@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="imageBoxHeight">50dp</dimen>
+    <dimen name="imageBoxWidth">50dp</dimen>
+    <dimen name="closeBoxHeight">25dp</dimen>
+    <dimen name="closeBoxWidth">25dp</dimen>
+    <dimen name="recycle">208dp</dimen>
+</resources>

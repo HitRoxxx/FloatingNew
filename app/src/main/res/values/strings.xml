@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Floating</string>
+    <string name="but_name">Start Floating Shortcut</string>
+    <string name="application_image">Application Image</string>
+    <string name="service_description">Service to Run Floating Shortcut</string>
+    <string name="notification_service_description">Service to run minimize floating Shortcut</string>
+</resources>
