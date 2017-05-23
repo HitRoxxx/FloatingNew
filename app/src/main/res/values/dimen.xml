@@ -5,4 +5,5 @@
     <dimen name="closeBoxHeight">25dp</dimen>
     <dimen name="closeBoxWidth">25dp</dimen>
     <dimen name="recycle">208dp</dimen>
+    <dimen name="text_size">14sp</dimen>
 </resources>

@@ -13,7 +13,6 @@ import com.theLoneWarrior.floating.R;
 public class MyIntentService extends IntentService {
     public MyIntentService() {
         super("MyIntentService");
-        System.gc();
     }
 
     @Override
@@ -47,10 +46,12 @@ public class MyIntentService extends IntentService {
             int NOTIFICATION_ID = 382;
             notificationManager.notify(NOTIFICATION_ID, notification);*/
 
-            Intent notificationIntent = new Intent(this, FloatingViewService.class);
-            PendingIntent pendingIntent = PendingIntent.getService(this, 0, notificationIntent, 0);
+            //Notification notification =
 
-            Notification notification = new Notification.Builder(this)
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            stopService(new Intent(this, FloatingViewService.class));
+
+            notificationManager.notify(382, new Notification.Builder(this)
                     .setSmallIcon(R.mipmap.ic_launcher_round)
                     .setContentTitle("Background Work")
                     .setContentText("Click To Start Floating Shortcut")
@@ -58,13 +59,9 @@ public class MyIntentService extends IntentService {
                     .setOngoing(true)
                     .setPriority(Notification.PRIORITY_MAX)
                     .setDefaults(Notification.DEFAULT_VIBRATE)
-                    .setContentIntent(pendingIntent)
-                    .build();
+                    .setContentIntent(PendingIntent.getService(this, 0, new Intent(this, FloatingViewService.class), 0))
+                    .build());
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            stopService(new Intent(this, FloatingViewService.class));
-
-            notificationManager.notify(382, notification);
             for (int i = 0; i < 10; i++) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     Runtime.getRuntime().gc();

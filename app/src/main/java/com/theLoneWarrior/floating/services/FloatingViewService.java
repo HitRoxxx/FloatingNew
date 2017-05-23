@@ -50,8 +50,7 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Bundle b = intent.getExtras();
         //////////////////////////////////////////////setting result from database/////////////////
-        AppDataStorage appDataStorage = new AppDataStorage(this);
-        SQLiteDatabase db = appDataStorage.getReadableDatabase();
+        SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
         Cursor cursor = db.query(
                 "APP_DATA",
                 null,
@@ -74,18 +73,22 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
         }
         db.close();
+
         //populate Service as a notification);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
-        Notification notification = new Notification.Builder(this)
+        // Notification notification =
+        startForeground(1, new Notification.Builder(this)
                 .setContentTitle("Floating Shortcut")
                 .setContentText("select shortcut")
                 .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentIntent(pi)
+                .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
                 .setTicker("HI")
-                .build();
-        startForeground(1, notification);
+                .build());
 
-        System.gc();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Runtime.getRuntime().gc();
+        } else {
+            System.gc();
+        }
         return START_REDELIVER_INTENT;
     }
 
@@ -230,20 +233,18 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                Runtime.getRuntime().gc();
-            } else {
-                System.gc();
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Runtime.getRuntime().gc();
+        } else {
+            System.gc();
+        }
     }
 
 
     @Override
     public void onListItemClick(int checkedItemIndex, ArrayList<PackageInfoStruct> result) {
-        /*PackageInfoStruct pis;
-        pis = result.get(checkedItemIndex);*/
-        String str = result.get(checkedItemIndex).getPacName().trim();
-        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(str);
+
+        Intent launchIntent = getPackageManager().getLaunchIntentForPackage(result.get(checkedItemIndex).getPacName().trim());
         //  launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (launchIntent != null) {
             startActivity(launchIntent);
@@ -282,11 +283,9 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                 main.removeView(nApp);
                 main.addView(nApp, shape);
             }
-            RecyclerViewAdapterResult mAdapter = new RecyclerViewAdapterResult(FloatingViewService.this, result);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(FloatingViewService.this);
-            nApp.setLayoutManager(layoutManager);
+            nApp.setLayoutManager(new LinearLayoutManager(FloatingViewService.this));
             nApp.setHasFixedSize(true);
-            nApp.setAdapter(mAdapter);
+            nApp.setAdapter(new RecyclerViewAdapterResult(FloatingViewService.this, result));
         } else {
             Toast.makeText(this, "No App Selected Please Select An App", Toast.LENGTH_SHORT).show();
         }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,18 +35,17 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public RecyclerViewAdapterResult.DataViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        View v = LayoutInflater.from(context).inflate(R.layout.recycle_view_layout_result, parent, false);
-        return new DataViewHolder(v);
+
+        return new DataViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_view_layout_result, parent, false));
     }
 
 
     @Override
     public void onBindViewHolder(RecyclerViewAdapterResult.DataViewHolder holder, int position) {
         PackageInfoStruct result = this.result.get(position);
+
         if (result.getAppName().length() <= 10) {
             holder.textView.setText(result.getAppName());
-
         } else {
             String sb = result.getAppName();
             String[] split = sb.split("\\s+");
@@ -107,6 +107,7 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
         DataViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.tv2);
+            textView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
             imageView = (ImageView) itemView.findViewById(R.id.iv1);
             itemView.setOnClickListener(this);
         }

@@ -1,6 +1,5 @@
 package com.theLoneWarrior.floating.adapter;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -39,9 +38,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public RecyclerViewAdapter.DataViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        View v = LayoutInflater.from(context).inflate(R.layout.recycle_view_layout, parent, false);
-        return new DataViewHolder(v);
+        return new DataViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_view_layout, parent, false));
     }
 
 

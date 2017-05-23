@@ -11,7 +11,6 @@ public class PackageInfoStruct {
 
     }
 
-
     public void setBitmapString(String bitmapString) {
         this.bitmapString = bitmapString;
     }
