@@ -40,6 +40,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import static android.graphics.BitmapFactory.decodeByteArray;
+
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.ListItemCheckListener {
 
@@ -143,9 +145,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                         ContentValues contentValues = new ContentValues();
                         contentValues.put("NAME", obj.getAppName());
                         contentValues.put("PACKAGE", obj.getPacName());
+                       // contentValues.put("IMAGE_RESOURCE", StringToBitmap(obj.getBitmapString()));
                         contentValues.put("IMAGE_RESOURCE", obj.getBitmapString());
-
-
                         long i = database.insert("APP_DATA", null, contentValues);
                         if (i == -1) {
                             Toast.makeText(MainActivity.this, "Sorry for Inconvenience, Database Error", Toast.LENGTH_SHORT).show();
@@ -158,6 +159,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 startService(intent);
                 saveData();
                 finish();
+            }
+
+            private String StringToBitmap(String bitmapString) {
+
+                try {
+                    byte[] encodeByte = Base64.decode(bitmapString, Base64.DEFAULT);
+               bitmapString= BitmapToString(scaleDownBitmap(decodeByteArray(encodeByte, 0, encodeByte.length), 50, MainActivity.this));
+                } catch (Exception e) {
+
+                    return null;
+                }
+                return bitmapString;
             }
         });
     }
@@ -246,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             newInfo.setBitmapString(BitmapToString(bitmap));
             //Log.d("Trial", str);
             res.add(newInfo);
+            bitmap.recycle();
         }
         return res;
     }
@@ -261,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     private Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
 
-       // final float densityMultiplier = ;
+        // final float densityMultiplier = ;
 
         int h = (int) (newHeight * context.getResources().getDisplayMetrics().density);
         int w = (int) (h * photo.getWidth() / ((double) photo.getHeight()));
@@ -343,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             case R.id.selectAll: {
 
                 if (!(result.size() == installedPackageDetails.size())) {
-                 //   Toast.makeText(this, "Select All", Toast.LENGTH_SHORT).show();
+                    //   Toast.makeText(this, "Select All", Toast.LENGTH_SHORT).show();
                     result.clear();
                     for (PackageInfoStruct obj : installedPackageDetails) {
                         obj.checked = true;
@@ -359,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             case R.id.deSelectAll: {
 
                 if ((result.size() > 0)) {
-                   // Toast.makeText(this, "Deselect All" + result.size(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(this, "Deselect All" + result.size(), Toast.LENGTH_SHORT).show();
                     for (PackageInfoStruct obj : result) {
                         obj.checked = false;
                     }

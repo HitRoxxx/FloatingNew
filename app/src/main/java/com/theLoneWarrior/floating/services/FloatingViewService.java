@@ -74,32 +74,31 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
         }
         db.close();
-
-        //populate Service as a notification);
-        // Notification notification =
-        startForeground(1, new Notification.Builder(this)
-                .setContentTitle("Floating Shortcut")
-                .setContentText("select shortcut")
-                .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
-                .setTicker("HI")
-                .build());
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Runtime.getRuntime().gc();
         } else {
             System.gc();
         }
+        //populate Service as a notification);
+        // Notification notification =
+        startForeground(1, new Notification.Builder(this)
+                .setContentTitle("Floating Shortcut")
+                .setContentText("select shortcut")
+                .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
+                .setTicker("HI")
+                .build());
 
 
-        return START_REDELIVER_INTENT;
+        populateRecycleView();
+
+        return START_NOT_STICKY;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         //Inflate the floating view layout we created
-        mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_widget_new2, null);
+        mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_widget,null);
         //Add the view to the window.
         /*final WindowManager.LayoutParams*/
         params = new WindowManager.LayoutParams(
@@ -132,14 +131,18 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                 //close the service and remove the from from the window
                 // Intent intent = new Intent(FloatingViewService.this, MyIntentService.class);
                 //startService(intent);
-                stopSelf();
+
+               // searchPreviousService();
+                Intent intent = new Intent(FloatingViewService.this, MyIntentService.class);
+                intent.setFlags(1);
+                startService(intent);
                 //stopSelf();
             }
         });
 
 
-        Button minmize = (Button) mFloatingView.findViewById(R.id.minimize);
-        minmize.setOnClickListener(new View.OnClickListener() {
+        Button minimize = (Button) mFloatingView.findViewById(R.id.minimize);
+        minimize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //close the service and remove the from from the window
@@ -158,13 +161,13 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
             }
         });*/
 
-        Button closeShortcut = (Button) mFloatingView.findViewById(R.id.radioButton);
+       /* Button closeShortcut = (Button) mFloatingView.findViewById(R.id.radioButton);
         closeShortcut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openShortcut();
+                openShortcut(true);
             }
-        });
+        });*/
 
 
         //Drag and move floating view using user's touch action.
@@ -172,11 +175,12 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-        mFloatingView.findViewById(R.id.up_iv).setOnTouchListener(new Movement());
+        mFloatingView.findViewById(R.id.radioButton).setOnTouchListener(new Movement());
 
     }
 
-    private void openShortcut() {
+
+    private void openShortcut(boolean flag) {
 
         if (isViewCollapsed()) {
 
@@ -184,7 +188,7 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
             // populateRecycleView();
 
-            populateRecycleView();
+
             //When user clicks on the image view of the collapsed layout,
             //visibility of the collapsed layout will be changed to "View.GONE"
             //and expanded view will become visible.
@@ -193,15 +197,21 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
 
         } else {
-            collapsedView.setVisibility(View.VISIBLE);
-            expandedView.setVisibility(View.GONE);
-            for (int i = 0; i < 5; i++) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    Runtime.getRuntime().gc();
-                } else {
-                    System.gc();
+            if(flag)
+            {
+                collapsedView.setVisibility(View.VISIBLE);
+                expandedView.setVisibility(View.GONE);
+                params.x = 0;
+                mWindowManager.updateViewLayout(mFloatingView, params);
+                for (int i = 0; i < 5; i++) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        Runtime.getRuntime().gc();
+                    } else {
+                        System.gc();
+                    }
                 }
             }
+
         }
     }
 
@@ -228,45 +238,25 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                     initialTouchY = event.getRawY();
                     return true;
                 case MotionEvent.ACTION_UP:
-                    int Xdiff = (int) (event.getRawX() - initialTouchX);
-                    int Ydiff = (int) (event.getRawY() - initialTouchY);
+                    int XDiff = (int) (event.getRawX() - initialTouchX);
+                    int YDiff = (int) (event.getRawY() - initialTouchY);
 
 
-                    //The check for Xdiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
+                    //The check for XDiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
                     //So that is click event.
-                    if (Xdiff < 10 && Ydiff < 10) {
-                        /*if (isViewCollapsed()) {
+                    if (XDiff < 10 && YDiff < 10) {
 
-
-                            // populate Recycle view on screen
-
-                            populateRecycleView();
-
-
-                            //When user clicks on the image view of the collapsed layout,
-                            //visibility of the collapsed layout will be changed to "View.GONE"
-                            //and expanded view will become visible.
-                            collapsedView.setVisibility(View.GONE);
-                            expandedView.setVisibility(View.VISIBLE);
-
-
-                        } else {
-                            collapsedView.setVisibility(View.VISIBLE);
-                            expandedView.setVisibility(View.GONE);
-                            for (int i = 0; i < 5; i++) {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                    Runtime.getRuntime().gc();
-                                } else {
-                                    System.gc();
-                                }
-                            }
-                        }*/
-                        openShortcut();
+                        openShortcut(true);
                     }
                     return true;
                 case MotionEvent.ACTION_MOVE:
                     //Calculate the X and Y coordinates of the view.
-                    params.x = initialX + (int) (event.getRawX() - initialTouchX);
+                    if (isViewCollapsed()) {
+                        params.x = 0;
+                    } else {
+                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
+                    }
+
                     params.y = initialY + (int) (event.getRawY() - initialTouchY);
 
 
@@ -295,10 +285,12 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Runtime.getRuntime().gc();
-        } else {
-            System.gc();
+        for (int i = 0; i < 4; i++) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                Runtime.getRuntime().gc();
+            } else {
+                System.gc();
+            }
         }
     }
 
@@ -349,6 +341,7 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
             // nApp.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
             nApp.setHasFixedSize(true);
             nApp.setAdapter(new RecyclerViewAdapterResult(FloatingViewService.this, result));
+
         } else {
             Toast.makeText(this, "No App Selected Please Select An App", Toast.LENGTH_SHORT).show();
         }

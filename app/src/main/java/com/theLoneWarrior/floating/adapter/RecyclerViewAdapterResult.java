@@ -56,7 +56,7 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
                 holder.textView.setText(split[0]);
             }
         }
-        holder.imageView.setImageBitmap(scaleDownBitmap(StringToBitmap(result.getBitmapString()), 100, (Context) reference));
+        holder.imageView.setImageBitmap(scaleDownBitmap(StringToBitmap(result.getBitmapString()), 50, (Context) reference));
         /*for (int i = 0; i < 20; i++) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Runtime.getRuntime().gc();

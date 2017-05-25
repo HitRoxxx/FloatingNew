@@ -9,7 +9,6 @@ import android.os.Build;
 
 import com.theLoneWarrior.floating.R;
 
-
 public class MyIntentService extends IntentService {
     public MyIntentService() {
         super("MyIntentService");
@@ -19,48 +18,28 @@ public class MyIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
 
-          /*  //Intent in = new Intent(this, MainActivity.class);
-            Intent i = new Intent();
-            String pkg = "com.example.android.floating";
-            String cls = "com.example.android.floating.FloatingViewService";
-            i.setComponent(new ComponentName(pkg, cls));
-           // startService(i);
+            int flag = intent.getFlags();
 
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-            stackBuilder.addParentStack(MainActivity.class);
-            stackBuilder.addNextIntent(i);
+            if (flag == 1) {
+                stopService(new Intent(this, FloatingViewService.class));
+                stopSelf();
 
-            PendingIntent intent1 = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-            Notification notification = new Notification.Builder(this)
-                    .setSmallIcon(R.mipmap.ic_launcher_round)
-                    .setContentTitle("Hello")
-                    .setContentText("Kumar rohit")
-                    .setAutoCancel(true)
-                    .setPriority(Notification.PRIORITY_MAX)
-                    .setDefaults(Notification.DEFAULT_VIBRATE)
-                    .setContentIntent(intent1)
-                    .build();
+            } else {
+                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                stopService(new Intent(this, FloatingViewService.class));
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notificationManager.notify(382, new Notification.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("Background Work")
+                        .setContentText("Click To Start Floating Shortcut")
+                        .setAutoCancel(true)
+                        .setOngoing(true)
+                        .setPriority(Notification.PRIORITY_MAX)
+                        .setDefaults(Notification.DEFAULT_VIBRATE)
+                        .setContentIntent(PendingIntent.getService(this, 0, new Intent(this, FloatingViewService.class), 0))
+                        .build());
+            }
 
-            int NOTIFICATION_ID = 382;
-            notificationManager.notify(NOTIFICATION_ID, notification);*/
-
-            //Notification notification =
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            stopService(new Intent(this, FloatingViewService.class));
-
-            notificationManager.notify(382, new Notification.Builder(this)
-                    .setSmallIcon(R.mipmap.ic_launcher_round)
-                    .setContentTitle("Background Work")
-                    .setContentText("Click To Start Floating Shortcut")
-                    .setAutoCancel(true)
-                    .setOngoing(true)
-                    .setPriority(Notification.PRIORITY_MAX)
-                    .setDefaults(Notification.DEFAULT_VIBRATE)
-                    .setContentIntent(PendingIntent.getService(this, 0, new Intent(this, FloatingViewService.class), 0))
-                    .build());
 
             for (int i = 0; i < 10; i++) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
