@@ -6,4 +6,7 @@
     <dimen name="closeBoxWidth">25dp</dimen>
     <dimen name="recycle">208dp</dimen>
     <dimen name="text_size">14sp</dimen>
+
+    <dimen name="floating_icon_height">50dp</dimen>
+    <dimen name="floating_icon_width">25dp</dimen>
 </resources>

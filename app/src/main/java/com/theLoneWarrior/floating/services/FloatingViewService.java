@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -89,6 +90,8 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
         } else {
             System.gc();
         }
+
+
         return START_REDELIVER_INTENT;
     }
 
@@ -96,7 +99,7 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
     public void onCreate() {
         super.onCreate();
         //Inflate the floating view layout we created
-        mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_widget, null);
+        mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_widget_new2, null);
         //Add the view to the window.
         /*final WindowManager.LayoutParams*/
         params = new WindowManager.LayoutParams(
@@ -127,10 +130,39 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
             @Override
             public void onClick(View view) {
                 //close the service and remove the from from the window
+                // Intent intent = new Intent(FloatingViewService.this, MyIntentService.class);
+                //startService(intent);
+                stopSelf();
+                //stopSelf();
+            }
+        });
+
+
+        Button minmize = (Button) mFloatingView.findViewById(R.id.minimize);
+        minmize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //close the service and remove the from from the window
                 Intent intent = new Intent(FloatingViewService.this, MyIntentService.class);
                 startService(intent);
                 // stopSelf();
                 //stopSelf();
+            }
+        });
+
+       /* final ImageView openShortcut = (ImageView) mFloatingView.findViewById(R.id.collapsed_iv);
+        openShortcut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openShortcut();
+            }
+        });*/
+
+        Button closeShortcut = (Button) mFloatingView.findViewById(R.id.radioButton);
+        closeShortcut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openShortcut();
             }
         });
 
@@ -142,6 +174,35 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
         mFloatingView.findViewById(R.id.up_iv).setOnTouchListener(new Movement());
 
+    }
+
+    private void openShortcut() {
+
+        if (isViewCollapsed()) {
+
+            // populate Recycle view on screen
+
+            // populateRecycleView();
+
+            populateRecycleView();
+            //When user clicks on the image view of the collapsed layout,
+            //visibility of the collapsed layout will be changed to "View.GONE"
+            //and expanded view will become visible.
+            collapsedView.setVisibility(View.GONE);
+            expandedView.setVisibility(View.VISIBLE);
+
+
+        } else {
+            collapsedView.setVisibility(View.VISIBLE);
+            expandedView.setVisibility(View.GONE);
+            for (int i = 0; i < 5; i++) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    Runtime.getRuntime().gc();
+                } else {
+                    System.gc();
+                }
+            }
+        }
     }
 
     ///// movement ontouch listener class ///
@@ -174,7 +235,7 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                     //The check for Xdiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
                     //So that is click event.
                     if (Xdiff < 10 && Ydiff < 10) {
-                        if (isViewCollapsed()) {
+                        /*if (isViewCollapsed()) {
 
 
                             // populate Recycle view on screen
@@ -199,7 +260,8 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                                     System.gc();
                                 }
                             }
-                        }
+                        }*/
+                        openShortcut();
                     }
                     return true;
                 case MotionEvent.ACTION_MOVE:
@@ -269,11 +331,11 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                 RelativeLayout main = (RelativeLayout) mFloatingView.findViewById(R.id.up_view);
                 RelativeLayout.LayoutParams shape = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) getResources().getDimension(R.dimen.recycle));
                 shape.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+              /*  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                     shape.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
-                }
-                shape.addRule(RelativeLayout.BELOW, R.id.up_iv);
-                shape.setMargins(40, 0, 40, 0);
+                }*/
+                shape.addRule(RelativeLayout.ALIGN_TOP, R.id.up_iv);
+                shape.setMargins(220, 220, 0, 0);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     nApp.setBackgroundColor(this.getColor(R.color.param));
                 } else {
@@ -284,6 +346,7 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                 main.addView(nApp, shape);
             }
             nApp.setLayoutManager(new LinearLayoutManager(FloatingViewService.this));
+            // nApp.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
             nApp.setHasFixedSize(true);
             nApp.setAdapter(new RecyclerViewAdapterResult(FloatingViewService.this, result));
         } else {
