@@ -1,11 +1,11 @@
 package com.theLoneWarrior.floating.adapter;
 
+import android.app.Service;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 import com.theLoneWarrior.floating.services.FloatingViewService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -27,10 +29,13 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
 
     private ArrayList<PackageInfoStruct> result;
     private ListItemClickListener reference;
+    private Service service;
 
     public RecyclerViewAdapterResult(ListItemClickListener reference, ArrayList<PackageInfoStruct> result) {
         this.result = result;
         this.reference = reference;
+        service = (Service) reference;
+
     }
 
     @Override
@@ -56,17 +61,20 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
                 holder.textView.setText(split[0]);
             }
         }
-        holder.imageView.setImageBitmap(scaleDownBitmap(StringToBitmap(result.getBitmapString()), 50, (Context) reference));
-        /*for (int i = 0; i < 20; i++) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                Runtime.getRuntime().gc();
-            } else {
-                System.gc();
-            }
-        }*/
+
+        try {
+            holder.imageView.setImageBitmap(scaleDownBitmap(MediaStore.Images.Media.getBitmap(service.getContentResolver(), result.getBitmapString()), 50, (Context) reference));
+        } catch (IOException e) {
+            e.printStackTrace();
+            Glide.with(holder.itemView).load(result.getBitmapString()).into(holder.imageView);
+        }
+
+
+        //Glide.with(holder.itemView).load(result.getBitmapString()).into(holder.imageView);
+
     }
 
-    private Bitmap StringToBitmap(String bitmapString) {
+  /*  private Bitmap StringToBitmap(String bitmapString) {
         try {
             byte[] encodeByte = Base64.decode(bitmapString, Base64.DEFAULT);
             return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
@@ -75,7 +83,7 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
             return null;
         }
 
-    }
+    }*/
 
     private Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
 
@@ -124,5 +132,8 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
         void onListItemClick(int checkedItemIndex, ArrayList<PackageInfoStruct> result);
     }
 
-
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
 }

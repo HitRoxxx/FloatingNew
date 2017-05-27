@@ -1,17 +1,19 @@
 package com.theLoneWarrior.floating.pojoClass;
 
+import android.net.Uri;
+
 public class PackageInfoStruct {
     private String appName = "";
     private String pName = "";
     public boolean checked;
-    private String bitmapString = "";
+    private Uri bitmapString ;
 
     // default constuctor
     public PackageInfoStruct() {
 
     }
 
-    public void setBitmapString(String bitmapString) {
+    public void setBitmapString(Uri bitmapString) {
         this.bitmapString = bitmapString;
     }
 
@@ -31,7 +33,7 @@ public class PackageInfoStruct {
         return appName;
     }
 
-    public String getBitmapString() {
+    public Uri getBitmapString() {
         return bitmapString;
     }
 

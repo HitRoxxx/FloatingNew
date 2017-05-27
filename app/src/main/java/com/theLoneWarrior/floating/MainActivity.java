@@ -10,8 +10,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -145,8 +143,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                         ContentValues contentValues = new ContentValues();
                         contentValues.put("NAME", obj.getAppName());
                         contentValues.put("PACKAGE", obj.getPacName());
-                       // contentValues.put("IMAGE_RESOURCE", StringToBitmap(obj.getBitmapString()));
-                        contentValues.put("IMAGE_RESOURCE", obj.getBitmapString());
+                        // contentValues.put("IMAGE_RESOURCE", StringToBitmap(obj.getBitmapString()));
+                        contentValues.put("IMAGE_RESOURCE", obj.getBitmapString().toString());
                         long i = database.insert("APP_DATA", null, contentValues);
                         if (i == -1) {
                             Toast.makeText(MainActivity.this, "Sorry for Inconvenience, Database Error", Toast.LENGTH_SHORT).show();
@@ -165,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
                 try {
                     byte[] encodeByte = Base64.decode(bitmapString, Base64.DEFAULT);
-               bitmapString= BitmapToString(scaleDownBitmap(decodeByteArray(encodeByte, 0, encodeByte.length), 50, MainActivity.this));
+                    bitmapString = BitmapToString(scaleDownBitmap(decodeByteArray(encodeByte, 0, encodeByte.length), 50, MainActivity.this));
                 } catch (Exception e) {
 
                     return null;
@@ -245,7 +243,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             PackageInfoStruct newInfo = new PackageInfoStruct();
             newInfo.setAppName(p.loadLabel(getPackageManager()).toString());
             newInfo.setPacName(p.packageName);
-            Drawable d = p.loadIcon(getPackageManager());
+            Uri uri;
+              if (p.icon != 0) {
+            uri = Uri.parse("android.resource://" + p.packageName + "/" + p.icon);
+            //  Toast.makeText(this, ""+uri, Toast.LENGTH_SHORT).show();
+              }
+              else
+              {
+                  uri= Uri.parse("android.resource://com.theLoneWarrior.floating/drawable/default_image");
+              }
+
+
+          /*  Drawable d = p.loadIcon(getPackageManager());
             Bitmap bitmap;
             //   bitmap = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_4444);
             bitmap = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -256,10 +265,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             //    newInfo.bitmap = codec(bitmap, 50);
             //  newInfo.bitmap = bitmap;
             bitmap = scaleDownBitmap(bitmap, 50, this);
-            newInfo.setBitmapString(BitmapToString(bitmap));
+            newInfo.setBitmapString(BitmapToString(bitmap));*/
             //Log.d("Trial", str);
+
+            newInfo.setBitmapString(uri);
             res.add(newInfo);
-            bitmap.recycle();
+            // bitmap.recycle();
         }
         return res;
     }

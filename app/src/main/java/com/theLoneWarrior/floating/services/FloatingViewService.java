@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
@@ -67,7 +68,7 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                 PackageInfoStruct newInfo = new PackageInfoStruct();
                 newInfo.setAppName(cursor.getString(1));
                 newInfo.setPacName(cursor.getString(2));
-                newInfo.setBitmapString(cursor.getString(3));
+                newInfo.setBitmapString(Uri.parse(cursor.getString(3)));
                 result.add(newInfo);
             } while (cursor.moveToNext());
             cursor.close();
@@ -87,9 +88,6 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                 .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
                 .setTicker("HI")
                 .build());
-
-
-        populateRecycleView();
 
         return START_NOT_STICKY;
     }
@@ -186,7 +184,7 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
             // populate Recycle view on screen
 
-            // populateRecycleView();
+             populateRecycleView();
 
 
             //When user clicks on the image view of the collapsed layout,

@@ -31,14 +31,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="8"
-            android:gravity="center"
-            android:minHeight="50dp"
             android:background="@color/colorHalfTransparent"
-            android:textSize="@dimen/text_size"
+            android:gravity="center"
+            android:maxLines="1"
+            android:minHeight="50dp"
             android:textColor="#ffffff"
             android:textIsSelectable="false"
-            android:textStyle="bold"
-            android:maxLines="1" />
+            android:textSize="@dimen/text_size"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

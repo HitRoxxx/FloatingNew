@@ -1,9 +1,7 @@
 package com.theLoneWarrior.floating.adapter;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +11,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 
@@ -29,11 +28,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<PackageInfoStruct> installedPackageDetails;
     private ListItemCheckListener reference;
     private ArrayList<PackageInfoStruct> filteredInstalledPackageDetail;
+    private AppCompatActivity activity;
 
     public RecyclerViewAdapter(ListItemCheckListener reference, ArrayList<PackageInfoStruct> installedPackageDetails) {
         this.installedPackageDetails = installedPackageDetails;
         filteredInstalledPackageDetail = installedPackageDetails;
         this.reference = reference;
+        activity = (AppCompatActivity) reference;
     }
 
     @Override
@@ -46,11 +47,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(RecyclerViewAdapter.DataViewHolder holder, int position) {
         PackageInfoStruct packageInfoStruct = filteredInstalledPackageDetail.get(position);
         holder.textView.setText(packageInfoStruct.getAppName());
-        holder.imageView.setImageBitmap(StringToBitmap(packageInfoStruct.getBitmapString()));
+
+        // holder.imageView.setImageBitmap(StringToBitmap(packageInfoStruct.getBitmapString()));
+        // Glide.with((activity).load(StringToBitmap(packageInfoStruct.getBitmapString())).into(holder.imageView);
+        //Drawable d =new BitmapDrawable(activity.getResources(),StringToBitmap(packageInfoStruct.getBitmapString()));
+        try {
+            Glide.with(holder.itemView).load(packageInfoStruct.getBitmapString()).into(holder.imageView);
+        } catch (Exception e) {
+            holder.imageView.setImageResource(R.drawable.default_image);
+        }
+
         holder.checkBox.setChecked(packageInfoStruct.checked);
     }
 
-    private Bitmap StringToBitmap(String bitmapString) {
+   /* private Bitmap StringToBitmap(String bitmapString) {
         try {
             byte[] encodeByte = Base64.decode(bitmapString, Base64.DEFAULT);
             return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
@@ -58,7 +68,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             return null;
         }
 
-    }
+    }*/
 
 
     @Override
