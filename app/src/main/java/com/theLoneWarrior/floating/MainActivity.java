@@ -30,15 +30,13 @@ import android.widget.Toast;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
 import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
-import com.theLoneWarrior.floating.services.FloatingViewService;
+import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-
-import static android.graphics.BitmapFactory.decodeByteArray;
 
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.ListItemCheckListener {
@@ -62,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
         checkPermission();
         recyclerView = (RecyclerView) findViewById(R.id.rv);
-        intent = new Intent(MainActivity.this, FloatingViewService.class);
+        intent = new Intent(MainActivity.this, FloatingViewServiceClose.class);
         searchPreviousService();
 
         /// recycler view propagation/////////////////////////////////////////////////
@@ -159,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 finish();
             }
 
-            private String StringToBitmap(String bitmapString) {
+            /*private String StringToBitmap(String bitmapString) {
 
                 try {
                     byte[] encodeByte = Base64.decode(bitmapString, Base64.DEFAULT);
@@ -169,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                     return null;
                 }
                 return bitmapString;
-            }
+            }*/
         });
     }
 
@@ -244,14 +242,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             newInfo.setAppName(p.loadLabel(getPackageManager()).toString());
             newInfo.setPacName(p.packageName);
             Uri uri;
-              if (p.icon != 0) {
-            uri = Uri.parse("android.resource://" + p.packageName + "/" + p.icon);
-            //  Toast.makeText(this, ""+uri, Toast.LENGTH_SHORT).show();
-              }
-              else
-              {
-                  uri= Uri.parse("android.resource://com.theLoneWarrior.floating/drawable/default_image");
-              }
+            if (p.icon != 0) {
+                uri = Uri.parse("android.resource://" + p.packageName + "/" + p.icon);
+                //  Toast.makeText(this, ""+uri, Toast.LENGTH_SHORT).show();
+            } else {
+                uri = Uri.parse("android.resource://com.theLoneWarrior.floating/drawable/default_image");
+            }
 
 
           /*  Drawable d = p.loadIcon(getPackageManager());

@@ -32,6 +32,17 @@
             android:description="@string/notification_service_description"
             android:exported="false" />
 
+        <service
+            android:name=".services.FloatingViewServiceClose"
+            android:description="@string/service_description"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name=".services.FloatingViewServiceNew"
+            android:description="@string/service_description"
+            android:enabled="true"
+            android:exported="false" />
+
     </application>
 
 </manifest>

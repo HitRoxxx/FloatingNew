@@ -21,12 +21,17 @@ public class MyIntentService extends IntentService {
             int flag = intent.getFlags();
 
             if (flag == 1) {
-                stopService(new Intent(this, FloatingViewService.class));
+                stopService(new Intent(this, FloatingViewServiceNew.class));
+                stopSelf();
+
+            } else if (flag == 2) {
+                stopService(new Intent(this, FloatingViewServiceNew.class));
+                startService(new Intent(this, FloatingViewServiceClose.class));
                 stopSelf();
 
             } else {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                stopService(new Intent(this, FloatingViewService.class));
+                stopService(new Intent(this, FloatingViewServiceNew.class));
 
                 notificationManager.notify(382, new Notification.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
@@ -36,12 +41,12 @@ public class MyIntentService extends IntentService {
                         .setOngoing(true)
                         .setPriority(Notification.PRIORITY_MAX)
                         .setDefaults(Notification.DEFAULT_VIBRATE)
-                        .setContentIntent(PendingIntent.getService(this, 0, new Intent(this, FloatingViewService.class), 0))
+                        .setContentIntent(PendingIntent.getService(this, 0, new Intent(this, FloatingViewServiceClose.class), 0))
                         .build());
             }
 
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 5; i++) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     Runtime.getRuntime().gc();
                 } else {
