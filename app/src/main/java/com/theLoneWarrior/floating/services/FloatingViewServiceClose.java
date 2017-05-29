@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,8 +20,8 @@ import com.theLoneWarrior.floating.R;
 public class FloatingViewServiceClose extends Service {
     private WindowManager mWindowManager;
     private View mFloatingView;
-    private Intent intentService;
     private WindowManager.LayoutParams params;
+    Handler handler;
 
     public FloatingViewServiceClose() {
     }
@@ -34,7 +35,6 @@ public class FloatingViewServiceClose extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        intentService = new Intent(FloatingViewServiceClose.this, FloatingViewServiceNew.class);
         // Bundle b = intent.getExtras();
         //////////////////////////////////////////////setting result from database/////////////////
 
@@ -46,12 +46,19 @@ public class FloatingViewServiceClose extends Service {
                 .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
                 .setTicker("HI")
                 .build());
+        handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    Runtime.getRuntime().gc();
+                } else {
+                    System.gc();
+                }
+                handler.postDelayed(this, 5000);
+            }
+        });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Runtime.getRuntime().gc();
-        } else {
-            System.gc();
-        }
 
         return START_NOT_STICKY;
     }
@@ -88,11 +95,10 @@ public class FloatingViewServiceClose extends Service {
 
     }
 
-
     ///// movement ontouch listener class ///
     private class Movement implements View.OnTouchListener {
 
-        // private int initialX;
+        private int initialX;
         private int initialY;
         private float initialTouchX;
         private float initialTouchY;
@@ -104,7 +110,7 @@ public class FloatingViewServiceClose extends Service {
                 case MotionEvent.ACTION_DOWN:
 
                     //remember the initial position.
-                    //  initialX = params.x;
+                    initialX = params.x;
                     initialY = params.y;
 
                     //get the touch location
@@ -119,15 +125,20 @@ public class FloatingViewServiceClose extends Service {
                     //The check for XDiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
                     //So that is click event.
                     if (XDiff < 10 && YDiff < 10) {
+                        //     new Thread(new Runnable() {
+                        //         @Override
+                        //        public void run() {
 
-                        startService(intentService);
+                        startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpen.class));
+                        //         }
+                        //      }).start();
+                        stopForeground(true);
                         stopSelf();
                     }
                     return true;
                 case MotionEvent.ACTION_MOVE:
                     //Calculate the X and Y coordinates of the view.
-                    params.x = 0;
-
+                    params.x = 0;/*initialX + (int) (event.getRawX() - initialTouchX);*/
 
                     params.y = initialY + (int) (event.getRawY() - initialTouchY);
 
@@ -135,10 +146,12 @@ public class FloatingViewServiceClose extends Service {
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(mFloatingView, params);
                     return true;
+
             }
+
+
             return false;
         }
-
     }
 
 
@@ -146,14 +159,8 @@ public class FloatingViewServiceClose extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
-
-        /*for (int i = 0; i < 4; i++) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                Runtime.getRuntime().gc();
-            } else {
-                System.gc();
-            }
-        }*/
+        handler.removeCallbacksAndMessages(null);
+       // handler.getLooper().quit();
     }
 
 

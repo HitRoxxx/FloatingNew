@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,15 +32,16 @@ import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 import java.util.ArrayList;
 
 
-public class FloatingViewService extends Service implements RecyclerViewAdapterResult.ListItemClickListener {
+public class FloatingViewServiceOpen extends Service implements RecyclerViewAdapterResult.ListItemClickListener {
     private WindowManager mWindowManager;
     private View mFloatingView;
     private ArrayList<PackageInfoStruct> result = new ArrayList<>();
-    private View collapsedView;
     private View expandedView;
     private WindowManager.LayoutParams params;
+    Intent intentService;
+    Handler handler;
 
-    public FloatingViewService() {
+    public FloatingViewServiceOpen() {
     }
 
     @Override
@@ -50,6 +52,10 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        intentService = new Intent(FloatingViewServiceOpen.this, FloatingViewServiceClose.class);
+        searchPreviousService();
+
         // Bundle b = intent.getExtras();
         //////////////////////////////////////////////setting result from database/////////////////
         SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
@@ -75,14 +81,22 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
         }
         db.close();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Runtime.getRuntime().gc();
-        } else {
-            System.gc();
-        }
+        handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    Runtime.getRuntime().gc();
+                } else {
+                    System.gc();
+                }
+                handler.postDelayed(this, 5000);
+            }
+        });
+        populateRecycleView();
         //populate Service as a notification);
         // Notification notification =
-        startForeground(1, new Notification.Builder(this)
+        startForeground(111, new Notification.Builder(this)
                 .setContentTitle("Floating Shortcut")
                 .setContentText("select shortcut")
                 .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
@@ -92,11 +106,15 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
         return START_NOT_STICKY;
     }
 
+    private void searchPreviousService() {
+        stopService(intentService);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         //Inflate the floating view layout we created
-        mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_widget,null);
+        mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_widget_new, null);
         //Add the view to the window.
         /*final WindowManager.LayoutParams*/
         params = new WindowManager.LayoutParams(
@@ -115,24 +133,15 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(mFloatingView, params);
 
-        //The root element of the collapsed view layout
-        collapsedView = mFloatingView.findViewById(R.id.collapse_view);
-        //The root element of the expanded view layout
-        expandedView = mFloatingView.findViewById(R.id.up_view);
-        expandedView.setVisibility(View.GONE);
-
         //Set the close button
         ImageView closeButtonCollapsed = (ImageView) mFloatingView.findViewById(R.id.close_btn);
         closeButtonCollapsed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //close the service and remove the from from the window
-                // Intent intent = new Intent(FloatingViewService.this, MyIntentService.class);
-                //startService(intent);
-
-               // searchPreviousService();
-                Intent intent = new Intent(FloatingViewService.this, MyIntentService.class);
+                Intent intent = new Intent(FloatingViewServiceOpen.this, MyIntentService.class);
                 intent.setFlags(1);
+                stopForeground(true);
                 startService(intent);
                 //stopSelf();
             }
@@ -144,7 +153,8 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
             @Override
             public void onClick(View view) {
                 //close the service and remove the from from the window
-                Intent intent = new Intent(FloatingViewService.this, MyIntentService.class);
+                Intent intent = new Intent(FloatingViewServiceOpen.this, MyIntentService.class);
+                stopForeground(true);
                 startService(intent);
                 // stopSelf();
                 //stopSelf();
@@ -169,7 +179,6 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
 
         //Drag and move floating view using user's touch action.
-        mFloatingView.findViewById(R.id.root_container).setOnTouchListener(new Movement());
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
@@ -177,41 +186,6 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
 
     }
 
-
-    private void openShortcut(boolean flag) {
-
-        if (isViewCollapsed()) {
-
-            // populate Recycle view on screen
-
-             populateRecycleView();
-
-
-            //When user clicks on the image view of the collapsed layout,
-            //visibility of the collapsed layout will be changed to "View.GONE"
-            //and expanded view will become visible.
-            collapsedView.setVisibility(View.GONE);
-            expandedView.setVisibility(View.VISIBLE);
-
-
-        } else {
-            if(flag)
-            {
-                collapsedView.setVisibility(View.VISIBLE);
-                expandedView.setVisibility(View.GONE);
-                params.x = 0;
-                mWindowManager.updateViewLayout(mFloatingView, params);
-                for (int i = 0; i < 5; i++) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        Runtime.getRuntime().gc();
-                    } else {
-                        System.gc();
-                    }
-                }
-            }
-
-        }
-    }
 
     ///// movement ontouch listener class ///
     private class Movement implements View.OnTouchListener {
@@ -244,17 +218,12 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                     //So that is click event.
                     if (XDiff < 10 && YDiff < 10) {
 
-                        openShortcut(true);
+                        startCloseService();
                     }
                     return true;
                 case MotionEvent.ACTION_MOVE:
                     //Calculate the X and Y coordinates of the view.
-                    if (isViewCollapsed()) {
-                        params.x = 0;
-                    } else {
-                        params.x = initialX + (int) (event.getRawX() - initialTouchX);
-                    }
-
+                    params.x = initialX + (int) (event.getRawX() - initialTouchX);
                     params.y = initialY + (int) (event.getRawY() - initialTouchY);
 
 
@@ -268,28 +237,19 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
     }
 
 
-    /**
-     * Detect if the floating view is collapsed or expanded.
-     *
-     * @return true if the floating view is collapsed.
-     */
-    private boolean isViewCollapsed() {
-        return mFloatingView == null || mFloatingView.findViewById(R.id.collapse_view).getVisibility() == View.VISIBLE;
-    }
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
-
-        for (int i = 0; i < 4; i++) {
+        handler.removeCallbacksAndMessages(null);
+      //  handler.getLooper().quit();
+        /*for (int i = 0; i < 4; i++) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Runtime.getRuntime().gc();
             } else {
                 System.gc();
             }
-        }
+        }*/
     }
 
 
@@ -303,13 +263,16 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
         } else {
             Toast.makeText(this, " Some Internal Error Occurred ", Toast.LENGTH_SHORT).show();
         }
-        collapsedView.setVisibility(View.VISIBLE);
-        expandedView.setVisibility(View.GONE);
-
+        startCloseService();
 
     }
 
-
+    void startCloseService() {
+        Intent intent = new Intent(FloatingViewServiceOpen.this, MyIntentService.class);
+        intent.setFlags(2);
+        stopForeground(true);
+        startService(intent);
+    }
     ///////////// Attaching recycle view result with data //////////////////////
 
     private void populateRecycleView() {
@@ -335,10 +298,10 @@ public class FloatingViewService extends Service implements RecyclerViewAdapterR
                 main.removeView(nApp);
                 main.addView(nApp, shape);
             }
-            nApp.setLayoutManager(new LinearLayoutManager(FloatingViewService.this));
+            nApp.setLayoutManager(new LinearLayoutManager(FloatingViewServiceOpen.this));
             // nApp.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
             nApp.setHasFixedSize(true);
-            nApp.setAdapter(new RecyclerViewAdapterResult(FloatingViewService.this, result));
+            nApp.setAdapter(new RecyclerViewAdapterResult(FloatingViewServiceOpen.this, result));
 
         } else {
             Toast.makeText(this, "No App Selected Please Select An App", Toast.LENGTH_SHORT).show();

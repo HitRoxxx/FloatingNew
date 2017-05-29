@@ -151,8 +151,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                     }
                     database.close();
                 }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startService(intent);
+                    }
+                }).start();
 
-                startService(intent);
                 saveData();
                 finish();
             }

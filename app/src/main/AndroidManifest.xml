@@ -23,11 +23,6 @@
         </activity>
 
         <service
-            android:name=".services.FloatingViewService"
-            android:description="@string/service_description"
-            android:enabled="true"
-            android:exported="false" />
-        <service
             android:name=".services.MyIntentService"
             android:description="@string/notification_service_description"
             android:exported="false" />
@@ -38,7 +33,7 @@
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".services.FloatingViewServiceNew"
+            android:name=".services.FloatingViewServiceOpen"
             android:description="@string/service_description"
             android:enabled="true"
             android:exported="false" />

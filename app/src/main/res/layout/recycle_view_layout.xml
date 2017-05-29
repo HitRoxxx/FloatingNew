@@ -33,7 +33,7 @@
             android:layout_gravity="center"
             android:layout_weight="8"
             android:gravity="center_horizontal|center_vertical|start"
-            android:minHeight="50dp"
+            android:minHeight="51.5dp"
             android:paddingEnd="0dp"
             android:paddingLeft="10dp"
             android:paddingRight="0dp"

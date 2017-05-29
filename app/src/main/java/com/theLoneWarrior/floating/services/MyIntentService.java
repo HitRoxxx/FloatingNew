@@ -21,17 +21,17 @@ public class MyIntentService extends IntentService {
             int flag = intent.getFlags();
 
             if (flag == 1) {
-                stopService(new Intent(this, FloatingViewServiceNew.class));
+                stopService(new Intent(this, FloatingViewServiceOpen.class));
                 stopSelf();
 
             } else if (flag == 2) {
-                stopService(new Intent(this, FloatingViewServiceNew.class));
+                stopService(new Intent(this, FloatingViewServiceOpen.class));
                 startService(new Intent(this, FloatingViewServiceClose.class));
                 stopSelf();
 
             } else {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                stopService(new Intent(this, FloatingViewServiceNew.class));
+                stopService(new Intent(this, FloatingViewServiceOpen.class));
 
                 notificationManager.notify(382, new Notification.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)

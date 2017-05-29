@@ -11,12 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
-import com.theLoneWarrior.floating.services.FloatingViewService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +27,8 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
     private ArrayList<PackageInfoStruct> result;
     private ListItemClickListener reference;
     private Service service;
+    boolean flag1 = true, flag2 = true;
+    int count, f;
 
     public RecyclerViewAdapterResult(ListItemClickListener reference, ArrayList<PackageInfoStruct> result) {
         this.result = result;
@@ -49,12 +48,12 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(RecyclerViewAdapterResult.DataViewHolder holder, int position) {
         PackageInfoStruct result = this.result.get(position);
 
-        if (result.getAppName().length() <= 10) {
+        if (result.getAppName().length() <= 15) {
             holder.textView.setText(result.getAppName());
         } else {
             String sb = result.getAppName();
             String[] split = sb.split("\\s+");
-            if (split[0].length() > 10) {
+            if (split[0].length() > 15) {
                 String tenDigitAppName = split[0].substring(0, 9);
                 holder.textView.setText(tenDigitAppName);
             } else {
@@ -63,13 +62,31 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
         }
 
         try {
-            holder.imageView.setImageBitmap(scaleDownBitmap(MediaStore.Images.Media.getBitmap(service.getContentResolver(), result.getBitmapString()), 50, (Context) reference));
+            //  Bitmap b =MediaStore.Images.Media.getBitmap(service.getContentResolver(), result.getBitmapString());
+            //  b.compress(Bitmap.CompressFormat.JPEG, 50,null);
+            holder.imageView.setImageBitmap(scaleDownBitmap(MediaStore.Images.Media.getBitmap(service.getContentResolver(), result.getBitmapString()), 60, (Context) reference));
+
+            //  holder.imageView.setImageBitmap(scaleDownBitmap(b, 100, (Context) reference));
         } catch (IOException e) {
             e.printStackTrace();
-            Glide.with(holder.itemView).load(result.getBitmapString()).into(holder.imageView);
+            //Glide.with(holder.itemView).load(result.getBitmapString()).into(holder.imageView);
         }
-
-
+       /* if (flag1) {
+            if (!flag2) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    Runtime.getRuntime().gc();
+                    Log.d("add", "" + count++);
+                } else {
+                    System.gc();
+                }
+                flag2 = true;
+            } else {
+                flag2 = false;
+            }
+            flag1 = false;
+        } else {
+            flag1 = true;
+        }*/
         //Glide.with(holder.itemView).load(result.getBitmapString()).into(holder.imageView);
 
     }
@@ -94,6 +111,21 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
 
         photo = Bitmap.createScaledBitmap(photo, w, h, true);
 
+
+       /* ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
+        photo.compress(Bitmap.CompressFormat.JPEG, 10, bAOS);
+        byte[] b = bAOS.toByteArray();
+
+        try{
+        //    b=Base64.decode(Base64.encodeToString(b, Base64.DEFAULT),Base64.DEFAULT);
+            photo= BitmapFactory.decodeByteArray(b, 0, b.length);
+            bAOS.flush();
+            bAOS.close();
+        }catch(Exception e){
+            e.getMessage();
+            return null;
+        }*/
+
         return photo;
     }
 
@@ -102,8 +134,7 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
     public int getItemCount() {
         try {
             return result.size();
-        } catch (Exception e) {
-            Toast.makeText((FloatingViewService) reference, "", Toast.LENGTH_SHORT).show();
+        } catch (Exception ignored) {
         }
         return 0;
     }
@@ -132,8 +163,5 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
         void onListItemClick(int checkedItemIndex, ArrayList<PackageInfoStruct> result);
     }
 
-    @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView);
-    }
+
 }
