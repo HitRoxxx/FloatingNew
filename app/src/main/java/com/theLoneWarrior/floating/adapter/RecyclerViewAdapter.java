@@ -11,7 +11,6 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 
@@ -51,12 +50,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // holder.imageView.setImageBitmap(StringToBitmap(packageInfoStruct.getBitmapString()));
         // Glide.with((activity).load(StringToBitmap(packageInfoStruct.getBitmapString())).into(holder.imageView);
         //Drawable d =new BitmapDrawable(activity.getResources(),StringToBitmap(packageInfoStruct.getBitmapString()));
-        try {
+      /*  try {
             Glide.with(holder.itemView).load(packageInfoStruct.getBitmapString()).into(holder.imageView);
         } catch (Exception e) {
             holder.imageView.setImageResource(R.drawable.default_image);
-        }
-
+        }*/
+        holder.imageView.setImageURI(packageInfoStruct.getBitmapString());
         holder.checkBox.setChecked(packageInfoStruct.checked);
     }
 

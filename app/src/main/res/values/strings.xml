@@ -4,4 +4,7 @@
     <string name="application_image">Application Image</string>
     <string name="service_description">Service to Run Floating Shortcut</string>
     <string name="notification_service_description">Service to run minimize floating Shortcut</string>
+
+    <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="dummy_content">"The\nWorld\nIs\nAgainst\nMe\nIt\nWouldn't\nBe\nFair\nOtherwise"</string>
 </resources>

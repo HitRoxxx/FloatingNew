@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.theLoneWarrior.floating"
     android:installLocation="auto">
@@ -15,18 +16,17 @@
         <activity
             android:name=".MainActivity"
             android:noHistory="true">
-            <intent-filter>
+         <!--   <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
 
         <service
             android:name=".services.MyIntentService"
             android:description="@string/notification_service_description"
             android:exported="false" />
-
         <service
             android:name=".services.FloatingViewServiceClose"
             android:description="@string/service_description"
@@ -38,6 +38,17 @@
             android:enabled="true"
             android:exported="false" />
 
+        <activity
+            android:name=".splash.SplashScreen"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_splash_screen"
+            android:theme="@style/FullscreenTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
