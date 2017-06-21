@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Floating</string>
+    <string name="app_name">FloSo</string>
     <string name="but_name">Start Floating Shortcut</string>
     <string name="application_image">Application Image</string>
     <string name="service_description">Service to Run Floating Shortcut</string>
@@ -7,4 +7,7 @@
 
     <string name="title_activity_splash_screen">SplashScreen</string>
     <string name="dummy_content">"The\nWorld\nIs\nAgainst\nMe\nIt\nWouldn't\nBe\nFair\nOtherwise"</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

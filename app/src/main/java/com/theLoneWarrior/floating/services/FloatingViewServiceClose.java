@@ -4,10 +4,12 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -128,8 +130,19 @@ public class FloatingViewServiceClose extends Service {
                         //     new Thread(new Runnable() {
                         //         @Override
                         //        public void run() {
+                        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(FloatingViewServiceClose.this);
+                        // String syncConnPref = sharedPref.getString("OutputVie", "");
+                        if(sharedPref.getBoolean("OutputView",true))
+                        {
+                            startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpen.class));
+                        }
+                        else
+                        {
+                            startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpenIconOnly.class));
+                        }
+                      //
 
-                        startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpen.class));
+
                         //         }
                         //      }).start();
                         stopForeground(true);

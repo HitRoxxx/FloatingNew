@@ -13,7 +13,9 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,7 +32,10 @@ import android.widget.Toast;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
 import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
+import com.theLoneWarrior.floating.preference.PreferenceDialog;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
+import com.theLoneWarrior.floating.services.FloatingViewServiceOpen;
+import com.theLoneWarrior.floating.services.FloatingViewServiceOpenIconOnly;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -110,9 +115,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     }
 
     private void searchPreviousService() {
-
         stopService(intent);
-        // stopService(new Intent(this, MyIntentService.class));
+        try {
+
+            stopService(new Intent(this, FloatingViewServiceOpen.class));
+            stopService(new Intent(this, FloatingViewServiceOpenIconOnly.class));
+            // stopService(new Intent(this, MyIntentService.class));
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Some Error Happened In Closing Services", Toast.LENGTH_SHORT).show();
+        }
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancel(382);
     }
@@ -395,6 +407,30 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 break;
             }
 
+            case R.id.setting: {
+                //      getSupportActionBar().hide();
+
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                /*// For a little polish, specify a transition animation
+               // transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                // To make it fullscreen, use the 'content' root view as the container
+                // for the fragment, which is always the root view for the activity
+                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+                //   getFragmentManager().beginTransaction()
+                transaction.replace(R.id.container, new PreferenceDialog())
+                        .addToBackStack(null).commit();*/
+
+
+               // simply use these xml animations when replacing fragments, i.e.:
+                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+             //   transaction.add(R.id.container ,new PreferenceDialog());
+              //  transaction.addToBackStack(null);
+             //   transaction.commit();
+
+                PreferenceDialog newFragment = new PreferenceDialog();
+                newFragment.show(transaction, "Setting");
+            }
+
         }
 
         saveData();
@@ -416,6 +452,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 mAdapter.getFilter().filter(newText);
                 return true;
             }
+
         });
     }
 
@@ -457,5 +494,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         super.onDestroy();
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+       // String syncConnPref = sharedPref.getString("OutputVie", "");
+       boolean flag= sharedPref.getBoolean("OutputView",true);
+    }
 }

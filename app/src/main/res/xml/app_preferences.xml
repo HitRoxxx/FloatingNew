@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Output">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@mipmap/ic_launcher"
+            android:key="OutputView"
+            android:summary="Default View"
+            android:title="Output View" />
+
+        <SwitchPreference
+            android:key="Alignment"
+            android:title="Align Output View"
+            android:summary="Left"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -38,10 +38,15 @@
             android:enabled="true"
             android:exported="false" />
 
+        <service
+            android:name=".services.FloatingViewServiceOpenIconOnly"
+            android:description="@string/service_description"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name=".splash.SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_splash_screen"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

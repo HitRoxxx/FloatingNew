@@ -14,7 +14,7 @@ import com.theLoneWarrior.floating.R;
 
 public class SplashScreen extends AppCompatActivity {
 
-    private static final int UI_ANIMATION_DELAY = 300;
+    private static final int UI_ANIMATION_DELAY = 200;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -75,7 +75,7 @@ public class SplashScreen extends AppCompatActivity {
                     finish();
                 }else
                 {
-                    handler.postDelayed(this,30);
+                    handler.postDelayed(this,50);
                 }
 
             }

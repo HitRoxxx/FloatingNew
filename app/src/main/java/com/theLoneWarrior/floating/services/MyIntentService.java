@@ -29,7 +29,12 @@ public class MyIntentService extends IntentService {
                 startService(new Intent(this, FloatingViewServiceClose.class));
                 stopSelf();
 
-            } else {
+            }
+            else if (flag == 3) {
+                stopService(new Intent(this, FloatingViewServiceOpenIconOnly.class));
+                startService(new Intent(this, FloatingViewServiceClose.class));
+                stopSelf();
+            }else {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 stopService(new Intent(this, FloatingViewServiceOpen.class));
 
