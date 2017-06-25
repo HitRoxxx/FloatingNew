@@ -81,8 +81,9 @@ public class Setting extends PreferenceFragment implements SharedPreferences.OnS
                     switchPreference.setIcon(R.drawable.center);
                     switchPreference.setSummary("Icon View");
                 }
-                return;
+
             }
+            return;
         }
      //   SharedPreferences sharedPrefs = getPreferenceManager().getSharedPreferences();
       // preference.setSummary(sharedPrefs.getString(key, "Default"));
