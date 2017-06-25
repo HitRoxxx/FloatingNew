@@ -17,7 +17,6 @@ import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -54,8 +53,8 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "Hi", Toast.LENGTH_SHORT).show();
-        Log.d("RUN","");
+      //  Toast.makeText(this, "Hi", Toast.LENGTH_SHORT).show();
+        //Log.d("RUN","");
         intentService = new Intent(FloatingViewServiceOpenIconOnly.this, FloatingViewServiceClose.class);
         searchPreviousService();
 
@@ -84,7 +83,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
         }
         db.close();
-        Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();
+       /* Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();*/
         handler = new Handler();
         handler.post(new Runnable() {
             @Override
@@ -140,6 +139,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
         mWindowManager.addView(mFloatingView, params);
 
         mFloatingView.findViewById(R.id.side_view).setOnTouchListener(new Movement());
+        mFloatingView.findViewById(R.id.side_view_Left).setOnTouchListener(new Movement());
     }
 
 

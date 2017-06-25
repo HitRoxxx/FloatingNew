@@ -35,7 +35,7 @@
                 android:id="@+id/recyclerViewIconOnly"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/param" />
+                android:background="@color/colorHalfTransparent" />
 
 
 

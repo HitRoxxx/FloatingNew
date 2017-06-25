@@ -5,7 +5,8 @@
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -13,14 +14,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:largeHeap="true"
             android:name=".MainActivity"
+            android:largeHeap="true"
+            android:parentActivityName=".SelectedApplication"
             android:noHistory="true">
-         <!--   <intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SelectedApplication"
+                />
+
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
 
         <service
@@ -37,7 +46,6 @@
             android:description="@string/service_description"
             android:enabled="true"
             android:exported="false" />
-
         <service
             android:name=".services.FloatingViewServiceOpenIconOnly"
             android:description="@string/service_description"
@@ -54,6 +62,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SelectedApplication"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

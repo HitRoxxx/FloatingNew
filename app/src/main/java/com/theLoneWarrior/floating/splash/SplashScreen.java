@@ -1,15 +1,20 @@
 package com.theLoneWarrior.floating.splash;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
-import com.theLoneWarrior.floating.MainActivity;
 import com.theLoneWarrior.floating.R;
+import com.theLoneWarrior.floating.SelectedApplication;
+import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
+import com.theLoneWarrior.floating.services.FloatingViewServiceOpen;
+import com.theLoneWarrior.floating.services.FloatingViewServiceOpenIconOnly;
 
 
 public class SplashScreen extends AppCompatActivity {
@@ -61,7 +66,7 @@ public class SplashScreen extends AppCompatActivity {
 
         setContentView(R.layout.activity_splash_screen);
         mContentView = findViewById(R.id.fullscreen_content);
-
+        searchPreviousService();
      final Handler handler=  new Handler();
             handler.post(new Runnable() {
 
@@ -71,7 +76,7 @@ public class SplashScreen extends AppCompatActivity {
 
                 if(count==100)
                 {
-                    startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                    startActivity(new Intent(SplashScreen.this, SelectedApplication.class));
                     finish();
                 }else
                 {
@@ -81,6 +86,21 @@ public class SplashScreen extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void searchPreviousService() {
+        stopService(new Intent(this, FloatingViewServiceClose.class));
+        try {
+
+            stopService(new Intent(this, FloatingViewServiceOpen.class));
+            stopService(new Intent(this, FloatingViewServiceOpenIconOnly.class));
+            // stopService(new Intent(this, MyIntentService.class));
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Some Error Happened In Closing Services", Toast.LENGTH_SHORT).show();
+        }
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(382);
     }
 
     @Override

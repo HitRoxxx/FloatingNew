@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,11 +64,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
         //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         checkPermission();
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         intent = new Intent(MainActivity.this, FloatingViewServiceClose.class);
-        searchPreviousService();
+        //  searchPreviousService();
 
         /// recycler view propagation/////////////////////////////////////////////////
 
@@ -164,12 +167,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                     }
                     database.close();
                 }
-                new Thread(new Runnable() {
+               /* new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        startService(intent);
+                        // startService(intent);
+
                     }
-                }).start();
+                }).start();*/
+
+                Intent newIntent = new Intent(MainActivity.this, SelectedApplication.class);
+                newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+             //   newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(new Intent(newIntent));
 
                 saveData();
                 finish();
@@ -422,11 +432,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                         .addToBackStack(null).commit();*/
 
 
-               // simply use these xml animations when replacing fragments, i.e.:
+                // simply use these xml animations when replacing fragments, i.e.:
                 transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
-             //   transaction.add(R.id.container ,new PreferenceDialog());
-              //  transaction.addToBackStack(null);
-             //   transaction.commit();
+                //   transaction.add(R.id.container ,new PreferenceDialog());
+                //  transaction.addToBackStack(null);
+                //   transaction.commit();
 
                 PreferenceDialog newFragment = new PreferenceDialog();
                 newFragment.show(transaction, "Setting");
@@ -501,7 +511,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     protected void onResume() {
         super.onResume();
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-       // String syncConnPref = sharedPref.getString("OutputVie", "");
-       boolean flag= sharedPref.getBoolean("OutputView",true);
+        // String syncConnPref = sharedPref.getString("OutputVie", "");
+        boolean flag = sharedPref.getBoolean("OutputView", true);
     }
 }
