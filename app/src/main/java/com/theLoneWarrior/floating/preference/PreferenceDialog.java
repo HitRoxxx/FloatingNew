@@ -28,4 +28,11 @@ public class PreferenceDialog extends DialogFragment {
         builder.setView(inflater.inflate(R.layout.dialog_preference,null));
         return builder.create();
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        dismiss();
+
+    }
 }

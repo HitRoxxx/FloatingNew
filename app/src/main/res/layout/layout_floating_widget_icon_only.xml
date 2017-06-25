@@ -11,7 +11,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:ignore="UselessParent">
-
+        <ImageView
+            android:id="@+id/side_view_Left"
+            android:layout_width="20dp"
+            android:layout_height="50dp"
+            android:rotation="180"
+            android:src="@drawable/down2"
+            android:visibility="gone"
+            tools:ignore="ContentDescription"
+            android:layout_gravity="center" />
         <!--View while view is collapsed-->
         <RelativeLayout
             android:id="@+id/up_view"

@@ -10,7 +10,7 @@ import android.preference.SwitchPreference;
 
 import com.theLoneWarrior.floating.R;
 
-public class Setting extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class Setting extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener  {
 
 
     @Override

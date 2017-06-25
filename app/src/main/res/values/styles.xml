@@ -3,12 +3,11 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@android:color/holo_green_light</item>
+        <item name="colorPrimary">@android:color/holo_green_dark</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@android:color/primary_text_dark_nodisable</item>
-
-        <item name="android:colorBackground">@android:color/darker_gray</item>
+        <item name="android:colorBackground">@android:color/holo_blue_bright</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="AppTheme.PopupOverlay">

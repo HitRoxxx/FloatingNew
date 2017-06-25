@@ -3,30 +3,30 @@ package com.theLoneWarrior.floating.services;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.theLoneWarrior.floating.R;
-import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterResult;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterResultIconOnly;
 import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
@@ -132,7 +132,8 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
         //Specify the view position
         params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
         params.x = 0;
-        params.y = 200;
+       // params.x = (int) -convertDpToPixel(30, this);  //-60;
+        params.y = (int) convertPixelsToDp(600,this);
 
         //Add the view to the window
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -143,7 +144,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
 
     ///// movement ontouch listener class ///
-    private class Movement implements View.OnTouchListener ,View.OnGenericMotionListener{
+    private class Movement implements View.OnTouchListener {
 
         private int initialX;
         private int initialY;
@@ -174,9 +175,30 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
                         startCloseService();
                     }
-                    params.x = 0;
-                    params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                  /*  params.x = 0;
+                    params.y = initialY + (int) (event.getRawY() - initialTouchY);*/
+                    Point p = new Point();
+                    Display d = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                    d.getSize(p);
+                    View  lv= mFloatingView.findViewById(R.id.side_view_Left);
+                    if (event.getRawX() > (p.x / 2)) {
+                        params.x = p.x;//(int) (p.x - convertDpToPixel(20, FloatingViewServiceOpenIconOnly.this));
 
+                        lv.setVisibility(View.VISIBLE);
+                        lv=mFloatingView.findViewById(R.id.side_view);
+                        lv.setVisibility(View.GONE);
+                        ;//(int) convertDpToPixel(p.x/2,FloatingViewServiceClose.this)-( (int) (convertDpToPixel(30,FloatingViewServiceClose.this)));//-60;/*initialX + (int) (event.getRawX() - initialTouchX);*/
+                        // Toast.makeText(FloatingViewServiceClose.this, ""+p.x, Toast.LENGTH_SHORT).show();
+                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                    }
+                    else
+                    {
+                        lv.setVisibility(View.GONE);
+                        lv=mFloatingView.findViewById(R.id.side_view);
+                        lv.setVisibility(View.VISIBLE);
+                        params.x = 0;
+                        params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                    }
 
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(mFloatingView, params);
@@ -198,21 +220,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
             return false;
         }
 
-        @Override
-        public boolean onGenericMotion(View v, MotionEvent event) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_BUTTON_RELEASE:
-                {
-                    params.x = 0;
-                    params.y = initialY + (int) (event.getRawY() - initialTouchY);
 
-
-                    //Update the layout with new X & Y coordinate
-                    mWindowManager.updateViewLayout(mFloatingView, params);
-                }
-            }
-            return false;
-        }
     }
 
 
@@ -268,6 +276,18 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
             Toast.makeText(this, "No App Selected Please Select An App", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    public float convertDpToPixel(float dp, Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    public  float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
 }

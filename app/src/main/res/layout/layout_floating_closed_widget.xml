@@ -24,9 +24,9 @@
             <!--Icon of floating widget -->
             <ImageView
                 android:id="@+id/side_view"
-                android:layout_width="30dp"
+                android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/down2"
+                android:src="@drawable/open"
                 tools:ignore="ContentDescription" />
 
             <!--Close button-->
@@ -35,3 +35,5 @@
         </RelativeLayout>
     </RelativeLayout>
 </FrameLayout>
+
+   <!-- android:src="@drawable/down2"-->

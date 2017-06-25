@@ -1,5 +1,6 @@
 package com.theLoneWarrior.floating;
 
+
 import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -429,6 +430,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
                 PreferenceDialog newFragment = new PreferenceDialog();
                 newFragment.show(transaction, "Setting");
+
+
             }
 
         }

@@ -3,13 +3,18 @@ package com.theLoneWarrior.floating.services;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -76,13 +81,13 @@ public class FloatingViewServiceClose extends Service {
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
         //Specify the view position
         params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
-        params.x = 0;
-        params.y = 200;
+        params.x = (int) -convertDpToPixel(30, this);  //-60;
+        params.y = (int) convertPixelsToDp(600,this);
 
         //Add the view to the window
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -123,7 +128,52 @@ public class FloatingViewServiceClose extends Service {
                     int XDiff = (int) (event.getRawX() - initialTouchX);
                     int YDiff = (int) (event.getRawY() - initialTouchY);
 
+                    Point p = new Point();
+                    Display d = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                    d.getSize(p);
+                    if (event.getRawX() > (p.x / 2)) {
+                        params.x = (int) (p.x - convertDpToPixel(30, FloatingViewServiceClose.this));
+                        ;//(int) convertDpToPixel(p.x/2,FloatingViewServiceClose.this)-( (int) (convertDpToPixel(30,FloatingViewServiceClose.this)));//-60;/*initialX + (int) (event.getRawX() - initialTouchX);*/
+                        // Toast.makeText(FloatingViewServiceClose.this, ""+p.x, Toast.LENGTH_SHORT).show();
+                        if (convertPixelsToDp(600,FloatingViewServiceClose.this) < initialY + (int) (event.getRawY() - initialTouchY)) {
 
+                            if((p.y-convertPixelsToDp(600,FloatingViewServiceClose.this) )>initialY + (int) (event.getRawY() - initialTouchY))
+                            {
+                                params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                            }
+                            else
+                            {
+                                params.y = (int) (p.y-convertPixelsToDp(600,FloatingViewServiceClose.this)) ;
+                            }
+
+                        }
+                        else
+                        {
+                            params.y =(int) convertPixelsToDp(600,FloatingViewServiceClose.this);
+                        }
+                    } else {
+                        params.x = (int) -convertDpToPixel(30, FloatingViewServiceClose.this);//-60;/*initialX + (int) (event.getRawX() - initialTouchX);*/
+                        if (convertPixelsToDp(600,FloatingViewServiceClose.this) < initialY + (int) (event.getRawY() - initialTouchY)) {
+
+                            if((p.y-convertPixelsToDp(600,FloatingViewServiceClose.this) )>initialY + (int) (event.getRawY() - initialTouchY))
+                            {
+                                params.y = initialY + (int) (event.getRawY() - initialTouchY);
+                            }
+                            else
+                            {
+                                params.y = (int) (p.y-convertPixelsToDp(600,FloatingViewServiceClose.this)) ;
+                            }
+
+                        }
+                        else
+                        {
+                            params.y =(int) convertPixelsToDp(600,FloatingViewServiceClose.this);
+                        }
+                    }
+
+
+                    //Update the layout with new X & Y coordinate
+                    mWindowManager.updateViewLayout(mFloatingView, params);
                     //The check for XDiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
                     //So that is click event.
                     if (XDiff < 10 && YDiff < 10) {
@@ -132,15 +182,12 @@ public class FloatingViewServiceClose extends Service {
                         //        public void run() {
                         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(FloatingViewServiceClose.this);
                         // String syncConnPref = sharedPref.getString("OutputVie", "");
-                        if(sharedPref.getBoolean("OutputView",true))
-                        {
+                        if (sharedPref.getBoolean("OutputView", true)) {
                             startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpen.class));
-                        }
-                        else
-                        {
+                        } else {
                             startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpenIconOnly.class));
                         }
-                      //
+                        //
 
 
                         //         }
@@ -151,7 +198,7 @@ public class FloatingViewServiceClose extends Service {
                     return true;
                 case MotionEvent.ACTION_MOVE:
                     //Calculate the X and Y coordinates of the view.
-                    params.x = 0;/*initialX + (int) (event.getRawX() - initialTouchX);*/
+                    params.x = initialX + (int) (event.getRawX() - initialTouchX);
 
                     params.y = initialY + (int) (event.getRawY() - initialTouchY);
 
@@ -168,12 +215,23 @@ public class FloatingViewServiceClose extends Service {
     }
 
 
+    public float convertDpToPixel(float dp, Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    public  float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
         handler.removeCallbacksAndMessages(null);
-       // handler.getLooper().quit();
+        // handler.getLooper().quit();
     }
 
 
