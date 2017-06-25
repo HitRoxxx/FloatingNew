@@ -14,9 +14,9 @@
         <SwitchPreference
             android:background="@color/colorHalfTransparent"
             android:defaultValue="true"
-            android:key="Alignment"
-            android:summary="Left"
-            android:title="Align Output View" />
+            android:key="SelectedApp"
+            android:summary="List "
+            android:title="Selected App View" />
     </PreferenceCategory>
 
 </PreferenceScreen>

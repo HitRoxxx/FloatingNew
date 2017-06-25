@@ -1,14 +1,19 @@
 package com.theLoneWarrior.floating;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,17 +26,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 
+import com.igalata.bubblepicker.BubblePickerListener;
+import com.igalata.bubblepicker.adapter.BubblePickerAdapter;
+import com.igalata.bubblepicker.model.PickerItem;
+import com.igalata.bubblepicker.rendering.BubblePicker;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
 import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class SelectedApplication extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener ,RecyclerViewAdapter.ListItemCheckListener {
+        implements NavigationView.OnNavigationItemSelectedListener, RecyclerViewAdapter.ListItemCheckListener {
 
+    BubblePicker picker;
     private ArrayList<PackageInfoStruct> result = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,35 +55,32 @@ public class SelectedApplication extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         setActionBarTitle();
-
+        picker = (BubblePicker) findViewById(R.id.picker);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                startActivity(new Intent(SelectedApplication.this,MainActivity.class));
+                startActivity(new Intent(SelectedApplication.this, MainActivity.class));
                /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 finish();*/
             }
         });
 
-        FloatingActionButton fabStartFloating =(FloatingActionButton) findViewById(R.id.fabStart);
+        FloatingActionButton fabStartFloating = (FloatingActionButton) findViewById(R.id.fabStart);
         fabStartFloating.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(result.size() > 0)
-                {
+                if (result.size() > 0) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            startService( new Intent(SelectedApplication.this, FloatingViewServiceClose.class));
+                            startService(new Intent(SelectedApplication.this, FloatingViewServiceClose.class));
                         }
                     }).start();
                     finish();
-                }
-                else
-                {
+                } else {
                     CoordinatorLayout coordinator = (CoordinatorLayout) findViewById(R.id.co);
 
 //                  /*  Snackbar.make(coordinator, textResId, Snackbar.LENGTH_LONG)
@@ -86,7 +98,6 @@ public class SelectedApplication extends AppCompatActivity
 
             }
         });
-
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -129,10 +140,67 @@ public class SelectedApplication extends AppCompatActivity
 
         }
         db.close();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(SelectedApplication.this);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
-        recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(new RecyclerViewAdapter(SelectedApplication.this, result));
+        // String syncConnPref = sharedPref.getString("OutputVie", "");
+        if (sharedPref.getBoolean("SelectedApp", true)) {
+
+            picker.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setAdapter(new RecyclerViewAdapter(SelectedApplication.this, result));
+        } else {
+            picker.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+            setBubble();
+        }
+
+
+    }
+
+    private void setBubble() {
+        picker.setAdapter(new BubblePickerAdapter() {
+            @Override
+            public int getTotalCount() {
+                return result.size();
+            }
+
+            @NotNull
+            @Override
+            public PickerItem getItem(int position) {
+                PackageInfoStruct packageInfoStruct = result.get(position);
+                PickerItem item = new PickerItem();
+                item.setTitle(packageInfoStruct.getAppName());
+                /*item.setGradient(new BubbleGradient(colors.getColor((position * 2) % 8, 0),
+                        colors.getColor((position * 2) % 8 + 1, 0), BubbleGradient.VERTICAL));*/
+                Typeface mediumTypeface = Typeface.create("", Typeface.ITALIC);
+                item.setTypeface(mediumTypeface);
+                item.setTextColor(ContextCompat.getColor(SelectedApplication.this, android.R.color.white));
+                /*item.setTextSize(40);*/
+                try {
+                    InputStream is = getContentResolver().openInputStream(packageInfoStruct.getBitmapString());
+                    item.setBackgroundImage(Drawable.createFromStream(is, packageInfoStruct.getBitmapString().toString()));
+                } catch (FileNotFoundException e) {
+                    item.setBackgroundImage(ContextCompat.getDrawable(SelectedApplication.this, R.drawable.default_image));
+                }
+                item.setSelected(true);
+                return item;
+            }
+        });
+/// complete later
+        picker.setListener(new BubblePickerListener() {
+            @Override
+            public void onBubbleSelected(@NotNull PickerItem item) {
+
+            }
+
+            @Override
+            public void onBubbleDeselected(@NotNull PickerItem item) {
+                item.setSelected(false);
+            }
+        });
     }
 
     @Override
@@ -239,4 +307,16 @@ public class SelectedApplication extends AppCompatActivity
         }
         System.gc();
     }*/
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        picker.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        picker.onPause();
+    }
 }

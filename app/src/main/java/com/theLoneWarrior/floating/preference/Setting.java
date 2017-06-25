@@ -7,6 +7,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 import android.preference.SwitchPreference;
+import android.widget.Toast;
 
 import com.theLoneWarrior.floating.R;
 
@@ -80,6 +81,17 @@ public class Setting extends PreferenceFragment implements SharedPreferences.OnS
                 } else {
                     switchPreference.setIcon(R.drawable.center);
                     switchPreference.setSummary("Icon View");
+                }
+
+            }
+            if (key.equals("SelectedApp")) {
+                if (getPreferenceManager().getSharedPreferences().getBoolean("SelectedApp", false)) {
+                    /*switchPreference.setIcon(R.mipmap.ic_launcher);*/
+                    switchPreference.setSummary("List");
+                } else {
+                    /*switchPreference.setIcon(R.drawable.center);*/
+                    switchPreference.setSummary("Bubble");
+                    Toast.makeText(getActivity(), "Bubble view is Still Experimental", Toast.LENGTH_SHORT).show();
                 }
 
             }
