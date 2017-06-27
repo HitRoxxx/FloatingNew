@@ -8,8 +8,9 @@
     tools:context=".MainActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/app_bar_height"
         android:theme="@style/Base.Widget.Design.AppBarLayout">
 
         <android.support.v7.widget.Toolbar
@@ -26,40 +27,52 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
+        android:layout_marginTop="@dimen/app_bar_height"
         android:orientation="vertical">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="9"
+            android:layout_height="match_parent"
             android:scrollbars="vertical" />
 
-        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_weight="1.5"
-            card_view:cardCornerRadius="10dp">
+        <!-- <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_marginBottom="5dp"
+             android:layout_marginLeft="5dp"
+             android:layout_marginRight="5dp"
+             android:layout_marginTop="5dp"
+             android:layout_weight="1.5"
+             card_view:cardCornerRadius="10dp">
 
-            <Button
-                android:id="@+id/notify_me"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#ff7b00"
-                android:text="@string/but_name"
-                android:textAllCaps="true"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="#ffffff"
-                android:textStyle="bold" />
-        </android.support.v7.widget.CardView>
+             <Button
+                 android:id="@+id/notify_me"
+                 style="@style/Widget.AppCompat.Button.Colored"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:background="#ff7b00"
+                 android:text="@string/but_name"
+                 android:textAllCaps="true"
+                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                 android:textColor="#ffffff"
+                 android:textStyle="bold" />
+         </android.support.v7.widget.CardView>-->
 
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/notify_me"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="#ff0000"
+        app:elevation="4dp"
+        app:fabSize="normal"
+        app:layout_anchor="@+id/app_bar"
+        app:layout_anchorGravity="bottom|right"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
 
 </android.support.design.widget.CoordinatorLayout>
 

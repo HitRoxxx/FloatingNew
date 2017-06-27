@@ -12,6 +12,7 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -305,7 +306,12 @@ public class FloatingViewServiceClose extends Service {
 
                             windowManager.updateViewLayout(mFloatingView, params);
                             //     Toast.makeText(FloatingViewServiceClose.this, ""+params.x, Toast.LENGTH_SHORT).show();
-
+                            Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            // Vibrate for 500 milliseconds
+                          //  vib.vibrate(300);
+                            if (vib.hasVibrator()) {
+                                vib.vibrate(200);
+                            }
                             break;
                         } else {
                             inBounded = false;

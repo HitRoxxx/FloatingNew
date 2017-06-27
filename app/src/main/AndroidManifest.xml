@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -16,12 +17,11 @@
         <activity
             android:name=".MainActivity"
             android:largeHeap="true"
-            android:parentActivityName=".SelectedApplication"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:parentActivityName=".SelectedApplication">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SelectedApplication"
-                />
+                android:value=".SelectedApplication" />
 
             <!--
             <intent-filter>
@@ -64,7 +64,7 @@
         </activity>
         <activity
             android:name=".SelectedApplication"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

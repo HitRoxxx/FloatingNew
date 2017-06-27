@@ -13,6 +13,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -33,6 +34,7 @@ import com.igalata.bubblepicker.rendering.BubblePicker;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
 import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
+import com.theLoneWarrior.floating.preference.PreferenceDialog;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 
 import org.jetbrains.annotations.NotNull;
@@ -111,6 +113,7 @@ public class SelectedApplication extends AppCompatActivity
 
         setRecycleView();
     }
+
 
     private void setActionBarTitle() {
         getSupportActionBar().setTitle(R.string.app_name);
@@ -229,6 +232,26 @@ public class SelectedApplication extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                /*// For a little polish, specify a transition animation
+               // transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                // To make it fullscreen, use the 'content' root view as the container
+                // for the fragment, which is always the root view for the activity
+                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+                //   getFragmentManager().beginTransaction()
+                transaction.replace(R.id.container, new PreferenceDialog())
+                        .addToBackStack(null).commit();*/
+
+
+            // simply use these xml animations when replacing fragments, i.e.:
+            transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+            //   transaction.add(R.id.container ,new PreferenceDialog());
+            //  transaction.addToBackStack(null);
+            //   transaction.commit();
+
+            PreferenceDialog newFragment = new PreferenceDialog();
+            newFragment.show(transaction, "Setting");
             return true;
         }
 
@@ -312,6 +335,7 @@ public class SelectedApplication extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         picker.onResume();
+        setRecycleView();
     }
 
     @Override

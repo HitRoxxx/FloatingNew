@@ -9,18 +9,12 @@
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always|collapseActionView" />
     <item
-        android:id="@+id/setting"
-        android:icon="@drawable/setting"
-        android:title="Setting"
-        android:orderInCategory="2"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/selectAll"
-        android:orderInCategory="3"
+        android:orderInCategory="2"
         android:title="Select All" />
     <item
         android:id="@+id/deSelectAll"
-        android:orderInCategory="4"
+        android:orderInCategory="3"
         android:title="Deselect All"
         app:showAsAction="never" />
 </menu>

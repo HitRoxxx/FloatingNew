@@ -16,7 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +33,6 @@ import android.widget.Toast;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
 import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
-import com.theLoneWarrior.floating.preference.PreferenceDialog;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 import com.theLoneWarrior.floating.services.FloatingViewServiceOpen;
 import com.theLoneWarrior.floating.services.FloatingViewServiceOpenIconOnly;
@@ -416,32 +414,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                     setRecycleView();
                 }
                 break;
-            }
-
-            case R.id.setting: {
-                //      getSupportActionBar().hide();
-
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                /*// For a little polish, specify a transition animation
-               // transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                // To make it fullscreen, use the 'content' root view as the container
-                // for the fragment, which is always the root view for the activity
-                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
-                //   getFragmentManager().beginTransaction()
-                transaction.replace(R.id.container, new PreferenceDialog())
-                        .addToBackStack(null).commit();*/
-
-
-                // simply use these xml animations when replacing fragments, i.e.:
-                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
-                //   transaction.add(R.id.container ,new PreferenceDialog());
-                //  transaction.addToBackStack(null);
-                //   transaction.commit();
-
-                PreferenceDialog newFragment = new PreferenceDialog();
-                newFragment.show(transaction, "Setting");
-
-
             }
 
         }
