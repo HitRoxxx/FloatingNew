@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     }
 
     void setRecycleView() {
-        mAdapter = new RecyclerViewAdapter(MainActivity.this, installedPackageDetails);
+        mAdapter = new RecyclerViewAdapter(MainActivity.this, installedPackageDetails, true);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(mAdapter);

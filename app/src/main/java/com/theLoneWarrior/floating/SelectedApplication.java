@@ -153,7 +153,7 @@ public class SelectedApplication extends AppCompatActivity
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
             recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(new RecyclerViewAdapter(SelectedApplication.this, result));
+            recyclerView.setAdapter(new RecyclerViewAdapter(SelectedApplication.this, result,false));
         } else {
             picker.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
@@ -333,9 +333,9 @@ public class SelectedApplication extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        super.onResume();
+       super.onResume();
         picker.onResume();
-        setRecycleView();
+      //  setRecycleView();
     }
 
     @Override

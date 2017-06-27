@@ -32,12 +32,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ListItemCheckListener reference;
     private ArrayList<PackageInfoStruct> filteredInstalledPackageDetail;
     private AppCompatActivity activity;
+    private boolean checkBoxEnabled;
 
-    public RecyclerViewAdapter(ListItemCheckListener reference, ArrayList<PackageInfoStruct> installedPackageDetails) {
+    public RecyclerViewAdapter(ListItemCheckListener reference, ArrayList<PackageInfoStruct> installedPackageDetails, boolean b) {
         this.installedPackageDetails = installedPackageDetails;
         filteredInstalledPackageDetail = installedPackageDetails;
         this.reference = reference;
         activity = (AppCompatActivity) reference;
+        checkBoxEnabled = b;
     }
 
     @Override
@@ -59,34 +61,34 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         } catch (Exception e) {
             holder.imageView.setImageResource(R.drawable.default_image);
         }*/
-      //  holder.imageView.setImageURI(packageInfoStruct.getBitmapString());
+        //  holder.imageView.setImageURI(packageInfoStruct.getBitmapString());
         try {
             holder.imageView.setImageBitmap(scaleDownBitmap(MediaStore.Images.Media.getBitmap(activity.getContentResolver(), packageInfoStruct.getBitmapString()), 50, (Context) reference));
         } catch (IOException e) {
             e.printStackTrace();
             holder.imageView.setImageURI(packageInfoStruct.getBitmapString());
         }
-
-        holder.checkBox.setChecked(packageInfoStruct.checked);
+        if (checkBoxEnabled)
+            holder.checkBox.setChecked(packageInfoStruct.checked);
     }
 
-   /* private Bitmap StringToBitmap(String bitmapString) {
-        try {
-            byte[] encodeByte = Base64.decode(bitmapString, Base64.DEFAULT);
-            return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-        } catch (Exception e) {
-            return null;
-        }
+    /* private Bitmap StringToBitmap(String bitmapString) {
+         try {
+             byte[] encodeByte = Base64.decode(bitmapString, Base64.DEFAULT);
+             return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+         } catch (Exception e) {
+             return null;
+         }
 
-    }*/
-   private Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
+     }*/
+    private Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
 
-       final float densityMultiplier = context.getResources().getDisplayMetrics().density;
+        final float densityMultiplier = context.getResources().getDisplayMetrics().density;
 
-       int h = (int) (newHeight * densityMultiplier);
-       int w = (int) (h * photo.getWidth() / ((double) photo.getHeight()));
+        int h = (int) (newHeight * densityMultiplier);
+        int w = (int) (h * photo.getWidth() / ((double) photo.getHeight()));
 
-       photo = Bitmap.createScaledBitmap(photo, w, h, true);
+        photo = Bitmap.createScaledBitmap(photo, w, h, true);
 
 
        /* ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
@@ -103,8 +105,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             return null;
         }*/
 
-       return photo;
-   }
+        return photo;
+    }
 
     @Override
     public int getItemCount() {
@@ -165,7 +167,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             textView = (TextView) itemView.findViewById(tv);
             imageView = (ImageView) itemView.findViewById(R.id.iv);
             checkBox = (CheckBox) itemView.findViewById(R.id.cb);
-            checkBox.setOnClickListener(this);
+            if (checkBoxEnabled) {
+               checkBox.setVisibility(View.VISIBLE);
+                checkBox.setOnClickListener(this);
+            }
+            else
+            {
+                checkBox.setVisibility(View.GONE);
+            }
         }
 
 
