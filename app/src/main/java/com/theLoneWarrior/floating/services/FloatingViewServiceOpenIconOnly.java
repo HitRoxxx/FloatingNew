@@ -5,9 +5,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.net.Uri;
@@ -27,7 +26,6 @@ import android.widget.Toast;
 
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterResultIconOnly;
-import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 
 import java.util.ArrayList;
@@ -53,14 +51,14 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-      //  Toast.makeText(this, "Hi", Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(this, "Hi", Toast.LENGTH_SHORT).show();
         //Log.d("RUN","");
         intentService = new Intent(FloatingViewServiceOpenIconOnly.this, FloatingViewServiceClose.class);
         searchPreviousService();
 
         // Bundle b = intent.getExtras();
         //////////////////////////////////////////////setting result from database/////////////////
-        SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
+      /*  SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
         Cursor cursor = db.query(
                 "APP_DATA",
                 null,
@@ -82,8 +80,30 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
             cursor.close();
 
         }
-        db.close();
+        db.close();*/
        /* Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();*/
+
+
+        SharedPreferences selectedAppPreference = FloatingViewServiceOpenIconOnly.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
+
+        String AppName = selectedAppPreference.getString("AppName", null);
+        String PacName = selectedAppPreference.getString("PacName", null);
+        String AppImage = selectedAppPreference.getString("AppImage", null);
+        if (PacName != null && !PacName.equals("") && AppName != null && AppImage != null) {
+            String[] split1 = AppName.split("\\+");
+            String[] split2 = PacName.split("\\+");
+            String[] split3 = AppImage.split("\\+");
+            for (int i = 0; i < split2.length; i++) {
+                PackageInfoStruct newInfo = new PackageInfoStruct();
+                newInfo.setAppName(split1[i]);
+                newInfo.setPacName(split2[i]);
+                newInfo.setBitmapString(Uri.parse(split3[i]));
+                result.add(newInfo);
+            }
+
+        }
+
+
         handler = new Handler();
         handler.post(new Runnable() {
             @Override
@@ -131,8 +151,8 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
         //Specify the view position
         params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
         params.x = 0;
-       // params.x = (int) -convertDpToPixel(30, this);  //-60;
-        params.y = (int) convertPixelsToDp(600,this);
+        // params.x = (int) -convertDpToPixel(30, this);  //-60;
+        params.y = (int) convertPixelsToDp(600, this);
 
         //Add the view to the window
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -180,21 +200,19 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
                     Point p = new Point();
                     Display d = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
                     d.getSize(p);
-                    View  lv= mFloatingView.findViewById(R.id.side_view_Left);
+                    View lv = mFloatingView.findViewById(R.id.side_view_Left);
                     if (event.getRawX() > (p.x / 2)) {
                         params.x = p.x;//(int) (p.x - convertDpToPixel(20, FloatingViewServiceOpenIconOnly.this));
 
                         lv.setVisibility(View.VISIBLE);
-                        lv=mFloatingView.findViewById(R.id.side_view);
+                        lv = mFloatingView.findViewById(R.id.side_view);
                         lv.setVisibility(View.GONE);
-                        ;//(int) convertDpToPixel(p.x/2,FloatingViewServiceClose.this)-( (int) (convertDpToPixel(30,FloatingViewServiceClose.this)));//-60;/*initialX + (int) (event.getRawX() - initialTouchX);*/
+                        //(int) convertDpToPixel(p.x/2,FloatingViewServiceClose.this)-( (int) (convertDpToPixel(30,FloatingViewServiceClose.this)));//-60;/*initialX + (int) (event.getRawX() - initialTouchX);*/
                         // Toast.makeText(FloatingViewServiceClose.this, ""+p.x, Toast.LENGTH_SHORT).show();
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
-                    }
-                    else
-                    {
+                    } else {
                         lv.setVisibility(View.GONE);
-                        lv=mFloatingView.findViewById(R.id.side_view);
+                        lv = mFloatingView.findViewById(R.id.side_view);
                         lv.setVisibility(View.VISIBLE);
                         params.x = 0;
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
@@ -229,7 +247,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
         handler.removeCallbacksAndMessages(null);
-      //  handler.getLooper().quit();
+        //  handler.getLooper().quit();
         /*for (int i = 0; i < 4; i++) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Runtime.getRuntime().gc();
@@ -278,16 +296,16 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
     }
 
-    public float convertDpToPixel(float dp, Context context) {
+  /*  public float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-    }
+    }*/
 
-    public  float convertPixelsToDp(float px, Context context){
+    public float convertPixelsToDp(float px, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        return px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
 }

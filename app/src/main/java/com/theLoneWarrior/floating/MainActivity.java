@@ -2,7 +2,6 @@ package com.theLoneWarrior.floating;
 
 
 import android.app.NotificationManager;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +16,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,7 +31,6 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
-import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 import com.theLoneWarrior.floating.services.FloatingViewServiceOpen;
@@ -54,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private SQLiteDatabase database;
     private RecyclerViewAdapter mAdapter;
     private RecyclerView recyclerView;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,25 +78,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
         /////////////////////////////////////storing data from sharedpreferences///////////////////////////////
         if (!flag) {
-            // if (false) {
-            installedPackageDetails = getShortedInstalledApps();
-            //    Toast.makeText(this, "data is there", Toast.LENGTH_SHORT).show();
-            String saveResult = prefs.getString("data", null);
-            //    Toast.makeText(this, "" + saveResult, Toast.LENGTH_SHORT).show();
 
-            if (saveResult != null) {
-                String[] split = saveResult.split("\\+");
-                for (String aSplit : split) {
-                    for (int j = 0; j < installedPackageDetails.size(); j++) {
-                        PackageInfoStruct obj = installedPackageDetails.get(j);
-                        if (obj.getPacName().equals(aSplit)) {
-                            installedPackageDetails.get(j).checked = true;
-                            result.add(obj);
-                        }
-                    }
-                }
-            }
-
+            recycleViewPropagation();
             setRecycleView();
 
         } else {
@@ -105,7 +88,55 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             setRecycleView();
         }
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //    saveData();
+                // Refresh items
+                refreshItems();
+            }
 
+        });
+
+
+    }
+
+    private void recycleViewPropagation() {
+        installedPackageDetails = getShortedInstalledApps();
+        //    Toast.makeText(this, "data is there", Toast.LENGTH_SHORT).show();
+        String saveResult = prefs.getString("data", null);
+        //    Toast.makeText(this, "" + saveResult, Toast.LENGTH_SHORT).show();
+        result.clear();
+        if (saveResult != null) {
+            String[] split = saveResult.split("\\+");
+            for (String aSplit : split) {
+                for (int j = 0; j < installedPackageDetails.size(); j++) {
+                    PackageInfoStruct obj = installedPackageDetails.get(j);
+                    if (obj.getPacName().equals(aSplit)) {
+                        installedPackageDetails.get(j).checked = true;
+                        result.add(obj);
+                    }
+                }
+            }
+        }
+    }
+
+    void refreshItems() {
+        // Load items
+        prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
+        recycleViewPropagation();
+        // Load complete
+        onItemsLoadComplete();
+    }
+
+    void onItemsLoadComplete() {
+        // Update the adapter and notify data set changed
+        // ...
+        setRecycleView();
+        //  mAdapter.notifyDataSetChanged();
+        // Stop refresh animation
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     void setRecycleView() {
@@ -144,11 +175,44 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         findViewById(R.id.notify_me).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ////////////////////////
+                saveData();
+                if(result!=null) {
+                    StringBuilder PacName = new StringBuilder("");
 
-                database = new AppDataStorage(MainActivity.this).getWritableDatabase();
+                        for (PackageInfoStruct str : result) {
+
+                            PacName.append(str.getPacName()).append("+");
+
+                        }
+                    StringBuilder AppName = new StringBuilder("");
+
+                        for (PackageInfoStruct str : result) {
+
+                            AppName.append(str.getAppName()).append("+");
+
+                        }
+
+                    StringBuilder AppImage = new StringBuilder("");
+
+                        for (PackageInfoStruct str : result) {
+
+                            AppImage.append(str.getBitmapString()).append("+");
+
+                        }
+                        SharedPreferences selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = selectedAppPreference.edit();
+                        editor.putString("AppName", String.valueOf(AppName));
+                        editor.putString("PacName", String.valueOf(PacName));
+                        editor.putString("AppImage", String.valueOf(AppImage));
+                        editor.apply();
+
+                }
+                /////////////////////////
+            //    database = new AppDataStorage(MainActivity.this).getWritableDatabase();
 
                 ///////////////////////use async task or thread//////////////
-                database.delete("APP_DATA", null, null);
+              /*  database.delete("APP_DATA", null, null);
                 if (result != null) {
                     for (final PackageInfoStruct obj : result) {
 
@@ -157,6 +221,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                         contentValues.put("PACKAGE", obj.getPacName());
                         // contentValues.put("IMAGE_RESOURCE", StringToBitmap(obj.getBitmapString()));
                         contentValues.put("IMAGE_RESOURCE", obj.getBitmapString().toString());
+
+
                         long i = database.insert("APP_DATA", null, contentValues);
                         if (i == -1) {
                             Toast.makeText(MainActivity.this, "Sorry for Inconvenience, Database Error", Toast.LENGTH_SHORT).show();
@@ -164,7 +230,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
                     }
                     database.close();
-                }
+                }*/
+
+              ///////////////////////////////////////////////////
                /* new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -175,11 +243,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
                 Intent newIntent = new Intent(MainActivity.this, SelectedApplication.class);
                 newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-             //   newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                //   newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(new Intent(newIntent));
 
-                saveData();
+
                 finish();
             }
 
@@ -330,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             obj.checked = false;
             result.remove(obj);
         }
-
+        saveData();
     }
 
     @Override

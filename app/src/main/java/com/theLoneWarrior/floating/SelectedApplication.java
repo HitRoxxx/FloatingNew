@@ -1,9 +1,8 @@
 package com.theLoneWarrior.floating;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -32,7 +31,6 @@ import com.igalata.bubblepicker.adapter.BubblePickerAdapter;
 import com.igalata.bubblepicker.model.PickerItem;
 import com.igalata.bubblepicker.rendering.BubblePicker;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
-import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 import com.theLoneWarrior.floating.preference.PreferenceDialog;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
@@ -43,8 +41,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class SelectedApplication extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, RecyclerViewAdapter.ListItemCheckListener {
+public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RecyclerViewAdapter.ListItemCheckListener {
 
     BubblePicker picker;
     private ArrayList<PackageInfoStruct> result = new ArrayList<>();
@@ -58,6 +55,8 @@ public class SelectedApplication extends AppCompatActivity
 
         setActionBarTitle();
         picker = (BubblePicker) findViewById(R.id.picker);
+
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +119,7 @@ public class SelectedApplication extends AppCompatActivity
     }
 
     private void setRecycleView() {
-        SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
+      /*  SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
         Cursor cursor = db.query(
                 "APP_DATA",
                 null,
@@ -142,7 +141,30 @@ public class SelectedApplication extends AppCompatActivity
             cursor.close();
 
         }
-        db.close();
+        db.close();*/
+
+        SharedPreferences selectedAppPreference = SelectedApplication.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
+
+        String AppName = selectedAppPreference.getString("AppName", null);
+        String PacName = selectedAppPreference.getString("PacName", null);
+        String AppImage = selectedAppPreference.getString("AppImage", null);
+        if (PacName != null && !PacName.equals("")) {
+            String[] split1 = AppName.split("\\+");
+            String[] split2 = PacName.split("\\+");
+            String[] split3 = AppImage.split("\\+");
+            for (int i = 0; i < split2.length; i++) {
+                PackageInfoStruct newInfo = new PackageInfoStruct();
+                newInfo.setAppName(split1[i]);
+                newInfo.setPacName(split2[i]);
+                newInfo.setBitmapString(Uri.parse(split3[i]));
+                result.add(newInfo);
+            }
+            split1 = null;
+            split2 = null;
+            split3 = null;
+
+        }
+
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(SelectedApplication.this);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
@@ -153,7 +175,7 @@ public class SelectedApplication extends AppCompatActivity
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
             recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(new RecyclerViewAdapter(SelectedApplication.this, result,false));
+            recyclerView.setAdapter(new RecyclerViewAdapter(SelectedApplication.this, result, false));
         } else {
             picker.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
@@ -333,9 +355,9 @@ public class SelectedApplication extends AppCompatActivity
 
     @Override
     protected void onResume() {
-       super.onResume();
+        super.onResume();
         picker.onResume();
-      //  setRecycleView();
+        //  setRecycleView();
     }
 
     @Override

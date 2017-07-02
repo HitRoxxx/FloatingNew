@@ -3,9 +3,9 @@ package com.theLoneWarrior.floating.services;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterResult;
-import com.theLoneWarrior.floating.database.AppDataStorage;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
 
         // Bundle b = intent.getExtras();
         //////////////////////////////////////////////setting result from database/////////////////
-        SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
+      /*  SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
         Cursor cursor = db.query(
                 "APP_DATA",
                 null,
@@ -80,7 +79,29 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
             cursor.close();
 
         }
-        db.close();
+        db.close();*/
+
+        SharedPreferences selectedAppPreference = FloatingViewServiceOpen.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
+
+        String AppName = selectedAppPreference.getString("AppName", null);
+        String PacName = selectedAppPreference.getString("PacName", null);
+        String AppImage = selectedAppPreference.getString("AppImage", null);
+        if (PacName != null && !PacName.equals("")) {
+            String[] split1 = AppName.split("\\+");
+            String[] split2 = PacName.split("\\+");
+            String[] split3 = AppImage.split("\\+");
+            for (int i = 0; i < split2.length; i++) {
+                PackageInfoStruct newInfo = new PackageInfoStruct();
+                newInfo.setAppName(split1[i]);
+                newInfo.setPacName(split2[i]);
+                newInfo.setBitmapString(Uri.parse(split3[i]));
+                result.add(newInfo);
+            }
+            split1 = null;
+            split2 = null;
+            split3 = null;
+
+        }
         handler = new Handler();
         handler.post(new Runnable() {
             @Override
