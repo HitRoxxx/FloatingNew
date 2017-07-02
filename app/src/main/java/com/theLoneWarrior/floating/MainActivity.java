@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -48,9 +47,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 69;
     private ArrayList<PackageInfoStruct> installedPackageDetails;
     private ArrayList<PackageInfoStruct> result = new ArrayList<>();
-    private SharedPreferences prefs, first;
+    private SharedPreferences  first,selectedAppPreference;
     private Intent intent;
-    private SQLiteDatabase database;
     private RecyclerViewAdapter mAdapter;
     private RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -71,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         //  searchPreviousService();
 
         /// recycler view propagation/////////////////////////////////////////////////
-
-        prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
+        selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
+      //  prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
         first = getSharedPreferences("first", Context.MODE_PRIVATE);
         boolean flag = first.getBoolean("check", true);
 
@@ -105,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private void recycleViewPropagation() {
         installedPackageDetails = getShortedInstalledApps();
         //    Toast.makeText(this, "data is there", Toast.LENGTH_SHORT).show();
-        String saveResult = prefs.getString("data", null);
+        String saveResult = selectedAppPreference.getString("PacName", null);
         //    Toast.makeText(this, "" + saveResult, Toast.LENGTH_SHORT).show();
         result.clear();
         if (saveResult != null) {
@@ -124,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     void refreshItems() {
         // Load items
-        prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
+        selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
         recycleViewPropagation();
         // Load complete
         onItemsLoadComplete();
@@ -177,38 +175,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             public void onClick(View view) {
                 ////////////////////////
                 saveData();
-                if(result!=null) {
-                    StringBuilder PacName = new StringBuilder("");
 
-                        for (PackageInfoStruct str : result) {
-
-                            PacName.append(str.getPacName()).append("+");
-
-                        }
-                    StringBuilder AppName = new StringBuilder("");
-
-                        for (PackageInfoStruct str : result) {
-
-                            AppName.append(str.getAppName()).append("+");
-
-                        }
-
-                    StringBuilder AppImage = new StringBuilder("");
-
-                        for (PackageInfoStruct str : result) {
-
-                            AppImage.append(str.getBitmapString()).append("+");
-
-                        }
-                        SharedPreferences selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = selectedAppPreference.edit();
-                        editor.clear();
-                        editor.putString("AppName", String.valueOf(AppName));
-                        editor.putString("PacName", String.valueOf(PacName));
-                        editor.putString("AppImage", String.valueOf(AppImage));
-                        editor.apply();
-
-                }
                 /////////////////////////
             //    database = new AppDataStorage(MainActivity.this).getWritableDatabase();
 
@@ -409,6 +376,46 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     }
 
     private void saveData() {
+
+
+
+
+
+        if(result!=null) {
+            StringBuilder PacName = new StringBuilder("");
+
+            for (PackageInfoStruct str : result) {
+
+                PacName.append(str.getPacName()).append("+");
+
+            }
+            StringBuilder AppName = new StringBuilder("");
+
+            for (PackageInfoStruct str : result) {
+
+                AppName.append(str.getAppName()).append("+");
+
+            }
+
+            StringBuilder AppImage = new StringBuilder("");
+
+            for (PackageInfoStruct str : result) {
+
+                AppImage.append(str.getBitmapString()).append("+");
+
+            }
+            SharedPreferences selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = selectedAppPreference.edit();
+            editor.clear();
+            editor.putString("AppName", String.valueOf(AppName));
+            editor.putString("PacName", String.valueOf(PacName));
+            editor.putString("AppImage", String.valueOf(AppImage));
+            editor.apply();
+
+
+
+
+       /*
         StringBuilder saveResult = new StringBuilder("");
         if (result != null) {
             for (PackageInfoStruct str : result) {
@@ -416,17 +423,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 saveResult.append(str.getPacName()).append("+");
 
             }
-        }
+        }*/
 
-
-        if (prefs != null) {
-            SharedPreferences.Editor editor = prefs.edit();
+        //    SharedPreferences.Editor editor = prefs.edit();
             SharedPreferences.Editor firstEditor = first.edit();
-            editor.clear();
-            editor.putString("data", String.valueOf(saveResult));
+         //   editor.clear();
+         //   editor.putString("data", String.valueOf(saveResult));
             firstEditor.putBoolean("check", false);
             firstEditor.apply();
-            editor.apply();
+          //  editor.apply();
         } else {
             //prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
             //  first = getSharedPreferences("first", Context.MODE_PRIVATE);
