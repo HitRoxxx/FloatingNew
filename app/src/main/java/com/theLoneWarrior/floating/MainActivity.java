@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -122,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     void refreshItems() {
         // Load items
-        selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
+     //   selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
         recycleViewPropagation();
         // Load complete
         onItemsLoadComplete();
@@ -532,6 +531,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 System.gc();
             }
         }
+        /*saveData();
+
+        Intent newIntent = new Intent(MainActivity.this, SelectedApplication.class);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //   newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(new Intent(newIntent));
+
+
+        finish();*/
         super.onBackPressed();
     }
 
@@ -556,8 +565,5 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        // String syncConnPref = sharedPref.getString("OutputVie", "");
-        boolean flag = sharedPref.getBoolean("OutputView", true);
     }
 }

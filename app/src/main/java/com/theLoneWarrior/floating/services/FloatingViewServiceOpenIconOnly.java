@@ -93,6 +93,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
             String[] split1 = AppName.split("\\+");
             String[] split2 = PacName.split("\\+");
             String[] split3 = AppImage.split("\\+");
+            result.clear();
             for (int i = 0; i < split2.length; i++) {
                 PackageInfoStruct newInfo = new PackageInfoStruct();
                 newInfo.setAppName(split1[i]);

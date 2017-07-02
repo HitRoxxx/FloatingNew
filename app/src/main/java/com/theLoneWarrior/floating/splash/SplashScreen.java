@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.SelectedApplication;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
@@ -18,6 +19,7 @@ import com.theLoneWarrior.floating.services.FloatingViewServiceOpenIconOnly;
 
 
 public class SplashScreen extends AppCompatActivity {
+
 
     private static final int UI_ANIMATION_DELAY = 200;
     private final Handler mHideHandler = new Handler();
@@ -63,6 +65,15 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (LeakCanary.isInAnalyzerProcess(getApplication())) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(getApplication());
+
+
 
         setContentView(R.layout.activity_splash_screen);
         mContentView = findViewById(R.id.fullscreen_content);

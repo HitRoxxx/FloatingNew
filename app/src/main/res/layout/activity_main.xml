@@ -62,6 +62,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv"
+            android:elevation="1dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical" />
@@ -73,6 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:background="@color/param"
         app:layout_anchor="@+id/container"
         app:layout_anchorGravity="bottom|center_horizontal">
 
@@ -96,15 +98,12 @@
             android:layout_gravity="bottom|center_horizontal"
             android:layout_margin="@dimen/fab_margin"
             android:layout_marginBottom="0dp"
-            android:layout_marginTop="0dp"
             app:backgroundTint="#ff0000"
             app:elevation="8dp"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="@+id/bottomToolbar"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@android:drawable/ic_dialog_email" />
     </android.support.constraint.ConstraintLayout>
 
