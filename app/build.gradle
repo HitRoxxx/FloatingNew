@@ -7,8 +7,8 @@ android {
         applicationId "com.theLoneWarrior.floating"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 3
-        versionName "0.1"
+        versionCode 4
+        versionName "0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,6 +31,7 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+
     compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
@@ -43,5 +44,5 @@ dependencies {
     compile 'com.github.igalata:Bubble-Picker:v0.2.4'
 
 
-    compile 'com.github.adrielcafe:AndroidAudioRecorder:0.3.0'
+
 }
