@@ -21,16 +21,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 
 import com.igalata.bubblepicker.BubblePickerListener;
 import com.igalata.bubblepicker.adapter.BubblePickerAdapter;
 import com.igalata.bubblepicker.model.PickerItem;
 import com.igalata.bubblepicker.rendering.BubblePicker;
-import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
+import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterSelectedApp;
+import com.theLoneWarrior.floating.helper.OnStartDragListener;
+import com.theLoneWarrior.floating.helper.SimpleItemTouchHelperCallback;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 import com.theLoneWarrior.floating.preference.PreferenceDialog;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
@@ -41,10 +43,12 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RecyclerViewAdapter.ListItemCheckListener {
+public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnStartDragListener {
 
     BubblePicker picker;
     private ArrayList<PackageInfoStruct> result = new ArrayList<>();
+    private ItemTouchHelper mItemTouchHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +117,11 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         setRecycleView();
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        setRecycleView();
+    }
 
     private void setActionBarTitle() {
         getSupportActionBar().setTitle(R.string.app_name);
@@ -159,10 +168,6 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
                 newInfo.setBitmapString(Uri.parse(split3[i]));
                 result.add(newInfo);
             }
-            split1 = null;
-            split2 = null;
-            split3 = null;
-
         }
 
 
@@ -170,12 +175,17 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
         // String syncConnPref = sharedPref.getString("OutputVie", "");
         if (sharedPref.getBoolean("SelectedApp", true)) {
-
+            RecyclerViewAdapterSelectedApp adapter=new RecyclerViewAdapterSelectedApp(SelectedApplication.this, result);
             picker.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
             recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(new RecyclerViewAdapter(SelectedApplication.this, result, false));
+            recyclerView.setAdapter(adapter);
+
+            ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
+            mItemTouchHelper = new ItemTouchHelper(callback);
+            mItemTouchHelper.attachToRecyclerView(recyclerView);
+
         } else {
             picker.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
@@ -305,19 +315,6 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         return true;
     }
 
-    @Override
-    public void onListItemCheck(int checkedItemIndex, CheckBox cb, ArrayList<PackageInfoStruct> pb) {
-       /* PackageInfoStruct obj = result.get(checkedItemIndex);
-        if (cb.isChecked()) {
-            obj.checked = true;
-            result.add(obj);
-
-        } else {
-            obj.checked = false;
-            result.remove(obj);
-        }
-        saveData();*/
-    }
 
    /* private void saveData() {
         StringBuilder saveResult = new StringBuilder("");
@@ -364,5 +361,10 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
     protected void onPause() {
         super.onPause();
         picker.onPause();
+    }
+
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
     }
 }

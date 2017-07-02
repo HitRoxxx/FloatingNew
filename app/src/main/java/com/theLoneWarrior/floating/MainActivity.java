@@ -202,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                         }
                         SharedPreferences selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = selectedAppPreference.edit();
+                        editor.clear();
                         editor.putString("AppName", String.valueOf(AppName));
                         editor.putString("PacName", String.valueOf(PacName));
                         editor.putString("AppImage", String.valueOf(AppImage));
