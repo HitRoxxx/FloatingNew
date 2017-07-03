@@ -22,9 +22,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.transition.Explode;
+import android.transition.Fade;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.igalata.bubblepicker.BubblePickerListener;
 import com.igalata.bubblepicker.adapter.BubblePickerAdapter;
@@ -53,7 +56,7 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+     //   setupWindowAnimations();
       setContentView(R.layout.activity_selected_application);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -118,6 +121,20 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         navigationView.setNavigationItemSelectedListener(this);
 
         setRecycleView();
+    }
+
+    private void setupWindowAnimations() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Fade fade = new Fade();
+            fade.setDuration(1000);
+            getWindow().setEnterTransition(fade);
+            Toast.makeText(this, "Animation", Toast.LENGTH_SHORT).show();
+            Explode slide = new Explode();
+            slide.setDuration(1000);
+            getWindow().setReenterTransition(slide);
+        }
+
+
     }
 
     @Override

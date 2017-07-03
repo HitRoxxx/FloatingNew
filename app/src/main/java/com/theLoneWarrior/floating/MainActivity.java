@@ -21,11 +21,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
@@ -46,22 +48,26 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 69;
     private ArrayList<PackageInfoStruct> installedPackageDetails;
     private ArrayList<PackageInfoStruct> result = new ArrayList<>();
-    private SharedPreferences  first,selectedAppPreference;
+    private SharedPreferences first, selectedAppPreference;
     private Intent intent;
     private RecyclerViewAdapter mAdapter;
     private RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
+    private int appCount = 0;
+    private TextView appCountView;
+    private boolean refreshFlag = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //  setupWindowAnimations();
         //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        appCountView = (TextView) findViewById(R.id.appSelected);
         checkPermission();
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         intent = new Intent(MainActivity.this, FloatingViewServiceClose.class);
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
         /// recycler view propagation/////////////////////////////////////////////////
         selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
-      //  prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
+        //  prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
         first = getSharedPreferences("first", Context.MODE_PRIVATE);
         boolean flag = first.getBoolean("check", true);
 
@@ -80,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             setRecycleView();
 
         } else {
-            Toast.makeText(this, "run", Toast.LENGTH_SHORT).show();
+            //  Toast.makeText(this, "run", Toast.LENGTH_SHORT).show();
             installedPackageDetails = getShortedInstalledApps();
             setRecycleView();
         }
@@ -91,11 +97,28 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             public void onRefresh() {
                 //    saveData();
                 // Refresh items
-                refreshItems();
+
+                if(!refreshFlag) {
+
+                    swipeRefreshLayout.setRefreshing(false);
+                }else
+                {
+                    refreshItems();
+                }
             }
 
         });
 
+
+    }
+
+    private void setupWindowAnimations() {
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Explode slide = new Explode();
+            slide.setDuration(1000);
+            getWindow().setExitTransition(slide);
+        }
 
     }
 
@@ -117,11 +140,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 }
             }
         }
+        // appCount = result.size();
+        appCountView.setText("" + result.size());
     }
 
     void refreshItems() {
         // Load items
-     //   selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
+        //   selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
         recycleViewPropagation();
         // Load complete
         onItemsLoadComplete();
@@ -134,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         //  mAdapter.notifyDataSetChanged();
         // Stop refresh animation
         swipeRefreshLayout.setRefreshing(false);
+
     }
 
     void setRecycleView() {
@@ -176,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 saveData();
 
                 /////////////////////////
-            //    database = new AppDataStorage(MainActivity.this).getWritableDatabase();
+                //    database = new AppDataStorage(MainActivity.this).getWritableDatabase();
 
                 ///////////////////////use async task or thread//////////////
               /*  database.delete("APP_DATA", null, null);
@@ -199,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                     database.close();
                 }*/
 
-              ///////////////////////////////////////////////////
+                ///////////////////////////////////////////////////
                /* new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -366,6 +392,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             result.remove(obj);
         }
         saveData();
+        appCountView.setText("" + result.size());
     }
 
     @Override
@@ -377,10 +404,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private void saveData() {
 
 
-
-
-
-        if(result!=null) {
+        if (result != null) {
             StringBuilder PacName = new StringBuilder("");
 
             for (PackageInfoStruct str : result) {
@@ -424,13 +448,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             }
         }*/
 
-        //    SharedPreferences.Editor editor = prefs.edit();
+            //    SharedPreferences.Editor editor = prefs.edit();
             SharedPreferences.Editor firstEditor = first.edit();
-         //   editor.clear();
-         //   editor.putString("data", String.valueOf(saveResult));
+            //   editor.clear();
+            //   editor.putString("data", String.valueOf(saveResult));
             firstEditor.putBoolean("check", false);
             firstEditor.apply();
-          //  editor.apply();
+            //  editor.apply();
         } else {
             //prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
             //  first = getSharedPreferences("first", Context.MODE_PRIVATE);
@@ -448,11 +472,34 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         MenuItem search = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);
-        search(searchView);
+        search(searchView, menu);
+        searchView.setQueryHint("Application Name");
+        // searchView.setIconifiedByDefault(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            searchView.setTransitionGroup(true);
+        }
+     //   searchView.setIconifiedByDefault(true);
+     //   searchView.setIconified(true);
+        searchView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+
+            @Override
+            public void onViewDetachedFromWindow(View arg0) {
+                // search was detached/closed
+                MainActivity.this.setItemsVisibility(menu, true);
+                //   Toast.makeText(MainActivity.this, "close", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onViewAttachedToWindow(View arg0) {
+                // search was opened
+                MainActivity.this.setItemsVisibility(menu, false);
+            }
+        });
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -492,15 +539,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         }
 
         saveData();
+        appCountView.setText("" + result.size());
         return super.onOptionsItemSelected(item);
     }
 
-    private void search(SearchView searchView) {
-
+    private void search(SearchView searchView, final Menu menu) {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
                 return false;
             }
 
@@ -508,10 +554,21 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             public boolean onQueryTextChange(String newText) {
 
                 mAdapter.getFilter().filter(newText);
+
                 return true;
             }
 
         });
+
+    }
+
+    private void setItemsVisibility(final Menu menu,
+                                    boolean visible) {
+        refreshFlag=visible;
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            item.setVisible(visible);
+        }
     }
 
     @Override

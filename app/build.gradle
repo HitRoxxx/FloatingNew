@@ -44,5 +44,4 @@ dependencies {
     compile 'com.github.igalata:Bubble-Picker:v0.2.4'
 
 
-
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 xmlns:tools="http://schemas.android.com/tools"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent"
+                                                 android:fitsSystemWindows="true"
+                                                 tools:context=".MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -19,7 +19,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:elevation="2dp"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -60,12 +60,17 @@
              </android.support.v7.widget.CardView>-->
 
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv"
-            android:elevation="1dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv"
+                android:elevation="1dp"
+                android:alwaysDrawnWithCache="true"
+                android:animationCache="true"
+                android:isScrollContainer="true"
+                android:drawingCacheQuality="high"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fadeScrollbars="true"
+                android:scrollbars="vertical"/>
         </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
 
@@ -75,8 +80,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/param"
-        app:layout_anchor="@+id/container"
-        app:layout_anchorGravity="bottom|center_horizontal">
+        >
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/bottomToolbar"
@@ -89,7 +93,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/notify_me"
@@ -104,7 +108,47 @@
             app:layout_constraintBottom_toBottomOf="@+id/bottomToolbar"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:srcCompat="@android:drawable/ic_dialog_email" />
+            app:srcCompat="@android:drawable/ic_dialog_email"/>
+
+        <FrameLayout
+            android:layout_width="52dp"
+
+            android:layout_height="74dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:background="#00ffffff"
+            android:elevation="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/notify_me"
+            app:layout_constraintHorizontal_bias="0.05"
+            app:layout_constraintLeft_toLeftOf="@+id/notify_me"
+            app:layout_constraintRight_toRightOf="@+id/bottomToolbar"
+            app:layout_constraintTop_toTopOf="@+id/notify_me"
+            app:layout_constraintVertical_bias="0.0"
+            tools:layout_editor_absoluteX="141dp">
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_horizontal|left"
+                app:backgroundTint="@color/colorAccent"
+                app:fabSize="mini"
+                app:rippleColor="@android:color/holo_red_dark"/>
+
+            <TextView
+                android:id="@+id/appSelected"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_horizontal|left"
+                android:elevation="10dp"
+                android:gravity="center"
+                android:text="666"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColor="#000000"
+                />
+        </FrameLayout>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>
