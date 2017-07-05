@@ -23,13 +23,28 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="?attr/actionBarSize"
         android:layout_marginTop="?attr/actionBarSize"
         android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <com.lusfold.spinnerloading.SpinnerLoading
+                android:id="@+id/animation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:visibility="invisible"
+                />
+        </RelativeLayout>
+
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/refresh"
@@ -62,17 +77,17 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv"
-                android:elevation="1dp"
-                android:alwaysDrawnWithCache="true"
-                android:animationCache="true"
-                android:isScrollContainer="true"
-                android:drawingCacheQuality="high"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:alwaysDrawnWithCache="true"
+                android:animationCache="true"
+                android:drawingCacheQuality="high"
+                android:elevation="1dp"
                 android:fadeScrollbars="true"
+                android:isScrollContainer="true"
                 android:scrollbars="vertical"/>
         </android.support.v4.widget.SwipeRefreshLayout>
-    </LinearLayout>
+    </FrameLayout>
 
 
     <android.support.constraint.ConstraintLayout
@@ -144,7 +159,7 @@
                 android:layout_gravity="center_horizontal|left"
                 android:elevation="10dp"
                 android:gravity="center"
-                android:text="666"
+                android:text="0"
                 android:textAppearance="@android:style/TextAppearance.Small"
                 android:textColor="#000000"
                 />

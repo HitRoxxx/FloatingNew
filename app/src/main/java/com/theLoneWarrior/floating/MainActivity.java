@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -30,6 +31,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lusfold.spinnerloading.SpinnerLoading;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
@@ -82,8 +84,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         /////////////////////////////////////storing data from sharedpreferences///////////////////////////////
         if (!flag) {
 
-            recycleViewPropagation();
-            setRecycleView();
+                 /*   recycleViewPropagation();
+                    setRecycleView();*/
+
+                 new RecycleViewSet().execute("");
+
+
 
         } else {
             //  Toast.makeText(this, "run", Toast.LENGTH_SHORT).show();
@@ -98,16 +104,72 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 //    saveData();
                 // Refresh items
 
-                if(!refreshFlag) {
+                if (!refreshFlag) {
 
                     swipeRefreshLayout.setRefreshing(false);
-                }else
-                {
+                } else {
                     refreshItems();
                 }
             }
 
         });
+
+
+    }
+
+    private class RecycleViewSet extends AsyncTask<String,String,String>
+    {
+        SpinnerLoading button;
+        int progress=0;
+        @Override
+        protected String doInBackground(String... params) {
+             button =(SpinnerLoading) findViewById(R.id.animation);
+            button.post(new Runnable() {
+                @Override
+                public void run() {
+                    button.setVisibility(View.VISIBLE);
+                  /*  button.setPaintMode(1);
+                    button.setCircleRadius(30);
+                    button.setItemCount(8);
+                    button.onApplyTrans(200);*/
+
+                }
+            });
+
+            installedPackageDetails = getShortedInstalledApps();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    button.setVisibility(View.INVISIBLE);
+                }
+            });
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            String saveResult = selectedAppPreference.getString("PacName", null);
+            //    Toast.makeText(this, "" + saveResult, Toast.LENGTH_SHORT).show();
+            result.clear();
+            if (saveResult != null) {
+                String[] split = saveResult.split("\\+");
+                for (String aSplit : split) {
+                    for (int j = 0; j < installedPackageDetails.size(); j++) {
+                        PackageInfoStruct obj = installedPackageDetails.get(j);
+                        if (obj.getPacName().equals(aSplit)) {
+                            installedPackageDetails.get(j).checked = true;
+                            result.add(obj);
+                        }
+                    }
+                }
+            }
+            // appCount = result.size();
+            appCountView.setText("" + result.size());
+            setRecycleView();
+        }
+
 
 
     }
@@ -482,8 +544,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             searchView.setTransitionGroup(true);
         }
-     //   searchView.setIconifiedByDefault(true);
-     //   searchView.setIconified(true);
+        //   searchView.setIconifiedByDefault(true);
+        //   searchView.setIconified(true);
         searchView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
 
             @Override
@@ -564,7 +626,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     private void setItemsVisibility(final Menu menu,
                                     boolean visible) {
-        refreshFlag=visible;
+        refreshFlag = visible;
         for (int i = 0; i < menu.size(); ++i) {
             MenuItem item = menu.getItem(i);
             item.setVisible(visible);
