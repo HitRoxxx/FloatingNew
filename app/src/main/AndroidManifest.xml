@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.theLoneWarrior.floating"
-    android:installLocation="auto">
+          package="com.theLoneWarrior.floating"
+          android:installLocation="auto">
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
@@ -21,7 +21,7 @@
             android:parentActivityName=".SelectedApplication">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SelectedApplication" />
+                android:value=".SelectedApplication"/>
 
             <!--
             <intent-filter>
@@ -35,37 +35,45 @@
         <service
             android:name=".services.MyIntentService"
             android:description="@string/notification_service_description"
-            android:exported="false" />
+            android:exported="false"/>
         <service
             android:name=".services.FloatingViewServiceClose"
             android:description="@string/service_description"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
         <service
             android:name=".services.FloatingViewServiceOpen"
             android:description="@string/service_description"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
         <service
             android:name=".services.FloatingViewServiceOpenIconOnly"
             android:description="@string/service_description"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
 
         <activity
             android:name=".splash.SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".SelectedApplication"
-            android:theme="@style/AppTheme"
-            android:largeHeap="true"/>
+            android:largeHeap="true"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".preference.PreferenceDialog"
+            android:parentActivityName=".SelectedApplication"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SelectedApplication"/>
+        </activity>
     </application>
 
 </manifest>

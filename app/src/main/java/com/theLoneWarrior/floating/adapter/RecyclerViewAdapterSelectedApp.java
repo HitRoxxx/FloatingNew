@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.provider.MediaStore;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.SelectedApplication;
 import com.theLoneWarrior.floating.helper.ItemTouchHelperAdapter;
@@ -22,7 +22,6 @@ import com.theLoneWarrior.floating.helper.ItemTouchHelperViewHolder;
 import com.theLoneWarrior.floating.helper.OnStartDragListener;
 import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -62,18 +61,18 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
         // holder.imageView.setImageBitmap(StringToBitmap(packageInfoStruct.getBitmapString()));
         // Glide.with((activity).load(StringToBitmap(packageInfoStruct.getBitmapString())).into(holder.imageView);
         //Drawable d =new BitmapDrawable(activity.getResources(),StringToBitmap(packageInfoStruct.getBitmapString()));
-      /*  try {
+        try {
             Glide.with(holder.itemView).load(packageInfoStruct.getBitmapString()).into(holder.imageView);
         } catch (Exception e) {
             holder.imageView.setImageResource(R.drawable.default_image);
-        }*/
+        }
         //  holder.imageView.setImageURI(packageInfoStruct.getBitmapString());
-        try {
+       /* try {
             holder.imageView.setImageBitmap(scaleDownBitmap(MediaStore.Images.Media.getBitmap(activity.getContentResolver(), packageInfoStruct.getBitmapString()), 50, reference));
         } catch (IOException e) {
             e.printStackTrace();
             holder.imageView.setImageURI(packageInfoStruct.getBitmapString());
-        }
+        }*/
        /* if (checkBoxEnabled)
             holder.checkBox.setChecked(packageInfoStruct.checked);*/
 
