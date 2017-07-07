@@ -17,6 +17,8 @@
          android:animationCache="true"
          android:isScrollContainer="true"
          android:drawingCacheQuality="high"
+         android:paddingBottom="50dp"
+         android:clipToPadding="false"
          app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintLeft_toLeftOf="parent"
          app:layout_constraintRight_toRightOf="parent"
