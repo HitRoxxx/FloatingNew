@@ -33,7 +33,7 @@ import android.widget.Toast;
 
 import com.lusfold.spinnerloading.SpinnerLoading;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapter;
-import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
+import com.theLoneWarrior.floating.pojoClass.AppInfo;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 import com.theLoneWarrior.floating.services.FloatingViewServiceOpen;
 import com.theLoneWarrior.floating.services.FloatingViewServiceOpenIconOnly;
@@ -48,8 +48,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.ListItemCheckListener {
 
     private final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 69;
-    private ArrayList<PackageInfoStruct> installedPackageDetails;
-    private ArrayList<PackageInfoStruct> result = new ArrayList<>();
+    private ArrayList<AppInfo> installedPackageDetails;
+    private ArrayList<AppInfo> result = new ArrayList<>();
     private SharedPreferences first, selectedAppPreference;
     private Intent intent;
     private RecyclerViewAdapter mAdapter;
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 String[] split = saveResult.split("\\+");
                 for (String aSplit : split) {
                     for (int j = 0; j < installedPackageDetails.size(); j++) {
-                        PackageInfoStruct obj = installedPackageDetails.get(j);
+                        AppInfo obj = installedPackageDetails.get(j);
                         if (obj.getPacName().equals(aSplit)) {
                             installedPackageDetails.get(j).checked = true;
                             result.add(obj);
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             String[] split = saveResult.split("\\+");
             for (String aSplit : split) {
                 for (int j = 0; j < installedPackageDetails.size(); j++) {
-                    PackageInfoStruct obj = installedPackageDetails.get(j);
+                    AppInfo obj = installedPackageDetails.get(j);
                     if (obj.getPacName().equals(aSplit)) {
                         installedPackageDetails.get(j).checked = true;
                         result.add(obj);
@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 ///////////////////////use async task or thread//////////////
               /*  database.delete("APP_DATA", null, null);
                 if (result != null) {
-                    for (final PackageInfoStruct obj : result) {
+                    for (final AppInfo obj : result) {
 
                         ContentValues contentValues = new ContentValues();
                         contentValues.put("NAME", obj.getAppName());
@@ -351,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     //////////////////////////new application finder ////////////////////////////
 
-    private ArrayList<PackageInfoStruct> getShortedInstalledApps() {
+    private ArrayList<AppInfo> getShortedInstalledApps() {
 
         final PackageManager packageManager = getPackageManager();
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
@@ -384,12 +384,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         Collections.sort(appInfo, new ApplicationInfo.DisplayNameComparator(packageManager));
 
 
-        ArrayList<PackageInfoStruct> res = new ArrayList<>();
+        ArrayList<AppInfo> res = new ArrayList<>();
         for (int i = 0; i < appInfo.size(); i++) {
             ApplicationInfo p = appInfo.get(i);
-            PackageInfoStruct newInfo = new PackageInfoStruct();
+            AppInfo newInfo = new AppInfo();
             newInfo.setAppName(p.loadLabel(getPackageManager()).toString());
             newInfo.setPacName(p.packageName);
+            newInfo.setData(p.dataDir);
+            newInfo.setSource(p.sourceDir);
+
             Uri uri;
             if (p.icon != 0) {
                 uri = Uri.parse("android.resource://" + p.packageName + "/" + p.icon);
@@ -443,8 +446,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
 
     @Override
-    public void onListItemCheck(int checkedItemIndex, CheckBox checkBox, ArrayList<PackageInfoStruct> filteredData) {
-        PackageInfoStruct obj = filteredData.get(checkedItemIndex);
+    public void onListItemCheck(int checkedItemIndex, CheckBox checkBox, ArrayList<AppInfo> filteredData) {
+        AppInfo obj = filteredData.get(checkedItemIndex);
         if (checkBox.isChecked()) {
             obj.checked = true;
             result.add(obj);
@@ -469,14 +472,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
         if (result != null) {
             StringBuilder PacName = new StringBuilder("");
 
-            for (PackageInfoStruct str : result) {
+            for (AppInfo str : result) {
 
                 PacName.append(str.getPacName()).append("+");
 
             }
             StringBuilder AppName = new StringBuilder("");
 
-            for (PackageInfoStruct str : result) {
+            for (AppInfo str : result) {
 
                 AppName.append(str.getAppName()).append("+");
 
@@ -484,26 +487,45 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
             StringBuilder AppImage = new StringBuilder("");
 
-            for (PackageInfoStruct str : result) {
+            for (AppInfo str : result) {
 
                 AppImage.append(str.getBitmapString()).append("+");
 
             }
+
+            StringBuilder AppSource = new StringBuilder("");
+
+            for (AppInfo str : result) {
+
+                AppSource.append(str.getSource()).append("+");
+
+            }
+
+            StringBuilder AppData = new StringBuilder("");
+
+            for (AppInfo str : result) {
+
+                AppData.append(str.getData()).append("+");
+
+            }
+
+
             SharedPreferences selectedAppPreference = MainActivity.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = selectedAppPreference.edit();
             editor.clear();
             editor.putString("AppName", String.valueOf(AppName));
             editor.putString("PacName", String.valueOf(PacName));
             editor.putString("AppImage", String.valueOf(AppImage));
+            editor.putString("AppSource", String.valueOf(AppSource));
+            editor.putString("AppData", String.valueOf(AppData));
             editor.apply();
-
 
 
 
        /*
         StringBuilder saveResult = new StringBuilder("");
         if (result != null) {
-            for (PackageInfoStruct str : result) {
+            for (AppInfo str : result) {
 
                 saveResult.append(str.getPacName()).append("+");
 
@@ -574,7 +596,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 if (!(result.size() == installedPackageDetails.size())) {
                     //   Toast.makeText(this, "Select All", Toast.LENGTH_SHORT).show();
                     result.clear();
-                    for (PackageInfoStruct obj : installedPackageDetails) {
+                    for (AppInfo obj : installedPackageDetails) {
                         obj.checked = true;
                         result.add(obj);
                     }
@@ -589,7 +611,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
                 if ((result.size() > 0)) {
                     // Toast.makeText(this, "Deselect All" + result.size(), Toast.LENGTH_SHORT).show();
-                    for (PackageInfoStruct obj : result) {
+                    for (AppInfo obj : result) {
                         obj.checked = false;
                     }
                     result.clear();

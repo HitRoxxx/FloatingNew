@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.theLoneWarrior.floating"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 22
         versionCode 4
         versionName "0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -43,5 +43,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
     compile 'com.github.igalata:Bubble-Picker:v0.2.4'
     compile 'com.lusfold.spinnerloading:library:1.0.0'
+    compile 'commons-io:commons-io:2.4'
 
 }

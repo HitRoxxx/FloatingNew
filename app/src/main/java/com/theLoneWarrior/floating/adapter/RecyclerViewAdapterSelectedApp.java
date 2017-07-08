@@ -1,9 +1,12 @@
 package com.theLoneWarrior.floating.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -11,16 +14,19 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.theLoneWarrior.floating.ExtractFileInBackground;
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.SelectedApplication;
 import com.theLoneWarrior.floating.helper.ItemTouchHelperAdapter;
 import com.theLoneWarrior.floating.helper.ItemTouchHelperViewHolder;
 import com.theLoneWarrior.floating.helper.OnStartDragListener;
-import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
+import com.theLoneWarrior.floating.pojoClass.AppInfo;
+import com.theLoneWarrior.floating.utils.UtilsApp;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,16 +40,19 @@ import static com.theLoneWarrior.floating.R.id.tv;
 public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<RecyclerViewAdapterSelectedApp.DataViewHolder> implements ItemTouchHelperAdapter {
 
     private SelectedApplication reference;
-    private ArrayList<PackageInfoStruct> filteredInstalledPackageDetail;
+    private ArrayList<AppInfo> filteredInstalledPackageDetail;
     private AppCompatActivity activity;
     private final OnStartDragListener mDragStartListener;
+    private RecyclerView recyclerView;
+    private int UNINSTALL_REQUEST_CODE = 1;
+    private int mExpandedPosition = -1;
 
-
-    public RecyclerViewAdapterSelectedApp(SelectedApplication reference, ArrayList<PackageInfoStruct> installedPackageDetails) {
+    public RecyclerViewAdapterSelectedApp(SelectedApplication reference, ArrayList<AppInfo> installedPackageDetails, RecyclerView recyclerView) {
         filteredInstalledPackageDetail = installedPackageDetails;
         this.reference = reference;
         activity = reference;
         mDragStartListener = reference;
+        this.recyclerView = recyclerView;
 
     }
 
@@ -54,8 +63,8 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
 
 
     @Override
-    public void onBindViewHolder(final RecyclerViewAdapterSelectedApp.DataViewHolder holder, int position) {
-        PackageInfoStruct packageInfoStruct = filteredInstalledPackageDetail.get(position);
+    public void onBindViewHolder(final DataViewHolder holder, final int position) {
+        final AppInfo packageInfoStruct = filteredInstalledPackageDetail.get(position);
         holder.textView.setText(packageInfoStruct.getAppName());
 
         // holder.imageView.setImageBitmap(StringToBitmap(packageInfoStruct.getBitmapString()));
@@ -75,6 +84,26 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
         }*/
        /* if (checkBoxEnabled)
             holder.checkBox.setChecked(packageInfoStruct.checked);*/
+        final boolean isExpanded = position == mExpandedPosition;
+        holder.expandableView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+        if (!holder.expandableView.isShown()) {
+            holder.textView.setTextColor(Color.BLACK);
+            holder.packageInfo.setText(packageInfoStruct.getPacName());
+        }
+
+
+        holder.itemView.setActivated(isExpanded);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //   Toast.makeText(reference, "Clicked", Toast.LENGTH_SHORT).show();
+                mExpandedPosition = isExpanded ? -1 : position;
+                // TransitionManager.beginDelayedTransition(recyclerView);
+                notifyDataSetChanged();
+            }
+
+        });
+
 
         holder.itemView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -90,6 +119,31 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
                 });
 
                 return false;
+            }
+        });
+
+        holder.extract.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new ExtractFileInBackground(activity, packageInfoStruct).execute();
+            }
+        });
+        holder.share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UtilsApp.copyFile(packageInfoStruct);
+                Intent shareIntent = UtilsApp.getShareIntent(UtilsApp.getOutputFilename(packageInfoStruct));
+                activity.startActivity(Intent.createChooser(shareIntent, String.format(activity.getResources().getString(R.string.send_to), packageInfoStruct.getAppName())));
+            }
+        });
+
+        holder.uninstall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
+                intent.setData(Uri.parse("package:" + packageInfoStruct.getPacName()));
+                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+                activity.startActivityForResult(intent, UNINSTALL_REQUEST_CODE);
             }
         });
     }
@@ -152,17 +206,17 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
     }
 
     private void saveData() {
-        if(filteredInstalledPackageDetail!=null) {
+        if (filteredInstalledPackageDetail != null) {
             StringBuilder PacName = new StringBuilder("");
 
-            for (PackageInfoStruct str : filteredInstalledPackageDetail) {
+            for (AppInfo str : filteredInstalledPackageDetail) {
 
                 PacName.append(str.getPacName()).append("+");
 
             }
             StringBuilder AppName = new StringBuilder("");
 
-            for (PackageInfoStruct str : filteredInstalledPackageDetail) {
+            for (AppInfo str : filteredInstalledPackageDetail) {
 
                 AppName.append(str.getAppName()).append("+");
 
@@ -170,7 +224,7 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
 
             StringBuilder AppImage = new StringBuilder("");
 
-            for (PackageInfoStruct str : filteredInstalledPackageDetail) {
+            for (AppInfo str : filteredInstalledPackageDetail) {
 
                 AppImage.append(str.getBitmapString()).append("+");
 
@@ -190,12 +244,21 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
     class DataViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
         TextView textView;
         ImageView imageView;
-
+        TextView packageInfo;
+        Button share, extract, uninstall;
+        ConstraintLayout expandableView;
 
         DataViewHolder(final View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(tv);
             imageView = (ImageView) itemView.findViewById(R.id.iv);
+            packageInfo = (TextView) itemView.findViewById(R.id.packageName);
+
+            share = (Button) itemView.findViewById(R.id.shareApk);
+            uninstall = (Button) itemView.findViewById(R.id.uninstallApk);
+            extract = (Button) itemView.findViewById(R.id.extractApk);
+
+            expandableView = (ConstraintLayout) itemView.findViewById(R.id.expandableView);
 
         }
 

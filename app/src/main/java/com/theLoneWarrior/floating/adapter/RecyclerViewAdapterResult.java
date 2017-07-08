@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.theLoneWarrior.floating.R;
-import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
+import com.theLoneWarrior.floating.pojoClass.AppInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,13 +24,13 @@ import java.util.ArrayList;
 
 public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerViewAdapterResult.DataViewHolder> {
 
-    private ArrayList<PackageInfoStruct> result;
+    private ArrayList<AppInfo> result;
     private ListItemClickListener reference;
     private Service service;
     boolean flag1 = true, flag2 = true;
     int count, f;
 
-    public RecyclerViewAdapterResult(ListItemClickListener reference, ArrayList<PackageInfoStruct> result) {
+    public RecyclerViewAdapterResult(ListItemClickListener reference, ArrayList<AppInfo> result) {
         this.result = result;
         this.reference = reference;
         service = (Service) reference;
@@ -46,7 +46,7 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public void onBindViewHolder(RecyclerViewAdapterResult.DataViewHolder holder, int position) {
-        PackageInfoStruct result = this.result.get(position);
+        AppInfo result = this.result.get(position);
 
         if (result.getAppName().length() <= 15) {
             holder.textView.setText(result.getAppName());
@@ -160,7 +160,7 @@ public class RecyclerViewAdapterResult extends RecyclerView.Adapter<RecyclerView
     }
 
     public interface ListItemClickListener {
-        void onListItemClick(int checkedItemIndex, ArrayList<PackageInfoStruct> result);
+        void onListItemClick(int checkedItemIndex, ArrayList<AppInfo> result);
     }
 
 

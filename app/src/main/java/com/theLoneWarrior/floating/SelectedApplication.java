@@ -1,11 +1,13 @@
 package com.theLoneWarrior.floating;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
@@ -23,6 +25,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.Explode;
 import android.transition.Fade;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,9 +38,10 @@ import com.igalata.bubblepicker.rendering.BubblePicker;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterSelectedApp;
 import com.theLoneWarrior.floating.helper.OnStartDragListener;
 import com.theLoneWarrior.floating.helper.SimpleItemTouchHelperCallback;
-import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
+import com.theLoneWarrior.floating.pojoClass.AppInfo;
 import com.theLoneWarrior.floating.preference.PreferenceDialog;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
+import com.theLoneWarrior.floating.utils.UtilsApp;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +52,7 @@ import java.util.ArrayList;
 public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnStartDragListener {
 
     BubblePicker picker;
-    private ArrayList<PackageInfoStruct> result = new ArrayList<>();
+    private ArrayList<AppInfo> result = new ArrayList<>();
     private ItemTouchHelper mItemTouchHelper;
 
 
@@ -93,15 +97,6 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
                 } else {
                     CoordinatorLayout coordinator = (CoordinatorLayout) findViewById(R.id.co);
 
-//                  /*  Snackbar.make(coordinator, textResId, Snackbar.LENGTH_LONG)
-//                            .setAction(R.string.accept_ok, new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//
-//                                }
-//                            })
-//                            .setDuration(Snackbar.LENGTH_INDEFINITE)
-//                            .show();*/
                     Snackbar.make(coordinator, "Please Add Some Application To Display", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
@@ -147,45 +142,28 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
     }
 
     private void setRecycleView() {
-      /*  SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
-        Cursor cursor = db.query(
-                "APP_DATA",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                PackageInfoStruct newInfo = new PackageInfoStruct();
-                newInfo.setAppName(cursor.getString(1));
-                newInfo.setPacName(cursor.getString(2));
-                newInfo.setBitmapString(Uri.parse(cursor.getString(3)));
-                result.add(newInfo);
-            } while (cursor.moveToNext());
-            cursor.close();
-
-        }
-        db.close();*/
 
         SharedPreferences selectedAppPreference = SelectedApplication.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
 
         String AppName = selectedAppPreference.getString("AppName", null);
         String PacName = selectedAppPreference.getString("PacName", null);
         String AppImage = selectedAppPreference.getString("AppImage", null);
+        String AppSource = selectedAppPreference.getString("AppSource", null);
+        String AppData = selectedAppPreference.getString("AppData", null);
         if (PacName != null && !PacName.equals("")) {
             String[] split1 = AppName.split("\\+");
             String[] split2 = PacName.split("\\+");
             String[] split3 = AppImage.split("\\+");
+            String[] split4 = AppSource.split("\\+");
+            String[] split5 = AppData.split("\\+");
             result.clear();
             for (int i = 0; i < split2.length; i++) {
-                PackageInfoStruct newInfo = new PackageInfoStruct();
+                AppInfo newInfo = new AppInfo();
                 newInfo.setAppName(split1[i]);
                 newInfo.setPacName(split2[i]);
                 newInfo.setBitmapString(Uri.parse(split3[i]));
+                newInfo.setSource(split4[i]);
+                newInfo.setData(split5[i]);
                 result.add(newInfo);
             }
         }
@@ -195,7 +173,7 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
         // String syncConnPref = sharedPref.getString("OutputVie", "");
         if (sharedPref.getBoolean("SelectedApp", true)) {
-            RecyclerViewAdapterSelectedApp adapter=new RecyclerViewAdapterSelectedApp(SelectedApplication.this, result);
+            RecyclerViewAdapterSelectedApp adapter=new RecyclerViewAdapterSelectedApp(SelectedApplication.this, result,recyclerView);
             picker.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
@@ -225,7 +203,7 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
             @NotNull
             @Override
             public PickerItem getItem(int position) {
-                PackageInfoStruct packageInfoStruct = result.get(position);
+                AppInfo packageInfoStruct = result.get(position);
                 PickerItem item = new PickerItem();
                 item.setTitle(packageInfoStruct.getAppName());
                 /*item.setGradient(new BubbleGradient(colors.getColor((position * 2) % 8, 0),
@@ -320,39 +298,6 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
     }
 
 
-   /* private void saveData() {
-        StringBuilder saveResult = new StringBuilder("");
-        if (result != null) {
-            for (PackageInfoStruct str : result) {
-
-                saveResult.append(str.getPacName()).append("+");
-
-            }
-        }
-
-
-        if (prefs != null) {
-            SharedPreferences.Editor editor = prefs.edit();
-            SharedPreferences.Editor firstEditor = first.edit();
-            editor.clear();
-            editor.putString("data", String.valueOf(saveResult));
-           *//* firstEditor.putBoolean("check", false);
-            firstEditor.apply();*//*
-            editor.apply();
-        } else {
-            //prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
-            //  first = getSharedPreferences("first", Context.MODE_PRIVATE);
-
-            Toast.makeText(this, "Enable the else Part", Toast.LENGTH_LONG).show();
-          *//*  SharedPreferences.Editor editor = prefs.edit();
-            SharedPreferences.Editor firstEditor = first.edit();
-            Toast.makeText(this, "no data serialising", Toast.LENGTH_SHORT).show();
-            firstEditor.putBoolean("check", false);
-            firstEditor.apply();
-            editor.apply();*//*
-        }
-        System.gc();
-    }*/
 
     @Override
     protected void onResume() {
@@ -370,5 +315,76 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         mItemTouchHelper.startDrag(viewHolder);
+    }
+
+    private int UNINSTALL_REQUEST_CODE = 1;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == UNINSTALL_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+             //   Log.i("App", "OK");
+                Intent intent = new Intent(this, SelectedApplication.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                //  finish();
+                startActivity(intent);
+            } else if (resultCode == RESULT_CANCELED) {
+              //  Log.i("App", "CANCEL");
+            }
+        }
+    }
+
+
+    class ExtractFileInBackground extends AsyncTask<Void, String, Boolean> {
+        private Context context;
+        private Activity activity;
+        //  private MaterialDialog dialog;
+        private AppInfo appInfo;
+
+        public ExtractFileInBackground(Context context, AppInfo appInfo) {
+            this.activity = (Activity) context;
+            this.context = context;
+            //  this.dialog = dialog;
+            this.appInfo = appInfo;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            Boolean status = false;
+
+            if (UtilsApp.checkPermissions(activity)) {
+                //    if (!appInfo.getAPK().equals(MLManagerApplication.getProPackage())) {
+                status = UtilsApp.copyFile(appInfo);
+                //    } else {
+                //    status = UtilsApp.extractMLManagerPro(context, appInfo);
+                //   }
+            }
+
+            return status;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean status) {
+            super.onPostExecute(status);
+      /*  dialog.dismiss();*/
+            if (status) {
+                //     UtilsDialog.showSnackbar(activity, String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getName(), UtilsApp.getAPKFilename(appInfo)), context.getResources().getString(R.string.button_undo), UtilsApp.getOutputFilename(appInfo), 1).show();
+
+                //    Snackbar.make(this,""+String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getName(), UtilsApp.getAPKFilename(appInfo)),1000);
+                View v= LayoutInflater.from(context).inflate(R.layout.activity_selected_application,null);
+                CoordinatorLayout codinatorLayout = (CoordinatorLayout)v.findViewById(R.id.co);
+                Snackbar.make(codinatorLayout, String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getAppName(), UtilsApp.getAPKFilename(appInfo)), Snackbar.LENGTH_LONG)
+                        .setAction("Undo", clickListener ).show();
+                Toast.makeText(context, " String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getName(), UtilsApp.getAPKFilename(appInfo))", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, context.getResources().getString(R.string.dialog_extract_fail)+context.getResources().getString(R.string.dialog_extract_fail_description), Toast.LENGTH_LONG).show();
+            }
+        }
+
+        private final View.OnClickListener clickListener = new View.OnClickListener() {
+            public void onClick(View v) {
+                UtilsApp.getOutputFilename(appInfo).delete();
+            }
+        };
     }
 }

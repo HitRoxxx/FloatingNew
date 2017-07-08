@@ -5,15 +5,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.theLoneWarrior.floating.R;
-import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
+import com.theLoneWarrior.floating.pojoClass.AppInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,13 +22,13 @@ import java.util.ArrayList;
 
 public class RecyclerViewAdapterResultIconOnly extends RecyclerView.Adapter<RecyclerViewAdapterResultIconOnly.DataViewHolder> {
 
-    private ArrayList<PackageInfoStruct> result;
+    private ArrayList<AppInfo> result;
     private ListItemClickListener reference;
     private Service service;
     boolean flag1 = true, flag2 = true;
     int count, f;
 
-    public RecyclerViewAdapterResultIconOnly(ListItemClickListener reference, ArrayList<PackageInfoStruct> result) {
+    public RecyclerViewAdapterResultIconOnly(ListItemClickListener reference, ArrayList<AppInfo> result) {
         this.result = result;
         this.reference = reference;
         service = (Service) reference;
@@ -46,7 +44,7 @@ public class RecyclerViewAdapterResultIconOnly extends RecyclerView.Adapter<Recy
 
     @Override
     public void onBindViewHolder(RecyclerViewAdapterResultIconOnly.DataViewHolder holder, int position) {
-        PackageInfoStruct result = this.result.get(position);
+        AppInfo result = this.result.get(position);
 /*
         if (result.getAppName().length() <= 15) {
             holder.textView.setText(result.getAppName());
@@ -160,7 +158,7 @@ public class RecyclerViewAdapterResultIconOnly extends RecyclerView.Adapter<Recy
     }
 
     public interface ListItemClickListener {
-        void onListItemClick(int checkedItemIndex, ArrayList<PackageInfoStruct> result);
+        void onListItemClick(int checkedItemIndex, ArrayList<AppInfo> result);
     }
 
 

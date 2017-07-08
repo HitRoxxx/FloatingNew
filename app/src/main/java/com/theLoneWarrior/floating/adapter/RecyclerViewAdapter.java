@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.theLoneWarrior.floating.R;
-import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
+import com.theLoneWarrior.floating.pojoClass.AppInfo;
 
 import java.util.ArrayList;
 
@@ -27,13 +27,13 @@ import static com.theLoneWarrior.floating.R.id.tv;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.DataViewHolder> implements Filterable {
 
-    private ArrayList<PackageInfoStruct> installedPackageDetails;
+    private ArrayList<AppInfo> installedPackageDetails;
     private ListItemCheckListener reference;
-    private ArrayList<PackageInfoStruct> filteredInstalledPackageDetail;
+    private ArrayList<AppInfo> filteredInstalledPackageDetail;
     private AppCompatActivity activity;
     private boolean checkBoxEnabled;
 
-    public RecyclerViewAdapter(ListItemCheckListener reference, ArrayList<PackageInfoStruct> installedPackageDetails, boolean b) {
+    public RecyclerViewAdapter(ListItemCheckListener reference, ArrayList<AppInfo> installedPackageDetails, boolean b) {
         this.installedPackageDetails = installedPackageDetails;
         filteredInstalledPackageDetail = installedPackageDetails;
         this.reference = reference;
@@ -49,7 +49,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(RecyclerViewAdapter.DataViewHolder holder, int position) {
-        PackageInfoStruct packageInfoStruct = filteredInstalledPackageDetail.get(position);
+        AppInfo packageInfoStruct = filteredInstalledPackageDetail.get(position);
         holder.textView.setText(packageInfoStruct.getAppName());
 
         // holder.imageView.setImageBitmap(StringToBitmap(packageInfoStruct.getBitmapString()));
@@ -125,9 +125,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     filteredInstalledPackageDetail = installedPackageDetails;
                 } else {
 
-                    ArrayList<PackageInfoStruct> filteredList = new ArrayList<>();
+                    ArrayList<AppInfo> filteredList = new ArrayList<>();
 
-                    for (PackageInfoStruct androidVersion : installedPackageDetails) {
+                    for (AppInfo androidVersion : installedPackageDetails) {
 
                         if (androidVersion.getAppName().toLowerCase().contains(charString)) {
 
@@ -146,14 +146,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @SuppressWarnings("unchecked")
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                filteredInstalledPackageDetail = (ArrayList<PackageInfoStruct>) filterResults.values;
+                filteredInstalledPackageDetail = (ArrayList<AppInfo>) filterResults.values;
                 notifyDataSetChanged();
             }
         };
     }
 
     public interface ListItemCheckListener {
-        void onListItemCheck(int checkedItemIndex, CheckBox cb, ArrayList<PackageInfoStruct> pb);
+        void onListItemCheck(int checkedItemIndex, CheckBox cb, ArrayList<AppInfo> pb);
     }
 
     class DataViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

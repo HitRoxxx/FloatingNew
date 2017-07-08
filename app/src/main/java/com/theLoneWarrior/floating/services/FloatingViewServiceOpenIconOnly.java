@@ -26,7 +26,7 @@ import android.widget.Toast;
 
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterResultIconOnly;
-import com.theLoneWarrior.floating.pojoClass.PackageInfoStruct;
+import com.theLoneWarrior.floating.pojoClass.AppInfo;
 
 import java.util.ArrayList;
 
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 public class FloatingViewServiceOpenIconOnly extends Service implements RecyclerViewAdapterResultIconOnly.ListItemClickListener {
     private WindowManager mWindowManager;
     private View mFloatingView;
-    private ArrayList<PackageInfoStruct> result = new ArrayList<>();
+    private ArrayList<AppInfo> result = new ArrayList<>();
     private View expandedView;
     private WindowManager.LayoutParams params;
     Intent intentService;
@@ -71,7 +71,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
         );
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                PackageInfoStruct newInfo = new PackageInfoStruct();
+                AppInfo newInfo = new AppInfo();
                 newInfo.setAppName(cursor.getString(1));
                 newInfo.setPacName(cursor.getString(2));
                 newInfo.setBitmapString(Uri.parse(cursor.getString(3)));
@@ -95,7 +95,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
             String[] split3 = AppImage.split("\\+");
             result.clear();
             for (int i = 0; i < split2.length; i++) {
-                PackageInfoStruct newInfo = new PackageInfoStruct();
+                AppInfo newInfo = new AppInfo();
                 newInfo.setAppName(split1[i]);
                 newInfo.setPacName(split2[i]);
                 newInfo.setBitmapString(Uri.parse(split3[i]));
@@ -260,7 +260,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
 
     @Override
-    public void onListItemClick(int checkedItemIndex, ArrayList<PackageInfoStruct> result) {
+    public void onListItemClick(int checkedItemIndex, ArrayList<AppInfo> result) {
 
         Intent launchIntent = getPackageManager().getLaunchIntentForPackage(result.get(checkedItemIndex).getPacName().trim());
         //  launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
