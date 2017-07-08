@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private RecyclerViewAdapter mAdapter;
     private RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
-    private int appCount = 0;
     private TextView appCountView;
     private boolean refreshFlag = true;
 
@@ -120,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private class RecycleViewSet extends AsyncTask<String,String,String>
     {
         SpinnerLoading button;
-        int progress=0;
         @Override
         protected String doInBackground(String... params) {
              button =(SpinnerLoading) findViewById(R.id.animation);
@@ -262,40 +260,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             public void onClick(View view) {
                 ////////////////////////
                 saveData();
-
-                /////////////////////////
-                //    database = new AppDataStorage(MainActivity.this).getWritableDatabase();
-
-                ///////////////////////use async task or thread//////////////
-              /*  database.delete("APP_DATA", null, null);
-                if (result != null) {
-                    for (final AppInfo obj : result) {
-
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put("NAME", obj.getAppName());
-                        contentValues.put("PACKAGE", obj.getPacName());
-                        // contentValues.put("IMAGE_RESOURCE", StringToBitmap(obj.getBitmapString()));
-                        contentValues.put("IMAGE_RESOURCE", obj.getBitmapString().toString());
-
-
-                        long i = database.insert("APP_DATA", null, contentValues);
-                        if (i == -1) {
-                            Toast.makeText(MainActivity.this, "Sorry for Inconvenience, Database Error", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                    database.close();
-                }*/
-
-                ///////////////////////////////////////////////////
-               /* new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // startService(intent);
-
-                    }
-                }).start();*/
-
                 Intent newIntent = new Intent(MainActivity.this, SelectedApplication.class);
                 newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 //   newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

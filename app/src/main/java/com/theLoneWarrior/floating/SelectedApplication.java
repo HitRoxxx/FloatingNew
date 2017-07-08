@@ -1,6 +1,5 @@
 package com.theLoneWarrior.floating;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -174,7 +173,7 @@ private  CoordinatorLayout coordinator;
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
         // String syncConnPref = sharedPref.getString("OutputVie", "");
         if (sharedPref.getBoolean("SelectedApp", true)) {
-            RecyclerViewAdapterSelectedApp adapter=new RecyclerViewAdapterSelectedApp(SelectedApplication.this, result,recyclerView);
+            RecyclerViewAdapterSelectedApp adapter=new RecyclerViewAdapterSelectedApp(SelectedApplication.this, result);
             picker.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
@@ -365,7 +364,6 @@ private  CoordinatorLayout coordinator;
                 UtilsApp.copyFile(app);
                 Intent shareIntent = UtilsApp.getShareIntent(UtilsApp.getOutputFilename(app));
                 startActivity(Intent.createChooser(shareIntent, String.format(getResources().getString(R.string.send_to), app.getAppName())));
-
                 break;
             }
         }
@@ -375,12 +373,9 @@ private  CoordinatorLayout coordinator;
 
     private class ExtractFileInBackground extends AsyncTask<Void, String, Boolean> {
         private Context context;
-        private Activity activity;
-        //  private MaterialDialog dialog;
         private AppInfo appInfo;
 
         ExtractFileInBackground(Context context, AppInfo appInfo) {
-            this.activity = (Activity) context;
             this.context = context;
             //  this.dialog = dialog;
             this.appInfo = appInfo;
@@ -410,7 +405,7 @@ private  CoordinatorLayout coordinator;
 
         private final View.OnClickListener clickListener = new View.OnClickListener() {
             public void onClick(View v) {
-              //  CoordinatorLayout coordinator = (CoordinatorLayout) findViewById(R.id.co);
+
                 make(coordinator, String.format(context.getResources().getString(R.string.dialog_delete_description), appInfo.getAppName(), UtilsApp.getAPKFilename(appInfo)), Snackbar.LENGTH_LONG).show();
                 UtilsApp.getOutputFilename(appInfo).delete();
             }

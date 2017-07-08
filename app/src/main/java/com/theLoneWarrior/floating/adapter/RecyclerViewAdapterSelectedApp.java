@@ -2,11 +2,9 @@ package com.theLoneWarrior.floating.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.MotionEventCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -37,19 +35,14 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
 
     private SelectedApplication reference;
     private ArrayList<AppInfo> filteredInstalledPackageDetail;
-    private AppCompatActivity activity;
     private final OnStartDragListener mDragStartListener;
-    private RecyclerView recyclerView;
-    private int UNINSTALL_REQUEST_CODE = 1;
+
     private int mExpandedPosition = -1;
 
-    public RecyclerViewAdapterSelectedApp(SelectedApplication reference, ArrayList<AppInfo> installedPackageDetails, RecyclerView recyclerView) {
+    public RecyclerViewAdapterSelectedApp(SelectedApplication reference, ArrayList<AppInfo> installedPackageDetails) {
         filteredInstalledPackageDetail = installedPackageDetails;
         this.reference = reference;
-        activity = reference;
         mDragStartListener = reference;
-        this.recyclerView = recyclerView;
-
     }
 
     @Override
@@ -59,7 +52,7 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
 
 
     @Override
-    public void onBindViewHolder(final DataViewHolder holder, final int position) {
+    public void onBindViewHolder(final DataViewHolder holder, int position) {
         final AppInfo packageInfoStruct = filteredInstalledPackageDetail.get(position);
         holder.textView.setText(packageInfoStruct.getAppName());
 
@@ -92,8 +85,8 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //   Toast.makeText(reference, "Clicked", Toast.LENGTH_SHORT).show();
-                mExpandedPosition = isExpanded ? -1 : position;
+
+                mExpandedPosition = isExpanded ? -1 : holder.getAdapterPosition();
                 // TransitionManager.beginDelayedTransition(recyclerView);
                 notifyDataSetChanged();
             }
@@ -129,7 +122,7 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
          }
 
      }*/
-    private Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
+   /* private Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
 
         final float densityMultiplier = context.getResources().getDisplayMetrics().density;
 
@@ -138,23 +131,8 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
 
         photo = Bitmap.createScaledBitmap(photo, w, h, true);
 
-
-       /* ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
-        photo.compress(Bitmap.CompressFormat.JPEG, 10, bAOS);
-        byte[] b = bAOS.toByteArray();
-
-        try{
-        //    b=Base64.decode(Base64.encodeToString(b, Base64.DEFAULT),Base64.DEFAULT);
-            photo= BitmapFactory.decodeByteArray(b, 0, b.length);
-            bAOS.flush();
-            bAOS.close();
-        }catch(Exception e){
-            e.getMessage();
-            return null;
-        }*/
-
         return photo;
-    }
+    }*/
 
     @Override
     public int getItemCount() {
