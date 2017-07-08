@@ -29,18 +29,18 @@
         android:id="@+id/fabStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-       android:layout_gravity="bottom"
+        android:layout_gravity="bottom"
         android:layout_margin="@dimen/fab_margin"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:backgroundTint="#2f86c9"
-        app:elevation="8dp"
-        app:fabSize="normal"
         android:scaleType="center"
-        app:srcCompat="@mipmap/ic_launcher"
-        />
+        app:backgroundTint="#388e3c"
+        app:elevation="10dp"
+        app:fabSize="normal"
+        app:rippleColor="@color/colorAccent"
+        app:srcCompat="@mipmap/ic_launcher"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -49,14 +49,13 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:layout_marginBottom="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         app:backgroundTint="#ff0000"
-        app:elevation="8dp"
+        app:elevation="10dp"
         app:fabSize="normal"
-        android:scaleType="center"
-        app:srcCompat="@android:drawable/ic_menu_add"/>
+        app:srcCompat="@drawable/setting"/>
 
 
 </android.support.design.widget.CoordinatorLayout>
