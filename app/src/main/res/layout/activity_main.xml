@@ -83,6 +83,8 @@
                 android:animationCache="true"
                 android:drawingCacheQuality="high"
                 android:elevation="1dp"
+                android:paddingBottom="5dp"
+                android:clipToPadding="false"
                 android:fadeScrollbars="true"
                 android:isScrollContainer="true"
                 android:scrollbars="vertical"/>

@@ -25,10 +25,10 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.transition.Explode;
 import android.transition.Fade;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.igalata.bubblepicker.BubblePickerListener;
@@ -49,12 +49,14 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnStartDragListener {
+import static android.support.design.widget.Snackbar.make;
+
+public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnStartDragListener ,RecyclerViewAdapterSelectedApp.ButtonClickListener{
 
     BubblePicker picker;
     private ArrayList<AppInfo> result = new ArrayList<>();
     private ItemTouchHelper mItemTouchHelper;
-
+private  CoordinatorLayout coordinator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,7 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
 
         setActionBarTitle();
         picker = (BubblePicker) findViewById(R.id.picker);
-
+        coordinator = (CoordinatorLayout) findViewById(R.id.co);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -95,9 +97,8 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
                     }).start();
                     finish();
                 } else {
-                    CoordinatorLayout coordinator = (CoordinatorLayout) findViewById(R.id.co);
 
-                    Snackbar.make(coordinator, "Please Add Some Application To Display", Snackbar.LENGTH_LONG)
+                    make(coordinator, "Please Add Some Application To Display", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
 
@@ -328,20 +329,57 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 //  finish();
                 startActivity(intent);
+                make(coordinator, " App is Uninstalled ", Snackbar.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
               //  Log.i("App", "CANCEL");
+                make(coordinator, " App is Secure ", Snackbar.LENGTH_LONG).show();
+
             }
         }
     }
 
+    @Override
+    public void onButtonClickListener(AppInfo app , View v) {
 
-    class ExtractFileInBackground extends AsyncTask<Void, String, Boolean> {
+        int id = v.getId();
+        switch (id)
+        {
+            case  R.id.uninstallApk :
+            {
+                Toast.makeText(this, "uninstall", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
+                intent.setData(Uri.parse("package:" + app.getPacName()));
+                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+                startActivityForResult(intent, UNINSTALL_REQUEST_CODE);
+                break;
+            }
+            case  R.id.extractApk :
+            {
+                Toast.makeText(this, "extract", Toast.LENGTH_SHORT).show();
+                new ExtractFileInBackground(SelectedApplication.this, app).execute();
+                break;
+            }
+            case  R.id.shareApk :
+            {
+                Toast.makeText(this, "share", Toast.LENGTH_SHORT).show();
+                UtilsApp.copyFile(app);
+                Intent shareIntent = UtilsApp.getShareIntent(UtilsApp.getOutputFilename(app));
+                startActivity(Intent.createChooser(shareIntent, String.format(getResources().getString(R.string.send_to), app.getAppName())));
+
+                break;
+            }
+        }
+
+    }
+
+
+    private class ExtractFileInBackground extends AsyncTask<Void, String, Boolean> {
         private Context context;
         private Activity activity;
         //  private MaterialDialog dialog;
         private AppInfo appInfo;
 
-        public ExtractFileInBackground(Context context, AppInfo appInfo) {
+        ExtractFileInBackground(Context context, AppInfo appInfo) {
             this.activity = (Activity) context;
             this.context = context;
             //  this.dialog = dialog;
@@ -350,32 +388,21 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            Boolean status = false;
-
-            if (UtilsApp.checkPermissions(activity)) {
-                //    if (!appInfo.getAPK().equals(MLManagerApplication.getProPackage())) {
-                status = UtilsApp.copyFile(appInfo);
-                //    } else {
-                //    status = UtilsApp.extractMLManagerPro(context, appInfo);
-                //   }
-            }
-
-            return status;
+            return UtilsApp.copyFile(appInfo);
         }
 
         @Override
         protected void onPostExecute(Boolean status) {
             super.onPostExecute(status);
-      /*  dialog.dismiss();*/
             if (status) {
-                //     UtilsDialog.showSnackbar(activity, String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getName(), UtilsApp.getAPKFilename(appInfo)), context.getResources().getString(R.string.button_undo), UtilsApp.getOutputFilename(appInfo), 1).show();
 
-                //    Snackbar.make(this,""+String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getName(), UtilsApp.getAPKFilename(appInfo)),1000);
-                View v= LayoutInflater.from(context).inflate(R.layout.activity_selected_application,null);
-                CoordinatorLayout codinatorLayout = (CoordinatorLayout)v.findViewById(R.id.co);
-                Snackbar.make(codinatorLayout, String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getAppName(), UtilsApp.getAPKFilename(appInfo)), Snackbar.LENGTH_LONG)
-                        .setAction("Undo", clickListener ).show();
-                Toast.makeText(context, " String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getName(), UtilsApp.getAPKFilename(appInfo))", Toast.LENGTH_SHORT).show();
+                Snackbar snackbar=Snackbar.make(coordinator, String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getAppName(), UtilsApp.getAPKFilename(appInfo)), Snackbar.LENGTH_LONG)
+                        .setAction("Undo", clickListener );
+                View snackbarView = snackbar.getView();
+                TextView tv= (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                tv.setMaxLines(3);
+                snackbar.show();
+            //    Toast.makeText(context, " String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getName(), UtilsApp.getAPKFilename(appInfo))", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(context, context.getResources().getString(R.string.dialog_extract_fail)+context.getResources().getString(R.string.dialog_extract_fail_description), Toast.LENGTH_LONG).show();
             }
@@ -383,6 +410,8 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
 
         private final View.OnClickListener clickListener = new View.OnClickListener() {
             public void onClick(View v) {
+              //  CoordinatorLayout coordinator = (CoordinatorLayout) findViewById(R.id.co);
+                make(coordinator, String.format(context.getResources().getString(R.string.dialog_delete_description), appInfo.getAppName(), UtilsApp.getAPKFilename(appInfo)), Snackbar.LENGTH_LONG).show();
                 UtilsApp.getOutputFilename(appInfo).delete();
             }
         };

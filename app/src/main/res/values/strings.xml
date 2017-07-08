@@ -108,7 +108,9 @@
     </string>
 
     <string name="send_to">Send \"%s\" using</string>
-    <string name="dialog_saved_description">\"%1$s\" APK has been saved into \"MLManager\" folder with name: %2$s</string>
+    <string name="dialog_saved_description">\"%1$s\" APK has been saved into \"FloSo\" folder with name: %2$s</string>
+    <string name="dialog_delete_description">\"%1$s\" APK has been deleted from \"FloSo\" folder with name :   %2$s</string>
+
     <string name="dialog_extract_fail_description">Unable to extract this APK. Please, try to restart your device.</string>
     <string name="dialog_extract_fail">Extract failed</string>
     <string name="button_undo">Undo</string>

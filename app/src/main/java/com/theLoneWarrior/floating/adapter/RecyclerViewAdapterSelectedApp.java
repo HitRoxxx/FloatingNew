@@ -1,11 +1,9 @@
 package com.theLoneWarrior.floating.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,14 +17,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.theLoneWarrior.floating.ExtractFileInBackground;
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.SelectedApplication;
 import com.theLoneWarrior.floating.helper.ItemTouchHelperAdapter;
 import com.theLoneWarrior.floating.helper.ItemTouchHelperViewHolder;
 import com.theLoneWarrior.floating.helper.OnStartDragListener;
 import com.theLoneWarrior.floating.pojoClass.AppInfo;
-import com.theLoneWarrior.floating.utils.UtilsApp;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -122,30 +118,6 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
             }
         });
 
-        holder.extract.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new ExtractFileInBackground(activity, packageInfoStruct).execute();
-            }
-        });
-        holder.share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                UtilsApp.copyFile(packageInfoStruct);
-                Intent shareIntent = UtilsApp.getShareIntent(UtilsApp.getOutputFilename(packageInfoStruct));
-                activity.startActivity(Intent.createChooser(shareIntent, String.format(activity.getResources().getString(R.string.send_to), packageInfoStruct.getAppName())));
-            }
-        });
-
-        holder.uninstall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
-                intent.setData(Uri.parse("package:" + packageInfoStruct.getPacName()));
-                intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
-                activity.startActivityForResult(intent, UNINSTALL_REQUEST_CODE);
-            }
-        });
     }
 
     /* private Bitmap StringToBitmap(String bitmapString) {
@@ -229,19 +201,36 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
                 AppImage.append(str.getBitmapString()).append("+");
 
             }
+            StringBuilder AppSource = new StringBuilder("");
+
+            for (AppInfo str : filteredInstalledPackageDetail) {
+
+                AppSource.append(str.getSource()).append("+");
+
+            }
+
+            StringBuilder AppData = new StringBuilder("");
+
+            for (AppInfo str : filteredInstalledPackageDetail) {
+
+                AppData.append(str.getData()).append("+");
+
+            }
             SharedPreferences selectedAppPreference = reference.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = selectedAppPreference.edit();
             editor.clear();
             editor.putString("AppName", String.valueOf(AppName));
             editor.putString("PacName", String.valueOf(PacName));
             editor.putString("AppImage", String.valueOf(AppImage));
+            editor.putString("AppSource", String.valueOf(AppSource));
+            editor.putString("AppData", String.valueOf(AppData));
             editor.apply();
 
         }
     }
 
 
-    class DataViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+    class DataViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder ,View.OnClickListener {
         TextView textView;
         ImageView imageView;
         TextView packageInfo;
@@ -260,6 +249,10 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
 
             expandableView = (ConstraintLayout) itemView.findViewById(R.id.expandableView);
 
+            share.setOnClickListener(this);
+            uninstall.setOnClickListener(this);
+            extract.setOnClickListener(this);
+
         }
 
 
@@ -272,7 +265,16 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
         public void onItemClear() {
             itemView.setBackgroundColor(Color.WHITE);
         }
+
+        @Override
+        public void onClick(View v) {
+
+            final AppInfo packageInfoStruct = filteredInstalledPackageDetail.get(getAdapterPosition());
+            reference.onButtonClickListener( packageInfoStruct, v);
+        }
     }
 
-
+    public interface ButtonClickListener {
+        void onButtonClickListener(AppInfo app, View v);
+    }
 }
