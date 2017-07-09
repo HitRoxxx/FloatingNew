@@ -10,6 +10,7 @@ public class AppInfo {
     private String source;
     private String data;
     private Boolean system;
+
     // default constuctor
     public AppInfo() {
 
@@ -74,4 +75,6 @@ public class AppInfo {
     public void setSystem(Boolean system) {
         this.system = system;
     }
+
+
 }

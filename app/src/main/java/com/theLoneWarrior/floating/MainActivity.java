@@ -365,21 +365,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 uri = Uri.parse("android.resource://com.theLoneWarrior.floating/drawable/default_image");
             }
 
-
-          /*  Drawable d = p.loadIcon(getPackageManager());
-            Bitmap bitmap;
-            //   bitmap = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_4444);
-            bitmap = Bitmap.createBitmap(d.getIntrinsicWidth(), d.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-
-            Canvas canvas = new Canvas(bitmap);
-            d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            d.draw(canvas);
-            //    newInfo.bitmap = codec(bitmap, 50);
-            //  newInfo.bitmap = bitmap;
-            bitmap = scaleDownBitmap(bitmap, 50, this);
-            newInfo.setBitmapString(BitmapToString(bitmap));*/
-            //Log.d("Trial", str);
-
             newInfo.setBitmapString(uri);
             res.add(newInfo);
             // bitmap.recycle();

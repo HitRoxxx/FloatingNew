@@ -55,7 +55,8 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
     public void onBindViewHolder(final DataViewHolder holder, int position) {
         final AppInfo packageInfoStruct = filteredInstalledPackageDetail.get(position);
         holder.textView.setText(packageInfoStruct.getAppName());
-
+        if (packageInfoStruct.getAppName().equals("FloSo"))
+            holder.uninstall.setVisibility(View.GONE);
         // holder.imageView.setImageBitmap(StringToBitmap(packageInfoStruct.getBitmapString()));
         // Glide.with((activity).load(StringToBitmap(packageInfoStruct.getBitmapString())).into(holder.imageView);
         //Drawable d =new BitmapDrawable(activity.getResources(),StringToBitmap(packageInfoStruct.getBitmapString()));
@@ -208,7 +209,7 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
     }
 
 
-    class DataViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder ,View.OnClickListener {
+    class DataViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder, View.OnClickListener {
         TextView textView;
         ImageView imageView;
         TextView packageInfo;
@@ -248,7 +249,7 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
         public void onClick(View v) {
 
             final AppInfo packageInfoStruct = filteredInstalledPackageDetail.get(getAdapterPosition());
-            reference.onButtonClickListener( packageInfoStruct, v);
+            reference.onButtonClickListener(packageInfoStruct, v);
         }
     }
 

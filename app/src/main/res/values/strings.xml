@@ -114,4 +114,7 @@
     <string name="dialog_extract_fail_description">Unable to extract this APK. Please, try to restart your device.</string>
     <string name="dialog_extract_fail">Extract failed</string>
     <string name="button_undo">Undo</string>
+    <string name="extract">Extract</string>
+    <string name="share">Share</string>
+    <string name="uninstall">Uninstall</string>
 </resources>

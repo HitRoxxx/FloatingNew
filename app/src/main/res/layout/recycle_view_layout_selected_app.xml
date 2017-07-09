@@ -4,7 +4,6 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="5dp"
@@ -62,27 +61,34 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center_horizontal|center_vertical"
-                android:minHeight="50dp"
-                android:paddingEnd="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:paddingStart="5dp"
-                android:text="mwhdgsjbkjfsdbkjhdjshv"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:layout_marginLeft="85dp"
+                android:layout_marginStart="85dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 card_view:layout_constraintLeft_toLeftOf="parent"
                 card_view:layout_constraintRight_toRightOf="parent"
-                card_view:layout_constraintTop_toTopOf="parent"
-                />
+                card_view:layout_constraintTop_toTopOf="parent"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="5dp"
+                android:background="@android:color/black"
+                card_view:layout_constraintBottom_toTopOf="@+id/linearLayout"
+                card_view:layout_constraintLeft_toLeftOf="parent"
+                card_view:layout_constraintRight_toRightOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/packageName"/>
 
             <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 card_view:layout_constraintBottom_toBottomOf="parent"
                 card_view:layout_constraintLeft_toLeftOf="parent"
                 card_view:layout_constraintRight_toRightOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@+id/packageName"
-                >
+                card_view:layout_constraintTop_toBottomOf="@+id/packageName">
 
                 <Button
                     android:id="@+id/extractApk"
@@ -90,11 +96,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Extract"
+                    android:text="@string/extract"
                     android:textAppearance="@android:style/TextAppearance.Medium"
                     android:textColor="@color/colorPrimaryDark"
                     android:textStyle="normal"/>
 
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/black"/>
 
                 <Button
                     android:id="@+id/shareApk"
@@ -102,11 +112,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Share"
+                    android:text="@string/share"
                     android:textAppearance="@android:style/TextAppearance.Medium"
                     android:textColor="@color/colorPrimaryDark"
                     android:textStyle="normal"
                     />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/black"/>
 
                 <Button
                     android:id="@+id/uninstallApk"
@@ -114,7 +129,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Uninstall"
+                    android:text="@string/uninstall"
                     android:textAppearance="@android:style/TextAppearance.Medium"
                     android:textColor="#f44336"
                     android:textStyle="normal"/>

@@ -3,7 +3,6 @@ package com.theLoneWarrior.floating.utils;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 
 import com.theLoneWarrior.floating.pojoClass.AppInfo;
 
@@ -45,7 +44,7 @@ public class UtilsApp {
 
     public static Boolean copyFile(AppInfo appInfo) {
         Boolean res = false;
-        Log.e("App",""+appInfo.getSource());
+//        Log.e("App",""+appInfo.getSource());
         File initialFile = new File(appInfo.getSource());
         File finalFile = getOutputFilename(appInfo);
 
