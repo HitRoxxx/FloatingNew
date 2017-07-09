@@ -55,7 +55,8 @@
         app:backgroundTint="#ff0000"
         app:elevation="10dp"
         app:fabSize="normal"
-        app:srcCompat="@drawable/setting"/>
+        android:scaleType="center"
+        app:srcCompat="@drawable/add"/>
 
 
 </android.support.design.widget.CoordinatorLayout>
