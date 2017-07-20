@@ -69,7 +69,7 @@
                 card_view:layout_constraintTop_toTopOf="parent"/>
 
             <View
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="8dp"
@@ -79,7 +79,9 @@
                 card_view:layout_constraintBottom_toTopOf="@+id/linearLayout"
                 card_view:layout_constraintLeft_toLeftOf="parent"
                 card_view:layout_constraintRight_toRightOf="parent"
-                card_view:layout_constraintTop_toBottomOf="@+id/packageName"/>
+                card_view:layout_constraintTop_toBottomOf="@+id/packageName"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"/>
 
             <LinearLayout
                 android:id="@+id/linearLayout"

@@ -46,11 +46,6 @@ public class FloatingViewServiceClose extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        // Bundle b = intent.getExtras();
-        //////////////////////////////////////////////setting result from database/////////////////
-
-        //populate Service as a notification);
-        // Notification notification =
         startForeground(1, new Notification.Builder(this)
                 .setContentTitle("Floating Shortcut")
                 .setContentText("select shortcut")
@@ -74,8 +69,8 @@ public class FloatingViewServiceClose extends Service {
         return START_NOT_STICKY;
     }
 
-    private RelativeLayout removeView;
-    private ImageView removeImg;
+    private RelativeLayout removeView, hideView;
+    private ImageView removeImg , hideImage;
     private WindowManager windowManager;
 
     @Override
@@ -88,6 +83,7 @@ public class FloatingViewServiceClose extends Service {
         d.getSize(p);
 
         removeView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.remove, null);
+        hideView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.hide, null);
         WindowManager.LayoutParams paramRemove = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -99,6 +95,10 @@ public class FloatingViewServiceClose extends Service {
         removeView.setVisibility(View.GONE);
         removeImg = (ImageView) removeView.findViewById(R.id.remove_img);
         windowManager.addView(removeView, paramRemove);
+
+        hideView.setVisibility(View.GONE);
+        hideImage = (ImageView) hideView.findViewById(R.id.hide_img);
+        windowManager.addView(hideView, paramRemove);
 
 
         //Inflate the floating view layout we created
@@ -134,7 +134,7 @@ public class FloatingViewServiceClose extends Service {
     private class Movement implements View.OnTouchListener {
 
         long time_start = 0, time_end = 0;
-        boolean isLongclick = false, inBounded = false;
+        boolean isLongclick = false, inBounded = false,inHide=false;
         int remove_img_width = 0, remove_img_height = 0;
 
         Handler handler_longClick = new Handler();
@@ -153,6 +153,16 @@ public class FloatingViewServiceClose extends Service {
                 param_remove.y = y_cord_remove;
 
                 windowManager.updateViewLayout(removeView, param_remove);
+
+                hideView.setVisibility(View.VISIBLE);
+                WindowManager.LayoutParams param_hide = (WindowManager.LayoutParams) hideView.getLayoutParams();
+                // int x_cord_remove = (p.x - removeView.getWidth()) / 2;
+                //  int y_cord_remove = (int) (p.y - (removeView.getHeight() + convertPixelsToDp(60f, FloatingViewServiceClose.this)));
+
+                param_hide.x = x_cord_remove;
+                param_hide.y = 0;
+
+                windowManager.updateViewLayout(hideView, param_remove);
             }
         };
 
@@ -198,16 +208,33 @@ public class FloatingViewServiceClose extends Service {
                         stopSelf();
                     }*/
                     removeView.setVisibility(View.GONE);
+                    hideView.setVisibility(View.GONE);
+
                     removeImg.getLayoutParams().height = remove_img_height;
                     removeImg.getLayoutParams().width = remove_img_width;
+
+                    hideImage.getLayoutParams().height = remove_img_height;
+                    hideImage.getLayoutParams().width = remove_img_width;
+
                     handler_longClick.removeCallbacks(runnable_longClick);
 
-                    if(inBounded){
+                    if (inBounded) {
                        /* if(MyDialog.active){
                             MyDialog.myDialog.finish();
                         }*/
                         stopService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceClose.class));
                         inBounded = false;
+                        break;
+                    }
+                    if (inHide) {
+                       /* if(MyDialog.active){
+                            MyDialog.myDialog.finish();
+                        }*/
+                      //  stopService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceClose.class));
+                        Intent intent = new Intent(FloatingViewServiceClose.this, MyIntentService.class);
+                        stopForeground(true);
+                        startService(intent);
+                        inHide = false;
                         break;
                     }
 
@@ -281,6 +308,7 @@ public class FloatingViewServiceClose extends Service {
                         int x_bound_left = p.x / 2 - (int) (remove_img_width * 1.5);
                         int x_bound_right = p.x / 2 + (int) (remove_img_width * 1.5);
                         int y_bound_top = p.y - (int) (remove_img_height * 1.5);
+                        int y_bound_bottom = (int) (remove_img_height * 1.5);
 
                         if ((x_cord >= x_bound_left && x_cord <= x_bound_right) && y_cord >= y_bound_top) {
                             inBounded = true;
@@ -292,31 +320,68 @@ public class FloatingViewServiceClose extends Service {
                                 removeImg.getLayoutParams().height = (int) (remove_img_height * 1.5);
                                 removeImg.getLayoutParams().width = (int) (remove_img_width * 1.5);
 
-                                WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeView.getLayoutParams();
-                                param_remove.x = x_cord_remove;
-                                param_remove.y = y_cord_remove;
 
-                                windowManager.updateViewLayout(removeView, param_remove);
+                                WindowManager.LayoutParams param_remove1 = (WindowManager.LayoutParams) removeView.getLayoutParams();
+                                param_remove1.x = x_cord_remove;
+                                param_remove1.y = y_cord_remove;
+
+
+                                windowManager.updateViewLayout(removeView, param_remove1);
                             }
-                            //setting floso to  center of remove
-                            //         params.x = (int) (x_cord_remove + (Math.abs(removeView.getWidth() - convertPixelsToDp(1f,FloatingViewServiceClose.this))) / 2);
-                            //        params.y = (int) (y_cord_remove + (Math.abs(removeView.getHeight() - convertPixelsToDp(10f,FloatingViewServiceClose.this))) / 2);
+
                             params.x = (int) (x_cord_remove + convertPixelsToDp(270, FloatingViewServiceClose.this));
                             params.y = (int) (y_cord_remove + convertPixelsToDp(270, FloatingViewServiceClose.this));
 
                             windowManager.updateViewLayout(mFloatingView, params);
-                            //     Toast.makeText(FloatingViewServiceClose.this, ""+params.x, Toast.LENGTH_SHORT).show();
                             Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                             // Vibrate for 500 milliseconds
-                          //  vib.vibrate(300);
+                            //  vib.vibrate(300);
                             if (vib.hasVibrator()) {
-                                vib.vibrate(200);
+                                vib.vibrate(100);
                             }
                             break;
+                        }
+                       if ((x_cord >= x_bound_left && x_cord <= x_bound_right) && y_cord <= y_bound_bottom) {
+
+                            inHide = true;
+
+                            int x_cord_remove = (int) ((p.x - (remove_img_height * 1.5)) / 2);
+                            int y_cord_hide = 0/*(int) (((remove_img_width * 1.5) ))*/;
+
+                            if (hideImage.getLayoutParams().height == remove_img_height) {
+                                hideImage.getLayoutParams().height = (int) (remove_img_height * 1.5);
+                                hideImage.getLayoutParams().width = (int) (remove_img_width * 1.5);
+
+                                WindowManager.LayoutParams param_remove1 = (WindowManager.LayoutParams) hideView.getLayoutParams();
+
+
+
+                                param_remove1.x = x_cord_remove;
+                                param_remove1.y = y_cord_hide;
+
+                                windowManager.updateViewLayout(hideView, param_remove1);
+                            }
+                            params.x = (int) (x_cord_remove + convertPixelsToDp(270, FloatingViewServiceClose.this));
+                            params.y = (int) (y_cord_hide + convertPixelsToDp(270, FloatingViewServiceClose.this));
+
+                            windowManager.updateViewLayout(mFloatingView, params);
+                            Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            // Vibrate for 500 milliseconds
+                            //  vib.vibrate(300);
+                           /* if (vib.hasVibrator()) {
+                                vib.vibrate(100);
+                            }*/
+                            break;
+
+
                         } else {
                             inBounded = false;
+                           inHide=false;
                             removeImg.getLayoutParams().height = remove_img_height;
                             removeImg.getLayoutParams().width = remove_img_width;
+
+                            hideImage.getLayoutParams().height = remove_img_height;
+                            hideImage.getLayoutParams().width = remove_img_width;
 
                             WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeView.getLayoutParams();
                             int x_cord_remove = (p.x - removeView.getWidth()) / 2;
@@ -326,6 +391,15 @@ public class FloatingViewServiceClose extends Service {
                             param_remove.y = y_cord_remove;
 
                             windowManager.updateViewLayout(removeView, param_remove);
+
+                            WindowManager.LayoutParams param_remove1 = (WindowManager.LayoutParams) hideView.getLayoutParams();
+                            int x_cord_remove1 = (p.x - hideView.getWidth()) / 2;
+                            int y_cord_remove1 = (int) (convertPixelsToDp(60f, FloatingViewServiceClose.this));
+
+                            param_remove1.x = x_cord_remove1;
+                            param_remove1.y = y_cord_remove1;
+
+                            windowManager.updateViewLayout(hideView, param_remove);
                         }
 
                     }

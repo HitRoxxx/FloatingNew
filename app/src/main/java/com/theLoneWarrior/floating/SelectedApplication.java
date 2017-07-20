@@ -3,8 +3,6 @@ package com.theLoneWarrior.floating;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,7 +11,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,10 +27,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.igalata.bubblepicker.BubblePickerListener;
-import com.igalata.bubblepicker.adapter.BubblePickerAdapter;
-import com.igalata.bubblepicker.model.PickerItem;
-import com.igalata.bubblepicker.rendering.BubblePicker;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterSelectedApp;
 import com.theLoneWarrior.floating.helper.OnStartDragListener;
 import com.theLoneWarrior.floating.helper.SimpleItemTouchHelperCallback;
@@ -42,17 +35,13 @@ import com.theLoneWarrior.floating.preference.PreferenceDialog;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 import com.theLoneWarrior.floating.utils.UtilsApp;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import static android.support.design.widget.Snackbar.make;
 
 public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnStartDragListener ,RecyclerViewAdapterSelectedApp.ButtonClickListener{
 
-    BubblePicker picker;
+    //BubblePicker picker;
     private ArrayList<AppInfo> result = new ArrayList<>();
     private ItemTouchHelper mItemTouchHelper;
 private  CoordinatorLayout coordinator;
@@ -67,7 +56,7 @@ private  CoordinatorLayout coordinator;
         setSupportActionBar(toolbar);
 
         setActionBarTitle();
-        picker = (BubblePicker) findViewById(R.id.picker);
+     //   picker = (BubblePicker) findViewById(R.id.picker);
         coordinator = (CoordinatorLayout) findViewById(R.id.co);
 
 
@@ -172,69 +161,25 @@ private  CoordinatorLayout coordinator;
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(SelectedApplication.this);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
         // String syncConnPref = sharedPref.getString("OutputVie", "");
-        if (sharedPref.getBoolean("SelectedApp", true)) {
-            RecyclerViewAdapterSelectedApp adapter=new RecyclerViewAdapterSelectedApp(SelectedApplication.this, result);
-            picker.setVisibility(View.GONE);
+
+           RecyclerViewAdapterSelectedApp adapter=new RecyclerViewAdapterSelectedApp(SelectedApplication.this, result);
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
             recyclerView.setHasFixedSize(true);
             recyclerView.setAdapter(adapter);
 
+
+
+
             ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
             mItemTouchHelper = new ItemTouchHelper(callback);
             mItemTouchHelper.attachToRecyclerView(recyclerView);
 
-        } else {
-            picker.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-            setBubble();
-        }
 
 
     }
 
-    private void setBubble() {
-        picker.setAdapter(new BubblePickerAdapter() {
-            @Override
-            public int getTotalCount() {
-                return result.size();
-            }
 
-            @NotNull
-            @Override
-            public PickerItem getItem(int position) {
-                AppInfo packageInfoStruct = result.get(position);
-                PickerItem item = new PickerItem();
-                item.setTitle(packageInfoStruct.getAppName());
-                /*item.setGradient(new BubbleGradient(colors.getColor((position * 2) % 8, 0),
-                        colors.getColor((position * 2) % 8 + 1, 0), BubbleGradient.VERTICAL));*/
-                Typeface mediumTypeface = Typeface.create("", Typeface.ITALIC);
-                item.setTypeface(mediumTypeface);
-                item.setTextColor(ContextCompat.getColor(SelectedApplication.this, android.R.color.white));
-                /*item.setTextSize(40);*/
-                try {
-                    InputStream is = getContentResolver().openInputStream(packageInfoStruct.getBitmapString());
-                    item.setBackgroundImage(Drawable.createFromStream(is, packageInfoStruct.getBitmapString().toString()));
-                } catch (FileNotFoundException e) {
-                    item.setBackgroundImage(ContextCompat.getDrawable(SelectedApplication.this, R.drawable.default_image));
-                }
-                item.setSelected(true);
-                return item;
-            }
-        });
-/// complete later
-        picker.setListener(new BubblePickerListener() {
-            @Override
-            public void onBubbleSelected(@NotNull PickerItem item) {
-
-            }
-
-            @Override
-            public void onBubbleDeselected(@NotNull PickerItem item) {
-                item.setSelected(false);
-            }
-        });
-    }
 
     @Override
     public void onBackPressed() {
@@ -289,7 +234,7 @@ private  CoordinatorLayout coordinator;
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-             }
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -301,14 +246,13 @@ private  CoordinatorLayout coordinator;
     @Override
     protected void onResume() {
         super.onResume();
-        picker.onResume();
-        //  setRecycleView();
+
+       //  setRecycleView();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        picker.onPause();
     }
 
     @Override

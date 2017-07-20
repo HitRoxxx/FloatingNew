@@ -41,7 +41,7 @@ public class MyIntentService extends IntentService {
                 stopSelf();
             }else {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                stopService(new Intent(this, FloatingViewServiceOpen.class));
+                stopService(new Intent(this, FloatingViewServiceClose.class));
 
                 notificationManager.notify(382, new Notification.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)

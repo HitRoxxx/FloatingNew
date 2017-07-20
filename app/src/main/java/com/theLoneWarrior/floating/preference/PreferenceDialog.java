@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.SelectedApplication;
@@ -38,9 +37,9 @@ public class PreferenceDialog extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         Intent newIntent = new Intent(PreferenceDialog.this, SelectedApplication.class);
-      /*  newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //   newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);*/
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(new Intent(newIntent));
     }
 
@@ -115,18 +114,6 @@ public class PreferenceDialog extends AppCompatActivity {
                     }
 
                 }
-                if (key.equals("SelectedApp")) {
-                    if (getPreferenceManager().getSharedPreferences().getBoolean("SelectedApp", false)) {
-                    /*switchPreference.setIcon(R.mipmap.ic_launcher);*/
-                        switchPreference.setSummary("List");
-                    } else {
-                    /*switchPreference.setIcon(R.drawable.center);*/
-                        switchPreference.setSummary("Bubble");
-                        Toast.makeText(getActivity(), "Bubble view is Still Experimental", Toast.LENGTH_SHORT).show();
-                    }
-
-                }
-                return;
             }
             //   SharedPreferences sharedPrefs = getPreferenceManager().getSharedPreferences();
             // preference.setSummary(sharedPrefs.getString(key, "Default"));
@@ -140,5 +127,7 @@ public class PreferenceDialog extends AppCompatActivity {
                     .unregisterOnSharedPreferenceChangeListener(this);
         }
     }
+
+
 
 }

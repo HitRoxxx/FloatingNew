@@ -11,12 +11,6 @@
             android:summary="Default View"
             android:title="Output View" />
 
-        <SwitchPreference
-            android:background="@color/colorHalfTransparent"
-            android:defaultValue="true"
-            android:key="SelectedApp"
-            android:summary="List "
-            android:title="Selected App View" />
     </PreferenceCategory>
 
 </PreferenceScreen>
