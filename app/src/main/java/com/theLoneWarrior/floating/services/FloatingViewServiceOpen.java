@@ -139,6 +139,9 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
         mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_widget_new, null);
         //Add the view to the window.
         /*final WindowManager.LayoutParams*/
+
+        SharedPreferences positionPreference = getSharedPreferences("Position", Context.MODE_PRIVATE);
+
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -147,10 +150,19 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
                 PixelFormat.TRANSLUCENT);
 
         //Specify the view position
-        params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
+      /*  params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
         params.x = 0;
-        params.y = 200;
-
+        params.y = 200;*/
+        if (positionPreference.getInt("PositionX", -6162) == -6162) {
+            params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
+            params.x = (int) 0;  //-60;
+            params.y = 200;
+        } else {
+            params.gravity = Gravity.TOP | Gravity.START;
+            params.x = positionPreference.getInt("PositionX",0 ) ; //-60;
+            params.y = positionPreference.getInt("PositionY", 200);
+            // Toast.makeText(this, positionPreference.getInt("PositionX", (int) convertPixelsToDp(600, this))+" reset "+positionPreference.getInt("PositionY",(int) -convertDpToPixel(30, this) ), Toast.LENGTH_SHORT).show();
+        }
         //Add the view to the window
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(mFloatingView, params);

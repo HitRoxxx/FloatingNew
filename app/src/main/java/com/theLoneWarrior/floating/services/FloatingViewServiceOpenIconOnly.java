@@ -39,7 +39,8 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
     private WindowManager.LayoutParams params;
     Intent intentService;
     Handler handler;
-
+    Point p;
+    View rightView,leftView;
     public FloatingViewServiceOpenIconOnly() {
     }
 
@@ -55,33 +56,6 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
         //Log.d("RUN","");
         intentService = new Intent(FloatingViewServiceOpenIconOnly.this, FloatingViewServiceClose.class);
         searchPreviousService();
-
-        // Bundle b = intent.getExtras();
-        //////////////////////////////////////////////setting result from database/////////////////
-      /*  SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
-        Cursor cursor = db.query(
-                "APP_DATA",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                AppInfo newInfo = new AppInfo();
-                newInfo.setAppName(cursor.getString(1));
-                newInfo.setPacName(cursor.getString(2));
-                newInfo.setBitmapString(Uri.parse(cursor.getString(3)));
-                result.add(newInfo);
-            } while (cursor.moveToNext());
-            cursor.close();
-
-        }
-        db.close();*/
-       /* Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();*/
 
 
         SharedPreferences selectedAppPreference = FloatingViewServiceOpenIconOnly.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
@@ -133,13 +107,14 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
     private void searchPreviousService() {
         stopService(intentService);
     }
-
+    SharedPreferences positionPreference;
     @Override
     public void onCreate() {
         super.onCreate();
         //Inflate the floating view layout we created
         mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_widget_icon_only, null);
 
+       positionPreference= getSharedPreferences("Position", Context.MODE_PRIVATE);
         //Add the view to the window.
         /*final WindowManager.LayoutParams*/
         params = new WindowManager.LayoutParams(
@@ -149,12 +124,40 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
+       p = new Point();
+        Display d = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        d.getSize(p);
         //Specify the view position
-        params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
+       /* params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
         params.x = 0;
         // params.x = (int) -convertDpToPixel(30, this);  //-60;
-        params.y = (int) convertPixelsToDp(600, this);
+        params.y = (int) convertPixelsToDp(600, this);*/
+       rightView = mFloatingView.findViewById(R.id.side_view_Left);
+        leftView = mFloatingView.findViewById(R.id.side_view);
+        //Specify the view position
+        if (positionPreference.getInt("PositionX", -6162) == -6162) {
+            params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
+            params.x =  0;  //-60;
+            params.y = (int) convertPixelsToDp(600, this);
+        } else {
+            params.gravity = Gravity.TOP | Gravity.START;
+           // params.x = positionPreference.getInt("PositionX",(int) 0 ) ; //-60;
+            params.y = positionPreference.getInt("PositionY", (int) convertPixelsToDp(600, this));
 
+            if(positionPreference.getInt("PositionX",(int) 0 ) > p.x/2)
+            {
+                params.x = positionPreference.getInt("PositionX",(int) 0 );
+                rightView.setVisibility(View.VISIBLE);
+                leftView.setVisibility(View.GONE);
+            }
+            else
+            {
+                params.x = 0;
+                rightView.setVisibility(View.GONE);
+                leftView.setVisibility(View.VISIBLE);
+            }
+            // Toast.makeText(this, positionPreference.getInt("PositionX", (int) convertPixelsToDp(600, this))+" reset "+positionPreference.getInt("PositionY",(int) -convertDpToPixel(30, this) ), Toast.LENGTH_SHORT).show();
+        }
         //Add the view to the window
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(mFloatingView, params);
@@ -198,26 +201,35 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
                     }
                   /*  params.x = 0;
                     params.y = initialY + (int) (event.getRawY() - initialTouchY);*/
-                    Point p = new Point();
-                    Display d = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-                    d.getSize(p);
-                    View lv = mFloatingView.findViewById(R.id.side_view_Left);
+
+
                     if (event.getRawX() > (p.x / 2)) {
                         params.x = p.x;//(int) (p.x - convertDpToPixel(20, FloatingViewServiceOpenIconOnly.this));
 
-                        lv.setVisibility(View.VISIBLE);
-                        lv = mFloatingView.findViewById(R.id.side_view);
-                        lv.setVisibility(View.GONE);
+                        rightView.setVisibility(View.VISIBLE);
+
+                        leftView.setVisibility(View.GONE);
                         //(int) convertDpToPixel(p.x/2,FloatingViewServiceClose.this)-( (int) (convertDpToPixel(30,FloatingViewServiceClose.this)));//-60;/*initialX + (int) (event.getRawX() - initialTouchX);*/
                         // Toast.makeText(FloatingViewServiceClose.this, ""+p.x, Toast.LENGTH_SHORT).show();
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
+
+                        SharedPreferences.Editor editor = positionPreference.edit();
+                        editor.putInt("PositionX",(int) (p.x - convertDpToPixel(30, FloatingViewServiceOpenIconOnly.this)));
+                        editor.putInt("PositionY", params.y);
+                        editor.apply();
                     } else {
-                        lv.setVisibility(View.GONE);
-                        lv = mFloatingView.findViewById(R.id.side_view);
-                        lv.setVisibility(View.VISIBLE);
+                        rightView.setVisibility(View.GONE);
+                        leftView = mFloatingView.findViewById(R.id.side_view);
+                        leftView.setVisibility(View.VISIBLE);
                         params.x = 0;
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
+
+                        SharedPreferences.Editor editor = positionPreference.edit();
+                        editor.putInt("PositionX",(int) -convertDpToPixel(30, FloatingViewServiceOpenIconOnly.this));
+                        editor.putInt("PositionY", params.y);
+                        editor.apply();
                     }
+
 
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(mFloatingView, params);
@@ -297,11 +309,12 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
     }
 
-  /*  public float convertDpToPixel(float dp, Context context) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-    }*/
+
+  public float convertDpToPixel(float dp, Context context) {
+      Resources resources = context.getResources();
+      DisplayMetrics metrics = resources.getDisplayMetrics();
+      return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+  }
 
     public float convertPixelsToDp(float px, Context context) {
         Resources resources = context.getResources();

@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -33,6 +34,7 @@ public class FloatingViewServiceClose extends Service {
     private WindowManager.LayoutParams params;
     Handler handler;
     Point p;
+    private SharedPreferences positionPreference;
 
     public FloatingViewServiceClose() {
     }
@@ -45,6 +47,7 @@ public class FloatingViewServiceClose extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
 
         startForeground(1, new Notification.Builder(this)
                 .setContentTitle("Floating Shortcut")
@@ -70,12 +73,14 @@ public class FloatingViewServiceClose extends Service {
     }
 
     private RelativeLayout removeView, hideView;
-    private ImageView removeImg , hideImage;
+    private ImageView removeImg, hideImage;
     private WindowManager windowManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        positionPreference = getSharedPreferences("Position", Context.MODE_PRIVATE);
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         p = new Point();
@@ -105,17 +110,33 @@ public class FloatingViewServiceClose extends Service {
         mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_closed_widget, null);
         //Add the view to the window.
         /*final WindowManager.LayoutParams*/
-        params = new WindowManager.LayoutParams(
+     /*   params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT);*/
+
+        params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
+
         //Specify the view position
-        params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
-        params.x = (int) -convertDpToPixel(30, this);  //-60;
-        params.y = (int) convertPixelsToDp(600, this);
+        if (positionPreference.getInt("PositionX", -6162) == -6162) {
+            params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
+            params.x = (int) -convertDpToPixel(30, this);  //-60;
+            params.y = (int) convertPixelsToDp(600, this);
+        } else {
+            params.gravity = Gravity.TOP | Gravity.START;
+            params.x = positionPreference.getInt("PositionX",(int) -convertDpToPixel(30, this) ) ; //-60;
+            params.y = positionPreference.getInt("PositionY", (int) convertPixelsToDp(600, this));
+           // Toast.makeText(this, positionPreference.getInt("PositionX", (int) convertPixelsToDp(600, this))+" reset "+positionPreference.getInt("PositionY",(int) -convertDpToPixel(30, this) ), Toast.LENGTH_SHORT).show();
+        }
+
 
         //Add the view to the window
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -134,7 +155,7 @@ public class FloatingViewServiceClose extends Service {
     private class Movement implements View.OnTouchListener {
 
         long time_start = 0, time_end = 0;
-        boolean isLongclick = false, inBounded = false,inHide=false;
+        boolean isLongclick = false, inBounded = false, inHide = false;
         int remove_img_width = 0, remove_img_height = 0;
 
         Handler handler_longClick = new Handler();
@@ -147,7 +168,7 @@ public class FloatingViewServiceClose extends Service {
                 removeView.setVisibility(View.VISIBLE);
                 WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeView.getLayoutParams();
                 int x_cord_remove = (p.x - removeView.getWidth()) / 2;
-                int y_cord_remove = (int) (p.y - (removeView.getHeight() + convertPixelsToDp(60f, FloatingViewServiceClose.this)));
+                int y_cord_remove = (int) (p.y - (removeView.getHeight() + convertPixelsToDp(200f, FloatingViewServiceClose.this)));
 
                 param_remove.x = x_cord_remove;
                 param_remove.y = y_cord_remove;
@@ -230,7 +251,7 @@ public class FloatingViewServiceClose extends Service {
                        /* if(MyDialog.active){
                             MyDialog.myDialog.finish();
                         }*/
-                      //  stopService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceClose.class));
+                        //  stopService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceClose.class));
                         Intent intent = new Intent(FloatingViewServiceClose.this, MyIntentService.class);
                         stopForeground(true);
                         startService(intent);
@@ -272,7 +293,12 @@ public class FloatingViewServiceClose extends Service {
                         }
                     }
 
-
+                    ///////////////////////////////setting Place ///////////////////////
+                    SharedPreferences.Editor editor = positionPreference.edit();
+                    editor.putInt("PositionX",params.x);
+                    editor.putInt("PositionY", params.y);
+                    editor.apply();
+                  //  Toast.makeText(FloatingViewServiceClose.this, params.x+" "+params.y, Toast.LENGTH_SHORT).show();
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(mFloatingView, params);
                     //The check for XDiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
@@ -314,7 +340,7 @@ public class FloatingViewServiceClose extends Service {
                             inBounded = true;
 
                             int x_cord_remove = (int) ((p.x - (remove_img_height * 1.5)) / 2);
-                            int y_cord_remove = (int) (p.y - ((remove_img_width * 1.5) + convertPixelsToDp(60f, FloatingViewServiceClose.this)));
+                            int y_cord_remove = (int) (p.y - ((remove_img_width * 1.5) + convertPixelsToDp(200f, FloatingViewServiceClose.this)));
 
                             if (removeImg.getLayoutParams().height == remove_img_height) {
                                 removeImg.getLayoutParams().height = (int) (remove_img_height * 1.5);
@@ -341,7 +367,7 @@ public class FloatingViewServiceClose extends Service {
                             }
                             break;
                         }
-                       if ((x_cord >= x_bound_left && x_cord <= x_bound_right) && y_cord <= y_bound_bottom) {
+                        if ((x_cord >= x_bound_left && x_cord <= x_bound_right) && y_cord <= y_bound_bottom) {
 
                             inHide = true;
 
@@ -353,7 +379,6 @@ public class FloatingViewServiceClose extends Service {
                                 hideImage.getLayoutParams().width = (int) (remove_img_width * 1.5);
 
                                 WindowManager.LayoutParams param_remove1 = (WindowManager.LayoutParams) hideView.getLayoutParams();
-
 
 
                                 param_remove1.x = x_cord_remove;
@@ -376,7 +401,7 @@ public class FloatingViewServiceClose extends Service {
 
                         } else {
                             inBounded = false;
-                           inHide=false;
+                            inHide = false;
                             removeImg.getLayoutParams().height = remove_img_height;
                             removeImg.getLayoutParams().width = remove_img_width;
 
@@ -385,7 +410,7 @@ public class FloatingViewServiceClose extends Service {
 
                             WindowManager.LayoutParams param_remove = (WindowManager.LayoutParams) removeView.getLayoutParams();
                             int x_cord_remove = (p.x - removeView.getWidth()) / 2;
-                            int y_cord_remove = (int) (p.y - (removeView.getHeight() + convertPixelsToDp(60f, FloatingViewServiceClose.this)));
+                            int y_cord_remove = (int) (p.y - (removeView.getHeight() + convertPixelsToDp(200f, FloatingViewServiceClose.this)));
 
                             param_remove.x = x_cord_remove;
                             param_remove.y = y_cord_remove;
@@ -394,7 +419,7 @@ public class FloatingViewServiceClose extends Service {
 
                             WindowManager.LayoutParams param_remove1 = (WindowManager.LayoutParams) hideView.getLayoutParams();
                             int x_cord_remove1 = (p.x - hideView.getWidth()) / 2;
-                            int y_cord_remove1 = (int) (convertPixelsToDp(60f, FloatingViewServiceClose.this));
+                            int y_cord_remove1 =0;
 
                             param_remove1.x = x_cord_remove1;
                             param_remove1.y = y_cord_remove1;
@@ -407,7 +432,6 @@ public class FloatingViewServiceClose extends Service {
                     params.x = initialX + (int) (event.getRawX() - initialTouchX);
 
                     params.y = initialY + (int) (event.getRawY() - initialTouchY);
-
 
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(mFloatingView, params);
@@ -441,6 +465,14 @@ public class FloatingViewServiceClose extends Service {
         // handler.getLooper().quit();
     }
 
-
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Intent intent = new Intent(FloatingViewServiceClose.this, MyIntentService.class);
+        intent.setFlags(5);
+        stopForeground(true);
+        startService(intent);
+        stopSelf();
+    }
 }
 

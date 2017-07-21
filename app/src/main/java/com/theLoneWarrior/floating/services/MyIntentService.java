@@ -39,6 +39,10 @@ public class MyIntentService extends IntentService {
                // stopService(new Intent(this, FloatingViewServiceOpenIconOnly.class));
                 stopService(new Intent(this, FloatingViewServiceClose.class));
                 stopSelf();
+            } else if (flag == 5) {
+                // stopService(new Intent(this, FloatingViewServiceOpenIconOnly.class));
+                startService(new Intent(this, FloatingViewServiceClose.class));
+                stopSelf();
             }else {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 stopService(new Intent(this, FloatingViewServiceClose.class));
