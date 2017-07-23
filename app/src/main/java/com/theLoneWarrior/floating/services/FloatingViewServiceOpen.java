@@ -7,10 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -25,9 +30,12 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.theLoneWarrior.floating.R;
+import com.theLoneWarrior.floating.ScreenShortActivity;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterResult;
 import com.theLoneWarrior.floating.pojoClass.AppInfo;
+import com.theLoneWarrior.floating.splash.SplashScreen;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -39,6 +47,9 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
     private WindowManager.LayoutParams params;
     Intent intentService;
     Handler handler;
+    boolean wifiEnabled;
+    WifiManager wifiManager;
+    boolean flashEnabled;
 
     public FloatingViewServiceOpen() {
     }
@@ -55,31 +66,6 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
         intentService = new Intent(FloatingViewServiceOpen.this, FloatingViewServiceClose.class);
         searchPreviousService();
 
-        // Bundle b = intent.getExtras();
-        //////////////////////////////////////////////setting result from database/////////////////
-      /*  SQLiteDatabase db = new AppDataStorage(this).getReadableDatabase();
-        Cursor cursor = db.query(
-                "APP_DATA",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                AppInfo newInfo = new AppInfo();
-                newInfo.setAppName(cursor.getString(1));
-                newInfo.setPacName(cursor.getString(2));
-                newInfo.setBitmapString(Uri.parse(cursor.getString(3)));
-                result.add(newInfo);
-            } while (cursor.moveToNext());
-            cursor.close();
-
-        }
-        db.close();*/
 
         SharedPreferences selectedAppPreference = FloatingViewServiceOpen.this.getSharedPreferences("SelectedApp", Context.MODE_PRIVATE);
 
@@ -159,7 +145,7 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
             params.y = 200;
         } else {
             params.gravity = Gravity.TOP | Gravity.START;
-            params.x = positionPreference.getInt("PositionX",0 ) ; //-60;
+            params.x = positionPreference.getInt("PositionX", 0); //-60;
             params.y = positionPreference.getInt("PositionY", 200);
             // Toast.makeText(this, positionPreference.getInt("PositionX", (int) convertPixelsToDp(600, this))+" reset "+positionPreference.getInt("PositionY",(int) -convertDpToPixel(30, this) ), Toast.LENGTH_SHORT).show();
         }
@@ -168,30 +154,166 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
         mWindowManager.addView(mFloatingView, params);
 
         //Set the close button
-        ImageView closeButtonCollapsed = (ImageView) mFloatingView.findViewById(R.id.close_btn);
+        final ImageView closeButtonCollapsed = (ImageView) mFloatingView.findViewById(R.id.camera);
         closeButtonCollapsed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //close the service and remove the from from the window
+              /*  //close the service and remove the from from the window
                 Intent intent = new Intent(FloatingViewServiceOpen.this, MyIntentService.class);
                 intent.setFlags(1);
                 stopForeground(true);
                 startService(intent);
-                //stopSelf();
+                //stopSelf();*/
+
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivity(cameraIntent);
+                startCloseService();
+
+
             }
         });
 
 
-        Button minimize = (Button) mFloatingView.findViewById(R.id.minimize);
-        minimize.setOnClickListener(new View.OnClickListener() {
+        Button floso = (Button) mFloatingView.findViewById(R.id.floso);
+        floso.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent cameraIntent = new Intent(FloatingViewServiceOpen.this, SplashScreen.class);
+                startActivity(cameraIntent);
+                stopSelf();
+            }
+        });
+
+        wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+
+        //
+        wifiEnabled = wifiManager.isWifiEnabled();
+        final Button wifi = (Button) mFloatingView.findViewById(R.id.wifi);
+        if (wifiEnabled) {
+            //   wifi.set();
+            wifi.setBackgroundResource(R.drawable.ic_wifi_black_24dp);
+        } else {
+            wifi.setBackgroundResource(R.drawable.ic_signal_wifi_off_black_24dp);
+        }
+        wifi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (wifiEnabled) {
+                    wifiEnabled = false;
+                    wifiManager.setWifiEnabled(false);
+                    wifi.setBackgroundResource(R.drawable.ic_signal_wifi_off_black_24dp);
+                } else {
+                    wifiEnabled = true;
+                    wifiManager.setWifiEnabled(true);
+                    wifi.setBackgroundResource(R.drawable.ic_wifi_black_24dp);
+                }
+            }
+        });
+
+
+        final Button screenShort = (Button) mFloatingView.findViewById(R.id.screenShort);
+
+        if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)) {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                screenShort.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                Camera cam = Camera.open();
+                Camera.Parameters p = cam.getParameters();
+                if (cam.getParameters().getFlashMode().equals("torch")) {
+                    screenShort.setBackgroundResource(R.drawable.ic_flash_on_black_24dp);
+                    flashEnabled = true;
+                } else {
+                    screenShort.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                    flashEnabled = false;
+                }
+            } else {
+                screenShort.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                String cameraId = null; // Usually front camera is at 0 position.
+                try {
+                    cameraId = camManager.getCameraIdList()[0];
+
+                    camManager.setTorchMode(cameraId, false);
+
+                } catch (CameraAccessException e) {
+                    Toast.makeText(FloatingViewServiceOpen.this, "Some Problem In Opening Camera", Toast.LENGTH_SHORT).show();
+                }
+                flashEnabled = false;
+
+            }
+        }
+        screenShort.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //close the service and remove the from from the window
-                Intent intent = new Intent(FloatingViewServiceOpen.this, MyIntentService.class);
+              /*  Intent intent = new Intent(FloatingViewServiceOpen.this, MyIntentService.class);
+                intent.setFlags(1);
+                getApplicationContext();
                 stopForeground(true);
-                startService(intent);
-                // stopSelf();
-                //stopSelf();
+                startService(intent);*/
+             /*  Intent intent = new Intent(FloatingViewServiceOpen.this, RecordingScreen.class);
+               stopForeground(true);
+               startActivity(intent);
+                stopSelf();*/
+                if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)) {
+                    Intent intent = new Intent(FloatingViewServiceOpen.this, ScreenShortActivity.class);
+                    stopForeground(true);
+                    startActivity(intent);
+                    startCloseService();
+                    //takeScreenshot();
+                } else {
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                        if (!flashEnabled) {
+                            screenShort.setBackgroundResource(R.drawable.ic_flash_on_black_24dp);
+                            Camera cam = Camera.open();
+                            Camera.Parameters p = cam.getParameters();
+                            p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                            cam.setParameters(p);
+                            cam.startPreview();
+                            flashEnabled = true;
+                        } else {
+                            screenShort.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                            Camera camera2 = Camera.open();
+                            Camera.Parameters parameters2 = camera2.getParameters();
+                            parameters2.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                            camera2.setParameters(parameters2);
+                            camera2.stopPreview();
+                            flashEnabled = false;
+                        }
+
+
+                    } else {
+
+                        if (!flashEnabled) {
+                            screenShort.setBackgroundResource(R.drawable.ic_flash_on_black_24dp);
+                            CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                            String cameraId = null; // Usually front camera is at 0 position.
+                            try {
+                                cameraId = camManager.getCameraIdList()[0];
+
+                                camManager.setTorchMode(cameraId, true);
+
+                            } catch (CameraAccessException e) {
+                                Toast.makeText(FloatingViewServiceOpen.this, "Some Problem In Opening Camera", Toast.LENGTH_SHORT).show();
+                            }
+                            flashEnabled = true;
+                        } else {
+                            screenShort.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                            CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                            String cameraId = null; // Usually front camera is at 0 position.
+                            try {
+                                cameraId = camManager.getCameraIdList()[0];
+
+                                camManager.setTorchMode(cameraId, false);
+
+                            } catch (CameraAccessException e) {
+                                Toast.makeText(FloatingViewServiceOpen.this, "Some Problem In Opening Camera", Toast.LENGTH_SHORT).show();
+                            }
+                            flashEnabled = false;
+                        }
+                    }
+                }
+
             }
         });
 
@@ -276,7 +398,7 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
         super.onDestroy();
         if (mFloatingView != null) mWindowManager.removeView(mFloatingView);
         handler.removeCallbacksAndMessages(null);
-      //  handler.getLooper().quit();
+        //  handler.getLooper().quit();
         /*for (int i = 0; i < 4; i++) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 Runtime.getRuntime().gc();
@@ -342,6 +464,60 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
         }
 
     }
+
+    /* private void takeScreenshot() {
+         Date now = new Date();
+         android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+         try {
+             // image naming and path  to include sd card  appending name you choose for file
+             String mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg";
+
+             // create bitmap screen capture
+             Toast.makeText(this, "1", Toast.LENGTH_SHORT).show();
+
+           *//*  params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);*//*
+
+ImageView imageView= (ImageView) mFloatingView.findViewById(R.id.test);
+imageView.setVisibility(View.VISIBLE);
+            RelativeLayout rl = (RelativeLayout) mFloatingView.findViewById(R.id.root2_container);
+            rl.setVisibility(View.INVISIBLE);
+            View v1 = mFloatingView;
+            v1.setDrawingCacheEnabled(true);
+            Toast.makeText(this, "2", Toast.LENGTH_SHORT).show();
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+            Toast.makeText(this, "3", Toast.LENGTH_SHORT).show();
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+
+            Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+            openScreenshot(imageFile);
+        } catch (Throwable e) {
+            // Several error may come out with file handling or OOM
+            e.printStackTrace();
+            Toast.makeText(this, ""+e, Toast.LENGTH_SHORT).show();
+        }
+    }*/
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
+    }
+
 
 }
 

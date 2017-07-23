@@ -144,6 +144,7 @@ public class FloatingViewServiceClose extends Service {
 
 
         //Drag and move floating view using user's touch action.
+       
         mFloatingView.findViewById(R.id.root_container).setOnTouchListener(new Movement());
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/

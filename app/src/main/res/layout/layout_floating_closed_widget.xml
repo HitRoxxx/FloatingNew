@@ -24,8 +24,8 @@
             <!--Icon of floating widget -->
             <ImageView
                 android:id="@+id/side_view"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/open"
                 tools:ignore="ContentDescription" />
 

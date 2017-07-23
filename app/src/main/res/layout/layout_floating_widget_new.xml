@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:descendantFocusability="blocksDescendants"
-    android:orientation="vertical">
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:descendantFocusability="blocksDescendants"
+             android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/root2_container"
@@ -21,6 +22,18 @@
             android:visibility="visible">
 
             <!--Icon of floating widget -->
+            <Button
+                android:id="@+id/wifi"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/radioButton"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="13dp"
+                android:layout_toLeftOf="@+id/radioButton"
+                android:layout_toStartOf="@+id/radioButton"
+                android:background="@drawable/ic_wifi_black_24dp"/>
+
             <ImageView
                 android:id="@+id/up_iv"
                 android:layout_width="150dp"
@@ -29,7 +42,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:src="@drawable/opennew"
-                tools:ignore="ContentDescription" />
+                tools:ignore="ContentDescription"/>
 
             <!--Close button-->
 
@@ -42,25 +55,25 @@
                 android:layout_marginLeft="85dp"
                 android:layout_marginStart="85dp"
                 android:layout_marginTop="80dp"
-                android:background="#00d9d9d9" />
+                android:background="#00d9d9d9"/>
 
             <ImageView
-                android:id="@+id/close_btn"
+                android:id="@+id/camera"
                 android:layout_width="@dimen/closeBoxWidth"
                 android:layout_height="@dimen/closeBoxHeight"
                 android:layout_marginLeft="112dp"
                 android:layout_marginStart="112dp"
                 android:layout_marginTop="44dp"
-                android:background="@drawable/off"
-                tools:ignore="ContentDescription" />
+                android:background="@drawable/ic_menu_camera"
+                tools:ignore="ContentDescription"/>
 
             <Button
                 android:id="@+id/radioButton"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:layout_alignEnd="@+id/close_btn"
-                android:layout_alignRight="@+id/close_btn"
-                android:layout_alignTop="@+id/close_btn"
+                android:layout_alignEnd="@+id/camera"
+                android:layout_alignRight="@+id/camera"
+                android:layout_alignTop="@+id/camera"
                 android:layout_marginEnd="43dp"
                 android:layout_marginRight="43dp"
                 android:layout_marginTop="12.8dp"
@@ -68,15 +81,24 @@
                 />
 
             <Button
-                android:id="@+id/minimize"
-                android:layout_width="@dimen/closeBoxWidth"
-                android:layout_height="@dimen/closeBoxHeight"
-                android:layout_marginLeft="95dp"
-                android:layout_marginStart="95dp"
-                android:layout_marginTop="20dp"
-                android:background="@android:drawable/ic_lock_lock"
+                android:id="@+id/floso"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_above="@+id/screenShort"
+                android:layout_alignLeft="@id/radioButton"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="9dp"
+                android:background="@mipmap/ic_launcher"
+                tools:ignore="ContentDescription"/>
 
-                tools:ignore="ContentDescription" />
+            <Button
+                android:id="@+id/screenShort"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+
+              android:layout_marginLeft="13dp"
+                android:layout_alignTop="@+id/camera"
+                android:background="@drawable/screen_shot"/>
         </RelativeLayout>
     </RelativeLayout>
 

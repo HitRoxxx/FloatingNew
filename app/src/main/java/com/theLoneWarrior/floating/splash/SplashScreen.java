@@ -20,7 +20,6 @@ import com.theLoneWarrior.floating.services.FloatingViewServiceOpenIconOnly;
 
 public class SplashScreen extends AppCompatActivity {
 
-
     private static final int UI_ANIMATION_DELAY = 200;
     private final Handler mHideHandler = new Handler();
     private View mContentView;

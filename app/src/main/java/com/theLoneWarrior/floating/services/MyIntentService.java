@@ -22,6 +22,8 @@ public class MyIntentService extends IntentService {
 
             if (flag == 1) {
                 stopService(new Intent(this, FloatingViewServiceOpen.class));
+              /*  takeScreenshot();*/
+                startService(new Intent(this, FloatingViewServiceClose.class));
                 stopSelf();
 
             } else if (flag == 2) {
@@ -70,6 +72,4 @@ public class MyIntentService extends IntentService {
 
         }
     }
-
-
-}
+  }

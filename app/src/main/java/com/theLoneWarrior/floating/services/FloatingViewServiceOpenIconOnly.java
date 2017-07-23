@@ -302,7 +302,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
             // nApp.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
             nApp.setHasFixedSize(true);
             nApp.setAdapter(new RecyclerViewAdapterResultIconOnly(FloatingViewServiceOpenIconOnly.this, result));
-            Toast.makeText(this, "Run", Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(this, "Run", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "No App Selected Please Select An App", Toast.LENGTH_SHORT).show();
         }
