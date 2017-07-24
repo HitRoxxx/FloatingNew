@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
@@ -25,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.theLoneWarrior.floating.FloatingSystem;
 import com.theLoneWarrior.floating.R;
 
 
@@ -132,9 +132,9 @@ public class FloatingViewServiceClose extends Service {
             params.y = (int) convertPixelsToDp(600, this);
         } else {
             params.gravity = Gravity.TOP | Gravity.START;
-            params.x = positionPreference.getInt("PositionX",(int) -convertDpToPixel(30, this) ) ; //-60;
+            params.x = positionPreference.getInt("PositionX", (int) -convertDpToPixel(30, this)); //-60;
             params.y = positionPreference.getInt("PositionY", (int) convertPixelsToDp(600, this));
-           // Toast.makeText(this, positionPreference.getInt("PositionX", (int) convertPixelsToDp(600, this))+" reset "+positionPreference.getInt("PositionY",(int) -convertDpToPixel(30, this) ), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, positionPreference.getInt("PositionX", (int) convertPixelsToDp(600, this))+" reset "+positionPreference.getInt("PositionY",(int) -convertDpToPixel(30, this) ), Toast.LENGTH_SHORT).show();
         }
 
 
@@ -144,7 +144,7 @@ public class FloatingViewServiceClose extends Service {
 
 
         //Drag and move floating view using user's touch action.
-       
+
         mFloatingView.findViewById(R.id.root_container).setOnTouchListener(new Movement());
 
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
@@ -296,10 +296,10 @@ public class FloatingViewServiceClose extends Service {
 
                     ///////////////////////////////setting Place ///////////////////////
                     SharedPreferences.Editor editor = positionPreference.edit();
-                    editor.putInt("PositionX",params.x);
+                    editor.putInt("PositionX", params.x);
                     editor.putInt("PositionY", params.y);
                     editor.apply();
-                  //  Toast.makeText(FloatingViewServiceClose.this, params.x+" "+params.y, Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(FloatingViewServiceClose.this, params.x+" "+params.y, Toast.LENGTH_SHORT).show();
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(mFloatingView, params);
                     //The check for XDiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
@@ -308,13 +308,30 @@ public class FloatingViewServiceClose extends Service {
                         //     new Thread(new Runnable() {
                         //         @Override
                         //        public void run() {
-                        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(FloatingViewServiceClose.this);
-                        // String syncConnPref = sharedPref.getString("OutputVie", "");
-                        if (sharedPref.getBoolean("OutputView", true)) {
+                        switch (getSharedPreferences("Setting", Context.MODE_PRIVATE).getInt("OutputView", 0)) {
+                            case 0: {
+                                startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpen.class));
+                                break;
+                            }
+                            case 1: {
+                                startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpenIconOnly.class));
+                                break;
+                            }
+                            case 2: {
+                                startActivity(new Intent(FloatingViewServiceClose.this, FloatingSystem.class));
+                                break;
+                            }
+                        }
+           /* default: {
+                outPutViewText.setText("Default");
+                Toast.makeText(this, "default", Toast.LENGTH_SHORT).show();
+                outPutViewImage.setBackgroundResource(R.mipmap.ic_launcher);
+            }*/
+                     /*   }
                             startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpen.class));
                         } else {
                             startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpenIconOnly.class));
-                        }
+                        }*/
                         //
 
 
@@ -420,7 +437,7 @@ public class FloatingViewServiceClose extends Service {
 
                             WindowManager.LayoutParams param_remove1 = (WindowManager.LayoutParams) hideView.getLayoutParams();
                             int x_cord_remove1 = (p.x - hideView.getWidth()) / 2;
-                            int y_cord_remove1 =0;
+                            int y_cord_remove1 = 0;
 
                             param_remove1.x = x_cord_remove1;
                             param_remove1.y = y_cord_remove1;

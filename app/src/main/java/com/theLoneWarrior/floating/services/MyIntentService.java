@@ -31,21 +31,24 @@ public class MyIntentService extends IntentService {
                 startService(new Intent(this, FloatingViewServiceClose.class));
                 stopSelf();
 
-            }
-            else if (flag == 3) {
+            } else if (flag == 3) {
                 stopService(new Intent(this, FloatingViewServiceOpenIconOnly.class));
                 startService(new Intent(this, FloatingViewServiceClose.class));
                 stopSelf();
-            }
-            else if (flag == 4) {
-               // stopService(new Intent(this, FloatingViewServiceOpenIconOnly.class));
+            } else if (flag == 4) {
+                // stopService(new Intent(this, FloatingViewServiceOpenIconOnly.class));
                 stopService(new Intent(this, FloatingViewServiceClose.class));
                 stopSelf();
             } else if (flag == 5) {
                 // stopService(new Intent(this, FloatingViewServiceOpenIconOnly.class));
                 startService(new Intent(this, FloatingViewServiceClose.class));
                 stopSelf();
-            }else {
+            }/* else if (flag == 6) {
+                Intent ss =new Intent(this, FloatingSystem.class);
+                ss.putExtra("LAND",intent.getBooleanExtra("LAND",false));
+                startActivity(ss);
+                stopSelf();
+            }*/ else {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 stopService(new Intent(this, FloatingViewServiceClose.class));
 
@@ -72,4 +75,4 @@ public class MyIntentService extends IntentService {
 
         }
     }
-  }
+}

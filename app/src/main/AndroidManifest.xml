@@ -12,11 +12,12 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.FLASHLIGHT"/>
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature android:name="android.hardware.camera.flash" />
+
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-feature android:name="android.hardware.camera.flash"/>
 
     <application
         android:allowBackup="true"
@@ -48,7 +49,7 @@
             android:exported="false"/>
         <service
             android:name=".services.FloatingViewServiceClose"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize"
             android:description="@string/service_description"
             android:enabled="true"
             android:exported="false"/>
@@ -78,21 +79,25 @@
             android:largeHeap="true"
             android:theme="@style/AppTheme"/>
         <activity
-            android:name=".preference.PreferenceDialog"
+            android:name=".RecordingScreen"
+            android:theme="@style/FullscreenTheme">
+        </activity>
+        <activity
+            android:name=".ScreenShortActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/TransparentTheme">
+        </activity>
+        <activity
+            android:name=".FloatingSystem"
+            android:theme="@style/TransparentTheme">
+        </activity>
+        <activity
+            android:name=".preference.PreferenceActivity"
             android:parentActivityName=".SelectedApplication"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SelectedApplication"/>
-        </activity>
-        <activity
-            android:name=".RecordingScreen"
-            android:theme="@style/FullscreenTheme">
-        </activity>
-        <activity android:name=".ScreenShortActivity"
-                  android:theme="@style/TransparentTheme"
-                  android:configChanges="orientation|screenSize">
         </activity>
     </application>
 

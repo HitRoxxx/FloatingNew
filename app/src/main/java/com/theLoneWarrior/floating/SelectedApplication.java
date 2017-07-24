@@ -31,7 +31,7 @@ import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterSelectedApp;
 import com.theLoneWarrior.floating.helper.OnStartDragListener;
 import com.theLoneWarrior.floating.helper.SimpleItemTouchHelperCallback;
 import com.theLoneWarrior.floating.pojoClass.AppInfo;
-import com.theLoneWarrior.floating.preference.PreferenceDialog;
+import com.theLoneWarrior.floating.preference.PreferenceActivity;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 import com.theLoneWarrior.floating.utils.UtilsApp;
 
@@ -208,7 +208,7 @@ private  CoordinatorLayout coordinator;
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
 
-           Intent intent = new Intent(SelectedApplication.this, PreferenceDialog.class);
+           Intent intent = new Intent(SelectedApplication.this, PreferenceActivity.class);
             startActivity(intent);
           /*  finish();*/
             return true;
@@ -228,6 +228,8 @@ private  CoordinatorLayout coordinator;
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
+
+           // startActivity(new Intent(SelectedApplication.this,FloatingSystem.class));
 
         } else if (id == R.id.nav_manage) {
 
