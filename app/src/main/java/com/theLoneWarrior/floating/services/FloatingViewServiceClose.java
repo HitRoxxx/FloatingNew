@@ -24,7 +24,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.theLoneWarrior.floating.FloatingSystem;
 import com.theLoneWarrior.floating.R;
 
 
@@ -321,8 +320,8 @@ public class FloatingViewServiceClose extends Service {
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
-
-                                        startActivity(new Intent(FloatingViewServiceClose.this, FloatingSystem.class));
+                                        startService(new Intent(FloatingViewServiceClose.this, SystemOverlayMenuService.class));
+                                   //     startActivity(new Intent(FloatingViewServiceClose.this, FloatingSystem.class));
                                     }
                                 }).start();
 

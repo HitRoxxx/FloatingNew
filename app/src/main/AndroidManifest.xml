@@ -64,6 +64,11 @@
             android:enabled="true"
             android:exported="false"/>
 
+        <service
+            android:name=".services.SystemOverlayMenuService"
+            android:description="@string/notification_service_description"
+            android:exported="false"/>
+
         <activity
             android:name=".splash.SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"

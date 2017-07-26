@@ -356,12 +356,12 @@ public class FloatingActionMenu  {
      */
 //   public static boolean flag;
     public Point getActionViewCenter() {
-        Point point = getActionViewCoordinates();
+      /*  Point point = getActionViewCoordinates();
        Point p = new Point();
         Display d = ((WindowManager) mainActionView.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         d.getSize(p);
 
-     if(p.x>p.y)
+    *//* if(p.x>p.y)
      {
        Log.e("aa","aa");
          point.x += mainActionView.getMeasuredWidth() / 2 + convertDpToPixel(135, mainActionView.getContext());
@@ -371,10 +371,15 @@ public class FloatingActionMenu  {
      {
          point.x += mainActionView.getMeasuredWidth() / 2 + convertDpToPixel(20, mainActionView.getContext());
          point.y += mainActionView.getMeasuredHeight() / 2;
-    }
+    }*//*
 
-      /*  point.x +=p.x / 2 + convertDpToPixel(20, mainActionView.getContext());
-        point.y += p.y;*/
+        point.x +=p.x / 2 + convertDpToPixel(20, mainActionView.getContext());
+        point.y += p.y;
+        return point;*/
+
+        Point point = getActionViewCoordinates();
+        point.x += mainActionView.getMeasuredWidth() / 2;
+        point.y += mainActionView.getMeasuredHeight() / 2;
         return point;
     }
 
