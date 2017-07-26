@@ -242,6 +242,8 @@ public class FloatingSystem extends AppCompatActivity {
         Intent intent = new Intent(this, MyIntentService.class);
         intent.setFlags(5);
         startService(intent);
+        finish();
+        return;
     }
 
    /* @Override
@@ -257,4 +259,10 @@ public class FloatingSystem extends AppCompatActivity {
         startService(intent);
         finish();
     }*/
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        startCloseService();
+    }
 }

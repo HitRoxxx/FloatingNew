@@ -88,6 +88,8 @@
             android:theme="@style/TransparentTheme">
         </activity>
         <activity
+            android:noHistory="true"
+            android:autoRemoveFromRecents="true"
             android:name=".FloatingSystem"
             android:theme="@style/TransparentTheme">
         </activity>

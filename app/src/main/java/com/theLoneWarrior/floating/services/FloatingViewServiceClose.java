@@ -318,7 +318,14 @@ public class FloatingViewServiceClose extends Service {
                                 break;
                             }
                             case 2: {
-                                startActivity(new Intent(FloatingViewServiceClose.this, FloatingSystem.class));
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        startActivity(new Intent(FloatingViewServiceClose.this, FloatingSystem.class));
+                                    }
+                                }).start();
+
                                 break;
                             }
                         }
