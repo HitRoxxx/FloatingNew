@@ -339,6 +339,12 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
         mFloatingView.findViewById(R.id.radioButton).setOnTouchListener(new Movement());
+        mFloatingView.findViewById(R.id.radioButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startCloseService();
+            }
+        });
 
     }
 
@@ -364,7 +370,7 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
                     //get the touch location
                     initialTouchX = event.getRawX();
                     initialTouchY = event.getRawY();
-                    return true;
+                    break;
                 case MotionEvent.ACTION_UP:
                     int XDiff = (int) (event.getRawX() - initialTouchX);
                     int YDiff = (int) (event.getRawY() - initialTouchY);
@@ -372,11 +378,11 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
 
                     //The check for XDiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
                     //So that is click event.
-                    if (XDiff < 10 && YDiff < 10) {
+                   /* if (XDiff < 10 && YDiff < 10) {
 
                         startCloseService();
-                    }
-                    return true;
+                    }*/
+                   break;
                 case MotionEvent.ACTION_MOVE:
                     //Calculate the X and Y coordinates of the view.
                     params.x = initialX + (int) (event.getRawX() - initialTouchX);
@@ -385,7 +391,7 @@ public class FloatingViewServiceOpen extends Service implements RecyclerViewAdap
 
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(mFloatingView, params);
-                    return true;
+                   break;
             }
             return false;
         }

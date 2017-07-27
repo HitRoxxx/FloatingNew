@@ -163,7 +163,21 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
         mWindowManager.addView(mFloatingView, params);
 
         mFloatingView.findViewById(R.id.side_view).setOnTouchListener(new Movement());
+        mFloatingView.findViewById(R.id.side_view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startCloseService();
+            }
+        });
+
+
         mFloatingView.findViewById(R.id.side_view_Left).setOnTouchListener(new Movement());
+        mFloatingView.findViewById(R.id.side_view_Left).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startCloseService();
+            }
+        });
     }
 
 
@@ -187,7 +201,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
                     //get the touch location
                     initialTouchX = event.getRawX();
                     initialTouchY = event.getRawY();
-                    return true;
+                    break;
                 case MotionEvent.ACTION_UP:
                     int XDiff = (int) (event.getRawX() - initialTouchX);
                     int YDiff = (int) (event.getRawY() - initialTouchY);
@@ -195,10 +209,10 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
                     //The check for XDiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
                     //So that is click event.
-                    if (XDiff < 10 && YDiff < 10) {
+                  /*  if (XDiff < 10 && YDiff < 10) {
 
                         startCloseService();
-                    }
+                    }*/
                   /*  params.x = 0;
                     params.y = initialY + (int) (event.getRawY() - initialTouchY);*/
 
@@ -233,7 +247,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(mFloatingView, params);
-                    return true;
+                   break;
                 case MotionEvent.ACTION_MOVE:
                     //Calculate the X and Y coordinates of the view.
                     params.x = initialX + (int) (event.getRawX() - initialTouchX);
@@ -242,7 +256,7 @@ public class FloatingViewServiceOpenIconOnly extends Service implements Recycler
 
                     //Update the layout with new X & Y coordinate
                     mWindowManager.updateViewLayout(mFloatingView, params);
-                    return true;
+                  break;
 
 
             }

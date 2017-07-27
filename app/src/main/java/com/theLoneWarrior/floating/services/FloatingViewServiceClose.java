@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -74,6 +75,7 @@ public class FloatingViewServiceClose extends Service {
     private RelativeLayout removeView, hideView;
     private ImageView removeImg, hideImage;
     private WindowManager windowManager;
+    private GestureDetector gestureDetector;
 
     @Override
     public void onCreate() {
@@ -143,9 +145,37 @@ public class FloatingViewServiceClose extends Service {
 
 
         //Drag and move floating view using user's touch action.
-
         mFloatingView.findViewById(R.id.root_container).setOnTouchListener(new Movement());
+        mFloatingView.findViewById(R.id.root_container).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (getSharedPreferences("Setting", Context.MODE_PRIVATE).getInt("OutputView", 0)) {
+                    case 0: {
+                        startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpen.class));
+                        break;
+                    }
+                    case 1: {
+                        startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpenIconOnly.class));
+                        break;
+                    }
+                    case 2: {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                startService(new Intent(FloatingViewServiceClose.this, SystemOverlayMenuService.class));
+                                //     startActivity(new Intent(FloatingViewServiceClose.this, FloatingSystem.class));
+                            }
+                        }).start();
 
+                        break;
+                    }
+                }
+
+
+                stopForeground(true);
+                stopSelf();
+            }
+        });
 /*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
 
@@ -198,7 +228,7 @@ public class FloatingViewServiceClose extends Service {
 
             int x_cord = (int) event.getRawX();
             int y_cord = (int) event.getRawY();
-            int x_cord_Destination, y_cord_Destination;
+            int x_cord_Destination, y_cord_Destination;                // your code for move and drag
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -307,46 +337,9 @@ public class FloatingViewServiceClose extends Service {
                         //     new Thread(new Runnable() {
                         //         @Override
                         //        public void run() {
-                        switch (getSharedPreferences("Setting", Context.MODE_PRIVATE).getInt("OutputView", 0)) {
-                            case 0: {
-                                startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpen.class));
-                                break;
-                            }
-                            case 1: {
-                                startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpenIconOnly.class));
-                                break;
-                            }
-                            case 2: {
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        startService(new Intent(FloatingViewServiceClose.this, SystemOverlayMenuService.class));
-                                   //     startActivity(new Intent(FloatingViewServiceClose.this, FloatingSystem.class));
-                                    }
-                                }).start();
 
-                                break;
-                            }
-                        }
-           /* default: {
-                outPutViewText.setText("Default");
-                Toast.makeText(this, "default", Toast.LENGTH_SHORT).show();
-                outPutViewImage.setBackgroundResource(R.mipmap.ic_launcher);
-            }*/
-                     /*   }
-                            startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpen.class));
-                        } else {
-                            startService(new Intent(FloatingViewServiceClose.this, FloatingViewServiceOpenIconOnly.class));
-                        }*/
-                        //
-
-
-                        //         }
-                        //      }).start();
-                        stopForeground(true);
-                        stopSelf();
                     }
-                    return true;
+                    return false;
                 case MotionEvent.ACTION_MOVE:
 
 
@@ -464,7 +457,7 @@ public class FloatingViewServiceClose extends Service {
             }
 
 
-            return true;
+            return false;
         }
     }
 
@@ -498,5 +491,17 @@ public class FloatingViewServiceClose extends Service {
         startService(intent);
         stopSelf();
     }
+
+    /*private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent event) {
+            Toast.makeText(FloatingViewServiceClose.this, "Hello", Toast.LENGTH_SHORT).show();
+            Log.e("Hi","Hi");
+            return true;
+        }
+    }*/
+
+
 }
 

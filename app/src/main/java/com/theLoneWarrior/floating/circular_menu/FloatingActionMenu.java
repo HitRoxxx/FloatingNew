@@ -3,6 +3,8 @@
  */
 package com.theLoneWarrior.floating.circular_menu;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -13,8 +15,8 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.SensorManager;
+import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,9 +25,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.circular_menu.animation.DefaultAnimationHandler;
 import com.theLoneWarrior.floating.circular_menu.animation.MenuAnimationHandler;
+import com.theLoneWarrior.floating.services.SystemOverlayMenuService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +87,10 @@ public class FloatingActionMenu  {
     private FrameLayout overlayContainer;
 
     private OrientationEventListener orientationListener;
+    public FloatingActionMenu()
+    {
 
+    }
     /**
      * Constructor that takes the parameters collected using {@link Builder}
      *
@@ -94,6 +102,7 @@ public class FloatingActionMenu  {
      * @param animationHandler
      * @param animated
      */
+
     public FloatingActionMenu(final View mainActionView,
                               int startAngle,
                               int endAngle,
@@ -168,6 +177,17 @@ public class FloatingActionMenu  {
             };
             orientationListener.enable();
         }
+    }
+
+    public void hide()
+
+    {
+        mainActionView.setVisibility(View.INVISIBLE);
+    }
+
+    public void show()
+    {
+        mainActionView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -272,7 +292,12 @@ public class FloatingActionMenu  {
         if (stateChangeListener != null) {
             stateChangeListener.onMenuClosed(this);
         }
+
+
     }
+
+
+
 
     /**
      * Toggles the menu
@@ -555,8 +580,19 @@ public class FloatingActionMenu  {
     public void setStateChangeListener(MenuStateChangeListener listener) {
         this.stateChangeListener = listener;
     }
+/*
+  static   public SystemOverlayMenuService soms;
+    public void setSystemOvelayMenuService(SystemOverlayMenuService soms )
+    {
 
+      this.soms=soms;
+    }
 
+    public SystemOverlayMenuService getSystemOvelayMenuService( )
+    {
+
+        return soms;
+    }*/
     /**
      * A simple click listener used by the main action view
      */
