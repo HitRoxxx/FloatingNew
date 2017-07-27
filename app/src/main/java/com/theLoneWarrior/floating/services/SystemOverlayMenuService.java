@@ -1,8 +1,11 @@
 package com.theLoneWarrior.floating.services;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
 import android.view.WindowManager;
@@ -50,15 +53,17 @@ public class SystemOverlayMenuService extends Service {
 
         // Set up the white button on the lower right corner
         // more or less with default parameter
-        ImageView fabIconNew = new ImageView(this);
+        final ImageView fabIconNew = new ImageView(this);
         fabIconNew.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_new_light));
         WindowManager.LayoutParams params = FloatingActionButton.Builder.getDefaultSystemWindowParams(this);
 
         rightLowerButton = new FloatingActionButton.Builder(this)
                 .setContentView(fabIconNew)
                 .setSystemOverlay(true)
+                .setBackgroundDrawable(R.drawable.button_sub_action_dark_selector)
                 .setLayoutParams(params)
                 .build();
+
 
         SubActionButton.Builder rLSubBuilder = new SubActionButton.Builder(this);
         ImageView rlIcon1 = new ImageView(this);
@@ -87,6 +92,26 @@ public class SystemOverlayMenuService extends Service {
                 .attachTo(rightLowerButton)
                 .build();
 
+        rightLowerMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
+            @Override
+            public void onMenuOpened(FloatingActionMenu menu) {
+                // Rotate the icon of rightLowerButton 45 degrees clockwise
+                fabIconNew.setRotation(0);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 45);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(fabIconNew, pvhR);
+                animation.start();
+            }
+
+            @Override
+            public void onMenuClosed(FloatingActionMenu menu) {
+                // Rotate the icon of rightLowerButton 45 degrees counter-clockwise
+                fabIconNew.setRotation(45);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(fabIconNew, pvhR);
+                animation.start();
+            }
+        });
+
         ////////////////////////////////////////////////////////
 
         // Set up the large red button on the top center side
@@ -100,7 +125,7 @@ public class SystemOverlayMenuService extends Service {
         int blueSubActionButtonContentMargin = getResources().getDimensionPixelSize(R.dimen.blue_sub_action_button_content_margin);
 
         ImageView fabIconStar = new ImageView(this);
-        fabIconStar.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_important));
+        fabIconStar.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
 
         FloatingActionButton.LayoutParams fabIconStarParams = new FloatingActionButton.LayoutParams(redActionButtonContentSize, redActionButtonContentSize);
         fabIconStarParams.setMargins(redActionButtonContentMargin,
@@ -177,6 +202,26 @@ public class SystemOverlayMenuService extends Service {
         topCenterMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
             @Override
             public void onMenuOpened(FloatingActionMenu menu) {
+                // Rotate the icon of rightLowerButton 45 degrees clockwise
+                fabIconNew.setRotation(0);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 45);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(fabIconNew, pvhR);
+                animation.start();
+            }
+
+            @Override
+            public void onMenuClosed(FloatingActionMenu menu) {
+                // Rotate the icon of rightLowerButton 45 degrees counter-clockwise
+                fabIconNew.setRotation(45);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(fabIconNew, pvhR);
+                animation.start();
+            }
+        });
+
+        topCenterMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
+            @Override
+            public void onMenuOpened(FloatingActionMenu menu) {
 
             }
 
@@ -188,13 +233,24 @@ public class SystemOverlayMenuService extends Service {
                 }
             }
         });
-
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                rightLowerMenu.open(true);
+                topCenterMenu.open(true);
+            }
+        }, 200);
         // make the red button terminate the service
         tcSub6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 serviceWillBeDismissed = true; // the order is important
                 topCenterMenu.close(true);
+                Intent intent = new Intent(SystemOverlayMenuService.this, MyIntentService.class);
+                intent.setFlags(5);
+                startService(intent);
+              stopSelf();
             }
         });
     }
