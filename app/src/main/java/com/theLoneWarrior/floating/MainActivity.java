@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -631,6 +632,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
 
         finish();*/
+        NavUtils.navigateUpFromSameTask(this);
         super.onBackPressed();
     }
 

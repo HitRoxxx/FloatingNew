@@ -418,11 +418,8 @@ public class SystemOverlayMenuService extends Service {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             /*   Intent i = new Intent(Intent.ACTION_MAIN);
-                i.addCategory(Intent.Category_T);
-                startActivity(i);*/
-              /*  KeyEvent kup = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK);
-                dispatchKeyEvent(kup);*/
+             //   KeyEvent kdown = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK);
+             //   dispatchKeyEvent(kdown);
             }
         });
 
