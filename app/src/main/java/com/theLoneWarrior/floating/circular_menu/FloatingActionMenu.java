@@ -16,6 +16,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.SensorManager;
 import android.os.Handler;
+import android.transition.Explode;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
@@ -542,7 +543,13 @@ public class FloatingActionMenu  {
     }
 
     public void detachOverlayContainer() {
-        getWindowManager().removeView(overlayContainer);
+        try {
+            getWindowManager().removeView(overlayContainer);
+        }catch (Exception e)
+        {
+
+        }
+
     }
 
     public int getStatusBarHeight() {

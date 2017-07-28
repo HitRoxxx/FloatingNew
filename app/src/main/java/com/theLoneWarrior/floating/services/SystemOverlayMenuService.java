@@ -3,19 +3,30 @@ package com.theLoneWarrior.floating.services;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.circular_menu.FloatingActionButton;
 import com.theLoneWarrior.floating.circular_menu.FloatingActionMenu;
 import com.theLoneWarrior.floating.circular_menu.SubActionButton;
+import com.theLoneWarrior.floating.splash.SplashScreen;
 
 
 public class SystemOverlayMenuService extends Service {
@@ -29,8 +40,12 @@ public class SystemOverlayMenuService extends Service {
     private FloatingActionMenu rightLowerMenu;
     private FloatingActionMenu topCenterMenu;
     private FloatingActionMenu centerMenu;
-    boolean flag;
+    boolean flashEnabled;
     private boolean serviceWillBeDismissed;
+    WifiManager wifiManager;
+    boolean wifiEnabled;
+    boolean isEnabled;
+    BluetoothAdapter bluetoothAdapter;
 
     public SystemOverlayMenuService() {
     }
@@ -68,22 +83,22 @@ public class SystemOverlayMenuService extends Service {
 
 
         SubActionButton.Builder rLSubBuilder = new SubActionButton.Builder(this);
-        ImageView rlIcon1 = new ImageView(this);
-        ImageView rlIcon2 = new ImageView(this);
-        ImageView rlIcon3 = new ImageView(this);
-        ImageView rlIcon4 = new ImageView(this);
+        ImageView screenRecording = new ImageView(this);
+        ImageView cameraVideoMode = new ImageView(this);
+        ImageView cameraPictureVideo = new ImageView(this);
+        final ImageView flashMode = new ImageView(this);
 
-        rlIcon1.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_chat_light));
-        rlIcon2.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_camera_light));
-        rlIcon3.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_video_light));
-        rlIcon4.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_place_light));
+        screenRecording.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_chat_light));
+        cameraVideoMode.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_video_light));
+        cameraPictureVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_camera_light));
+        //  flashMode.setImageDrawable(getResources().getDrawable(R.drawable.ic_flash_off_black_24dp));
 
         // Build the menu with default options: light theme, 90 degrees, 72dp radius.
         // Set 4 default SubActionButtons
-        SubActionButton rlSub1 = rLSubBuilder.setContentView(rlIcon1).build();
-        SubActionButton rlSub2 = rLSubBuilder.setContentView(rlIcon2).build();
-        SubActionButton rlSub3 = rLSubBuilder.setContentView(rlIcon3).build();
-        SubActionButton rlSub4 = rLSubBuilder.setContentView(rlIcon4).build();
+        SubActionButton rlSub1 = rLSubBuilder.setContentView(screenRecording).build();
+        SubActionButton rlSub2 = rLSubBuilder.setContentView(cameraVideoMode).build();
+        SubActionButton rlSub3 = rLSubBuilder.setContentView(cameraPictureVideo).build();
+        SubActionButton rlSub4 = rLSubBuilder.setContentView(flashMode).build();
         rightLowerMenu = new FloatingActionMenu.Builder(this, true)
                 .addSubActionView(rlSub1, rlSub1.getLayoutParams().width, rlSub1.getLayoutParams().height)
                 .addSubActionView(rlSub2, rlSub2.getLayoutParams().width, rlSub2.getLayoutParams().height)
@@ -113,8 +128,131 @@ public class SystemOverlayMenuService extends Service {
                 animation.start();
             }
         });
+        ////ON CLick ON Button//////////////////////////////////////////////////////////////////////////////////////////////
 
-        ////////////////////////////////////////////////////////
+        cameraPictureVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivity(cameraIntent);
+                startCloseService();
+            }
+        });
+
+        cameraVideoMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent cameraIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                startActivity(cameraIntent);
+                startCloseService();
+            }
+        });
+
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)) {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                flashMode.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                Camera cam = Camera.open();
+                Camera.Parameters p = cam.getParameters();
+                if (cam.getParameters().getFlashMode().equals("torch")) {
+                    flashMode.setBackgroundResource(R.drawable.ic_flash_on_black_24dp);
+                    flashEnabled = true;
+                } else {
+                    flashMode.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                    flashEnabled = false;
+                }
+            } else {
+                flashMode.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                String cameraId = null; // Usually front camera is at 0 position.
+                try {
+                    cameraId = camManager.getCameraIdList()[0];
+
+                    camManager.setTorchMode(cameraId, false);
+
+                } catch (CameraAccessException e) {
+                    Toast.makeText(SystemOverlayMenuService.this, "Some Problem In Opening Camera", Toast.LENGTH_SHORT).show();
+                }
+                flashEnabled = false;
+
+            }
+        } else {
+            if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+                Toast.makeText(this, "No Flash in System", Toast.LENGTH_SHORT).show();
+            }
+        }
+        flashMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+              /*  if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)) {
+                    Intent intent = new Intent(SystemOverlayMenuService.this, ScreenShortActivity.class);
+                    stopForeground(true);
+                    startActivity(intent);
+                    startCloseService();
+                    //takeScreenshot();
+                } else {*/
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                    if (!flashEnabled) {
+                        flashMode.setBackgroundResource(R.drawable.ic_flash_on_black_24dp);
+                        Camera cam = Camera.open();
+                        Camera.Parameters p = cam.getParameters();
+                        p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        cam.setParameters(p);
+                        cam.startPreview();
+                        flashEnabled = true;
+                    } else {
+                        flashMode.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                        Camera camera2 = Camera.open();
+                        Camera.Parameters parameters2 = camera2.getParameters();
+                        parameters2.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        camera2.setParameters(parameters2);
+                        camera2.stopPreview();
+                        flashEnabled = false;
+                    }
+
+
+                } else {
+
+                    if (!flashEnabled) {
+                        flashMode.setBackgroundResource(R.drawable.ic_flash_on_black_24dp);
+                        CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                        String cameraId = null; // Usually front camera is at 0 position.
+                        try {
+                            cameraId = camManager.getCameraIdList()[0];
+
+                            camManager.setTorchMode(cameraId, true);
+
+                        } catch (CameraAccessException e) {
+                            Toast.makeText(SystemOverlayMenuService.this, "Some Problem In Opening Camera", Toast.LENGTH_SHORT).show();
+                        }
+                        flashEnabled = true;
+                    } else {
+                        flashMode.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
+                        CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+                        String cameraId = null; // Usually front camera is at 0 position.
+                        try {
+                            cameraId = camManager.getCameraIdList()[0];
+
+                            camManager.setTorchMode(cameraId, false);
+
+                        } catch (CameraAccessException e) {
+                            Toast.makeText(SystemOverlayMenuService.this, "Some Problem In Opening Camera", Toast.LENGTH_SHORT).show();
+                        }
+                        flashEnabled = false;
+                    }
+                }
+            }
+
+            //  }
+        });
+
+        screenRecording.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(SystemOverlayMenuService.this, "Not Implemented", Toast.LENGTH_SHORT).show();
+            }
+        });
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Set up the large red button on the top center side
         // With custom button and content sizes and margins
@@ -155,6 +293,9 @@ public class SystemOverlayMenuService extends Service {
         SubActionButton.Builder tCRedBuilder = new SubActionButton.Builder(this);
         tCRedBuilder.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_action_red_selector));
 
+        SubActionButton.Builder tCRedBuilderFloSo = new SubActionButton.Builder(this);
+        tCRedBuilderFloSo.setBackgroundDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
+
         FrameLayout.LayoutParams blueContentParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         blueContentParams.setMargins(blueSubActionButtonContentMargin,
                 blueSubActionButtonContentMargin,
@@ -166,26 +307,32 @@ public class SystemOverlayMenuService extends Service {
         tCSubBuilder.setLayoutParams(blueParams);
         tCRedBuilder.setLayoutParams(blueParams);
 
-        ImageView tcIcon1 = new ImageView(this);
+        ImageView floSo = new ImageView(this);
         ImageView tcIcon2 = new ImageView(this);
-        ImageView tcIcon3 = new ImageView(this);
-        ImageView tcIcon4 = new ImageView(this);
-        ImageView tcIcon5 = new ImageView(this);
-        ImageView tcIcon6 = new ImageView(this);
+        ImageView home = new ImageView(this);
+        ImageView back = new ImageView(this);
+        ImageView closeSystemOverlay = new ImageView(this);
+        final ImageView wifi = new ImageView(this);
+        ImageView listViewApp = new ImageView(this);
+        final ImageView blueTooth = new ImageView(this);
 
-        tcIcon1.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_camera));
+        //  floSo.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
         tcIcon2.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_picture));
-        tcIcon3.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_video));
-        tcIcon4.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_location_found));
-        tcIcon5.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_headphones));
-        tcIcon6.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_cancel));
+        home.setImageDrawable(getResources().getDrawable(R.drawable.ic_home_black));
+        back.setImageDrawable(getResources().getDrawable(R.drawable.ic_backspace));
+        closeSystemOverlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_cancel));
+        // wifi.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_headphones));
+        listViewApp.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_chat));
+        //  blueTooth.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_important));
 
-        SubActionButton tcSub1 = tCSubBuilder.setContentView(tcIcon1, blueContentParams).build();
+        SubActionButton tcSub1 = tCRedBuilderFloSo.setContentView(floSo, blueContentParams).build();
         SubActionButton tcSub2 = tCSubBuilder.setContentView(tcIcon2, blueContentParams).build();
-        SubActionButton tcSub3 = tCSubBuilder.setContentView(tcIcon3, blueContentParams).build();
-        SubActionButton tcSub4 = tCSubBuilder.setContentView(tcIcon4, blueContentParams).build();
-        SubActionButton tcSub5 = tCSubBuilder.setContentView(tcIcon5, blueContentParams).build();
-        SubActionButton tcSub6 = tCRedBuilder.setContentView(tcIcon6, blueContentParams).build();
+        SubActionButton tcSub3 = tCSubBuilder.setContentView(home, blueContentParams).build();
+        SubActionButton tcSub4 = tCSubBuilder.setContentView(back, blueContentParams).build();
+        SubActionButton tcSub5 = tCRedBuilder.setContentView(closeSystemOverlay, blueContentParams).build();
+        SubActionButton tcSub6 = tCSubBuilder.setContentView(wifi, blueContentParams).build();
+        SubActionButton tcSub7 = tCSubBuilder.setContentView(listViewApp, blueContentParams).build();
+        SubActionButton tcSub8 = tCSubBuilder.setContentView(blueTooth, blueContentParams).build();
 
 
         // Build another menu with custom options
@@ -196,23 +343,14 @@ public class SystemOverlayMenuService extends Service {
                 .addSubActionView(tcSub4, tcSub4.getLayoutParams().width, tcSub4.getLayoutParams().height)
                 .addSubActionView(tcSub5, tcSub5.getLayoutParams().width, tcSub5.getLayoutParams().height)
                 .addSubActionView(tcSub6, tcSub6.getLayoutParams().width, tcSub6.getLayoutParams().height)
+                .addSubActionView(tcSub7, tcSub7.getLayoutParams().width, tcSub7.getLayoutParams().height)
+                .addSubActionView(tcSub8, tcSub8.getLayoutParams().width, tcSub8.getLayoutParams().height)
                 .setRadius(redActionMenuRadius)
-                .setStartAngle(0)
+                .setStartAngle(-180)
                 .setEndAngle(180)
                 .attachTo(topCenterButton)
                 .build();
 
-        topCenterMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
-            @Override
-            public void onMenuOpened(FloatingActionMenu menu) {
-
-            }
-
-            @Override
-            public void onMenuClosed(FloatingActionMenu menu) {
-
-            }
-        });
 
         topCenterMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
             @Override
@@ -253,20 +391,131 @@ public class SystemOverlayMenuService extends Service {
             }
         }, 200);
         // make the red button terminate the service
-        tcSub6.setOnClickListener(new View.OnClickListener() {
+        closeSystemOverlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                serviceWillBeDismissed = true; // the order is important
-                topCenterMenu.close(true);
-                rightLowerMenu.close(true);
-                Intent intent = new Intent(SystemOverlayMenuService.this, MyIntentService.class);
-                intent.setFlags(5);
-                startService(intent);
-                stopSelf();
+
+                startCloseService();
             }
         });
 
         oneMore();
+
+
+        //////////////////////////////////////////////////
+
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_MAIN);
+                i.addCategory(Intent.CATEGORY_HOME);
+                startActivity(i);
+
+            }
+        });
+
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+             /*   Intent i = new Intent(Intent.ACTION_MAIN);
+                i.addCategory(Intent.Category_T);
+                startActivity(i);*/
+              /*  KeyEvent kup = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK);
+                dispatchKeyEvent(kup);*/
+            }
+        });
+
+        floSo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent cameraIntent = new Intent(SystemOverlayMenuService.this, SplashScreen.class);
+                        startActivity(cameraIntent);
+                    }
+                }).start();
+
+                startCloseService();
+            }
+        });
+
+
+        wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+
+        //
+        wifiEnabled = wifiManager.isWifiEnabled();
+        if (wifiEnabled) {
+            //   wifi.set();
+            wifi.setBackgroundResource(R.drawable.ic_wifi_black_24dp);
+        } else {
+            wifi.setBackgroundResource(R.drawable.ic_signal_wifi_off_black_24dp);
+        }
+        wifi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (wifiEnabled) {
+                    wifiEnabled = false;
+                    wifiManager.setWifiEnabled(false);
+                    wifi.setBackgroundResource(R.drawable.ic_signal_wifi_off_black_24dp);
+                } else {
+                    wifiEnabled = true;
+                    wifiManager.setWifiEnabled(true);
+                    wifi.setBackgroundResource(R.drawable.ic_wifi_black_24dp);
+                }
+            }
+        });
+
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        isEnabled = bluetoothAdapter.isEnabled();
+        if (isEnabled) {
+            blueTooth.setBackgroundResource(R.drawable.ic_bluetooth_on);
+        } else {
+            blueTooth.setBackgroundResource(R.drawable.ic_bluetooth_disabled);
+        }
+
+        blueTooth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isEnabled) {
+                    bluetoothAdapter.disable();
+                    blueTooth.setBackgroundResource(R.drawable.ic_bluetooth_disabled);
+                    isEnabled = false;
+                } else {
+                    blueTooth.setBackgroundResource(R.drawable.ic_bluetooth_on);
+                    bluetoothAdapter.enable();
+                    isEnabled = true;
+                }
+
+            }
+        });
+
+        listViewApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startService(new Intent(SystemOverlayMenuService.this, FloatingViewServiceOpenIconOnly.class));
+                // startCloseService();
+                serviceWillBeDismissed = true; // the order is important
+                topCenterMenu.close(true);
+                rightLowerMenu.close(true);
+                centerMenu.close(true);
+                stopSelf();
+            }
+        });
+        ////////////////////////////////////////////////////
+    }
+
+
+    private void startCloseService() {
+        serviceWillBeDismissed = true; // the order is important
+        topCenterMenu.close(true);
+        rightLowerMenu.close(true);
+        centerMenu.close(true);
+        Intent intent = new Intent(SystemOverlayMenuService.this, MyIntentService.class);
+        intent.setFlags(5);
+        startService(intent);
+        stopSelf();
     }
 
     private void oneMore() {

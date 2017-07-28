@@ -10,7 +10,7 @@
 
 
 
-    <dimen name="red_action_button_size">96dp</dimen>
+    <dimen name="red_action_button_size">76dp</dimen>//96
     <dimen name="red_action_button_margin">48dp</dimen>
 
     <dimen name="red_action_button_content_size">16dp</dimen>
@@ -29,6 +29,6 @@
     <dimen name="action_button_margin">12dp</dimen>
     <dimen name="action_menu_radius">96dp</dimen>
 
-    <dimen name="sub_action_button_size">36dp</dimen>
+    <dimen name="sub_action_button_size">46dp</dimen>//36
     <dimen name="sub_action_button_content_margin">6dp</dimen>
 </resources>
