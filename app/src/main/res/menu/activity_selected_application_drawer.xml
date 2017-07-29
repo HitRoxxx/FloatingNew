@@ -1,24 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+    <group >
+
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="My Output" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_tutorial"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="Tutorial" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_setting"
             android:icon="@drawable/ic_menu_manage"
             android:title="Setting" />
+        <item
+            android:id="@+id/more_app"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="More" />
     </group>
+    <item android:title="Love FloSo?">
+        <menu>
+            <item
+                android:id="@+id/about_Floso"
+                android:icon="@drawable/ic_menu_share"
+                android:title="About Floso" />
+            <item
+                android:id="@+id/rate_Floso"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Rate FloSo" />
+            <item
+                android:id="@+id/upGrade_now"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Upgarde" />
+            <item
+                android:id="@+id/restore_purchase"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Restore Purchase" />
+            <item
+                android:id="@+id/like_us_on_youtube"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Like Us On Youtube" />
+        </menu>
+
+    </item>
 
     <item android:title="Communicate">
         <menu>
@@ -27,10 +53,9 @@
                 android:icon="@drawable/ic_menu_share"
                 android:title="Share" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_support"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="Contact Support" />
         </menu>
     </item>
-
 </menu>

@@ -94,12 +94,6 @@
             android:theme="@style/TransparentTheme">
         </activity>
         <activity
-            android:noHistory="true"
-            android:autoRemoveFromRecents="true"
-            android:name=".FloatingSystem"
-            android:theme="@style/TransparentTheme">
-        </activity>
-        <activity
             android:name=".preference.PreferenceActivity"
             android:parentActivityName=".SelectedApplication"
             android:theme="@style/AppTheme">

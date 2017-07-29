@@ -55,25 +55,20 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
     public void onBindViewHolder(final DataViewHolder holder, int position) {
         final AppInfo packageInfoStruct = filteredInstalledPackageDetail.get(position);
         holder.textView.setText(packageInfoStruct.getAppName());
-        if (packageInfoStruct.getAppName().equals("FloSo"))
-            holder.uninstall.setVisibility(View.GONE);
-        // holder.imageView.setImageBitmap(StringToBitmap(packageInfoStruct.getBitmapString()));
-        // Glide.with((activity).load(StringToBitmap(packageInfoStruct.getBitmapString())).into(holder.imageView);
-        //Drawable d =new BitmapDrawable(activity.getResources(),StringToBitmap(packageInfoStruct.getBitmapString()));
+      /*  if ( 2 == holder.itemView.getContext().getSharedPreferences("Setting", Context.MODE_PRIVATE).getInt("OutputView", 0)&& position < 8)
+        {
+            holder.itemView.setBackgroundResource(R.color.halfPink);
+        }*/
+
+            if (packageInfoStruct.getAppName().equals("FloSo"))
+                holder.uninstall.setVisibility(View.GONE);
+
         try {
             Glide.with(holder.itemView).load(packageInfoStruct.getBitmapString()).into(holder.imageView);
         } catch (Exception e) {
             holder.imageView.setImageResource(R.drawable.default_image);
         }
-        //  holder.imageView.setImageURI(packageInfoStruct.getBitmapString());
-       /* try {
-            holder.imageView.setImageBitmap(scaleDownBitmap(MediaStore.Images.Media.getBitmap(activity.getContentResolver(), packageInfoStruct.getBitmapString()), 50, reference));
-        } catch (IOException e) {
-            e.printStackTrace();
-            holder.imageView.setImageURI(packageInfoStruct.getBitmapString());
-        }*/
-       /* if (checkBoxEnabled)
-            holder.checkBox.setChecked(packageInfoStruct.checked);*/
+
         final boolean isExpanded = position == mExpandedPosition;
         holder.expandableView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         if (!holder.expandableView.isShown()) {
@@ -88,7 +83,6 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
             public void onClick(View v) {
 
                 mExpandedPosition = isExpanded ? -1 : holder.getAdapterPosition();
-                // TransitionManager.beginDelayedTransition(recyclerView);
                 notifyDataSetChanged();
             }
 
@@ -114,26 +108,6 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
 
     }
 
-    /* private Bitmap StringToBitmap(String bitmapString) {
-         try {
-             byte[] encodeByte = Base64.decode(bitmapString, Base64.DEFAULT);
-             return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-         } catch (Exception e) {
-             return null;
-         }
-
-     }*/
-   /* private Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
-
-        final float densityMultiplier = context.getResources().getDisplayMetrics().density;
-
-        int h = (int) (newHeight * densityMultiplier);
-        int w = (int) (h * photo.getWidth() / ((double) photo.getHeight()));
-
-        photo = Bitmap.createScaledBitmap(photo, w, h, true);
-
-        return photo;
-    }*/
 
     @Override
     public int getItemCount() {
@@ -154,6 +128,7 @@ public class RecyclerViewAdapterSelectedApp extends RecyclerView.Adapter<Recycle
         filteredInstalledPackageDetail.remove(position);
         notifyItemRemoved(position);
         saveData();
+
     }
 
     private void saveData() {

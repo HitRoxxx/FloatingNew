@@ -34,29 +34,30 @@ import com.theLoneWarrior.floating.pojoClass.AppInfo;
 import com.theLoneWarrior.floating.preference.PreferenceActivity;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 import com.theLoneWarrior.floating.utils.UtilsApp;
+import com.webianks.easy_feedback.EasyFeedback;
 
 import java.util.ArrayList;
 
 import static android.support.design.widget.Snackbar.make;
 
-public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnStartDragListener ,RecyclerViewAdapterSelectedApp.ButtonClickListener{
+public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnStartDragListener, RecyclerViewAdapterSelectedApp.ButtonClickListener {
 
     //BubblePicker picker;
     private ArrayList<AppInfo> result = new ArrayList<>();
     private ItemTouchHelper mItemTouchHelper;
-private  CoordinatorLayout coordinator;
+    private CoordinatorLayout coordinator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-     //   setupWindowAnimations();
-      setContentView(R.layout.activity_selected_application);
+        //   setupWindowAnimations();
+        setContentView(R.layout.activity_selected_application);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         setActionBarTitle();
-     //   picker = (BubblePicker) findViewById(R.id.picker);
+        //   picker = (BubblePicker) findViewById(R.id.picker);
         coordinator = (CoordinatorLayout) findViewById(R.id.co);
 
 
@@ -162,23 +163,19 @@ private  CoordinatorLayout coordinator;
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
         // String syncConnPref = sharedPref.getString("OutputVie", "");
 
-           RecyclerViewAdapterSelectedApp adapter=new RecyclerViewAdapterSelectedApp(SelectedApplication.this, result);
-            recyclerView.setVisibility(View.VISIBLE);
-            recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(adapter);
+        RecyclerViewAdapterSelectedApp adapter = new RecyclerViewAdapterSelectedApp(SelectedApplication.this, result);
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.setLayoutManager(new LinearLayoutManager(SelectedApplication.this));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapter);
 
 
-
-
-            ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
-            mItemTouchHelper = new ItemTouchHelper(callback);
-            mItemTouchHelper.attachToRecyclerView(recyclerView);
-
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
 
 
     }
-
 
 
     @Override
@@ -208,7 +205,7 @@ private  CoordinatorLayout coordinator;
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
 
-           Intent intent = new Intent(SelectedApplication.this, PreferenceActivity.class);
+            Intent intent = new Intent(SelectedApplication.this, PreferenceActivity.class);
             startActivity(intent);
           /*  finish();*/
             return true;
@@ -223,19 +220,62 @@ private  CoordinatorLayout coordinator;
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+
+
+        if (id == R.id.nav_gallery) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_tutorial) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_setting) {
 
-           // startActivity(new Intent(SelectedApplication.this,FloatingSystem.class));
+            startActivity(new Intent(SelectedApplication.this, PreferenceActivity.class));
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.more_app) {
 
-        } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+        }
+        else if (id == R.id.about_Floso) {
+
+
+        }
+        else if (id == R.id.rate_Floso) {
+
+
+        }
+        else if (id == R.id.upGrade_now) {
+
+
+        }
+        else if (id == R.id.restore_purchase) {
+
+
+        }
+        else if (id == R.id.like_us_on_youtube) {
+
+
+        }
+
+        else if (id == R.id.nav_share) {
+           /* Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT,
+                    "Hey check out my app at: test");//https://play.google.com/store/apps/details?id=com.google.android.apps.plus
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);*/
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_SUBJECT, "My application name");
+            String sAux = "\nLet me recommend you this application\n\n";
+            sAux = sAux + "https://play.google.com/store/apps/details?id=Orion.Soft \n\n";
+            i.putExtra(Intent.EXTRA_TEXT, sAux);
+            startActivity(Intent.createChooser(i, "choose one"));
+
+        } else if (id == R.id.nav_support) {
+            new EasyFeedback.Builder(this)
+                    .withEmail("the_lone_warrior@outlook.com")
+                    .withSystemInfo()
+                    .build()
+                    .start();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -244,12 +284,10 @@ private  CoordinatorLayout coordinator;
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
-
-       //  setRecycleView();
+        //  setRecycleView();
     }
 
     @Override
@@ -263,19 +301,20 @@ private  CoordinatorLayout coordinator;
     }
 
     private int UNINSTALL_REQUEST_CODE = 1;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == UNINSTALL_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-             //   Log.i("App", "OK");
+                //   Log.i("App", "OK");
                 Intent intent = new Intent(this, SelectedApplication.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 //  finish();
                 startActivity(intent);
                 make(coordinator, " App is Uninstalled ", Snackbar.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
-              //  Log.i("App", "CANCEL");
+                //  Log.i("App", "CANCEL");
                 make(coordinator, " App is Secure ", Snackbar.LENGTH_LONG).show();
 
             }
@@ -283,13 +322,11 @@ private  CoordinatorLayout coordinator;
     }
 
     @Override
-    public void onButtonClickListener(AppInfo app , View v) {
+    public void onButtonClickListener(AppInfo app, View v) {
 
         int id = v.getId();
-        switch (id)
-        {
-            case  R.id.uninstallApk :
-            {
+        switch (id) {
+            case R.id.uninstallApk: {
                 Toast.makeText(this, "uninstall", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
                 intent.setData(Uri.parse("package:" + app.getPacName()));
@@ -297,14 +334,12 @@ private  CoordinatorLayout coordinator;
                 startActivityForResult(intent, UNINSTALL_REQUEST_CODE);
                 break;
             }
-            case  R.id.extractApk :
-            {
+            case R.id.extractApk: {
                 Toast.makeText(this, "extract", Toast.LENGTH_SHORT).show();
                 new ExtractFileInBackground(SelectedApplication.this, app).execute();
                 break;
             }
-            case  R.id.shareApk :
-            {
+            case R.id.shareApk: {
                 Toast.makeText(this, "share", Toast.LENGTH_SHORT).show();
                 UtilsApp.copyFile(app);
                 Intent shareIntent = UtilsApp.getShareIntent(UtilsApp.getOutputFilename(app));
@@ -336,15 +371,15 @@ private  CoordinatorLayout coordinator;
             super.onPostExecute(status);
             if (status) {
 
-                Snackbar snackbar=Snackbar.make(coordinator, String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getAppName(), UtilsApp.getAPKFilename(appInfo)), Snackbar.LENGTH_LONG)
-                        .setAction("Undo", clickListener );
+                Snackbar snackbar = Snackbar.make(coordinator, String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getAppName(), UtilsApp.getAPKFilename(appInfo)), Snackbar.LENGTH_LONG)
+                        .setAction("Undo", clickListener);
                 View snackbarView = snackbar.getView();
-                TextView tv= (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                TextView tv = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
                 tv.setMaxLines(3);
                 snackbar.show();
-            //    Toast.makeText(context, " String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getName(), UtilsApp.getAPKFilename(appInfo))", Toast.LENGTH_SHORT).show();
+                //    Toast.makeText(context, " String.format(context.getResources().getString(R.string.dialog_saved_description), appInfo.getName(), UtilsApp.getAPKFilename(appInfo))", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(context, context.getResources().getString(R.string.dialog_extract_fail)+context.getResources().getString(R.string.dialog_extract_fail_description), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, context.getResources().getString(R.string.dialog_extract_fail) + context.getResources().getString(R.string.dialog_extract_fail_description), Toast.LENGTH_LONG).show();
             }
         }
 
