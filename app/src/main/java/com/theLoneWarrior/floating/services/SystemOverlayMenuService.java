@@ -281,7 +281,7 @@ public class SystemOverlayMenuService extends Service {
         topCenterButton = new FloatingActionButton.Builder(this)
                 .setSystemOverlay(true)
                 .setContentView(fabIconStar, fabIconStarParams)
-                .setBackgroundDrawable(R.drawable.button_action_red_selector)
+                .setBackgroundDrawable(R.mipmap.ic_launcher)
                 .setPosition(FloatingActionButton.POSITION_CENTER)
                 .setLayoutParams(params2)
                 .build();

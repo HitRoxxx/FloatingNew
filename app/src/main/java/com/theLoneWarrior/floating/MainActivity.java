@@ -87,8 +87,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                  /*   recycleViewPropagation();
                     setRecycleView();*/
 
-                 new RecycleViewSet().execute("");
-
+            new RecycleViewSet().execute("");
 
 
         } else {
@@ -117,20 +116,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     }
 
-    private class RecycleViewSet extends AsyncTask<String,String,String>
-    {
+    private class RecycleViewSet extends AsyncTask<String, String, String> {
         SpinnerLoading button;
+
         @Override
         protected String doInBackground(String... params) {
-             button =(SpinnerLoading) findViewById(R.id.animation);
+            button = (SpinnerLoading) findViewById(R.id.animation);
             button.post(new Runnable() {
                 @Override
                 public void run() {
                     button.setVisibility(View.VISIBLE);
-                  /*  button.setPaintMode(1);
-                    button.setCircleRadius(30);
-                    button.setItemCount(8);
-                    button.onApplyTrans(200);*/
 
                 }
             });
@@ -168,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             appCountView.setText("" + result.size());
             setRecycleView();
         }
-
 
 
     }
@@ -271,17 +265,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 finish();
             }
 
-            /*private String StringToBitmap(String bitmapString) {
-
-                try {
-                    byte[] encodeByte = Base64.decode(bitmapString, Base64.DEFAULT);
-                    bitmapString = BitmapToString(scaleDownBitmap(decodeByteArray(encodeByte, 0, encodeByte.length), 50, MainActivity.this));
-                } catch (Exception e) {
-
-                    return null;
-                }
-                return bitmapString;
-            }*/
         });
     }
 
@@ -361,14 +344,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             Uri uri;
             if (p.icon != 0) {
                 uri = Uri.parse("android.resource://" + p.packageName + "/" + p.icon);
-                //  Toast.makeText(this, ""+uri, Toast.LENGTH_SHORT).show();
             } else {
                 uri = Uri.parse("android.resource://com.theLoneWarrior.floating/drawable/default_image");
             }
 
             newInfo.setBitmapString(uri);
             res.add(newInfo);
-            // bitmap.recycle();
         }
         return res;
     }
@@ -470,25 +451,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             editor.putString("AppData", String.valueOf(AppData));
             editor.apply();
 
-
-
-       /*
-        StringBuilder saveResult = new StringBuilder("");
-        if (result != null) {
-            for (AppInfo str : result) {
-
-                saveResult.append(str.getPacName()).append("+");
-
-            }
-        }*/
-
-            //    SharedPreferences.Editor editor = prefs.edit();
             SharedPreferences.Editor firstEditor = first.edit();
-            //   editor.clear();
-            //   editor.putString("data", String.valueOf(saveResult));
             firstEditor.putBoolean("check", false);
             firstEditor.apply();
-            //  editor.apply();
         } else {
             //prefs = getSharedPreferences("appData", Context.MODE_PRIVATE);
             //  first = getSharedPreferences("first", Context.MODE_PRIVATE);
@@ -596,8 +561,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     }
 
-    private void setItemsVisibility(final Menu menu,
-                                    boolean visible) {
+    private void setItemsVisibility(final Menu menu, boolean visible) {
         refreshFlag = visible;
         for (int i = 0; i < menu.size(); ++i) {
             MenuItem item = menu.getItem(i);
@@ -608,7 +572,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     @Override
     protected void onPause() {
         super.onPause();
-        saveData();
+        // saveData();
 
     }
 
@@ -622,16 +586,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                 System.gc();
             }
         }
-        /*saveData();
-
-        Intent newIntent = new Intent(MainActivity.this, SelectedApplication.class);
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //   newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(new Intent(newIntent));
-
-
-        finish();*/
         NavUtils.navigateUpFromSameTask(this);
         super.onBackPressed();
     }
