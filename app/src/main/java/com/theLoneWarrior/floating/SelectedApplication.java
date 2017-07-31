@@ -27,18 +27,21 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.stkent.amplify.prompt.DefaultLayoutPromptView;
+import com.github.stkent.amplify.tracking.Amplify;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterSelectedApp;
+import com.theLoneWarrior.floating.feedback.EasyFeedback;
 import com.theLoneWarrior.floating.helper.OnStartDragListener;
 import com.theLoneWarrior.floating.helper.SimpleItemTouchHelperCallback;
 import com.theLoneWarrior.floating.pojoClass.AppInfo;
 import com.theLoneWarrior.floating.preference.PreferenceActivity;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 import com.theLoneWarrior.floating.utils.UtilsApp;
-import com.webianks.easy_feedback.EasyFeedback;
 
 import java.util.ArrayList;
 
 import static android.support.design.widget.Snackbar.make;
+import static com.theLoneWarrior.floating.splash.SplashScreen.mRewardedVideoAd;
 
 public class SelectedApplication extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnStartDragListener, RecyclerViewAdapterSelectedApp.ButtonClickListener {
 
@@ -57,9 +60,18 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         setSupportActionBar(toolbar);
 
         setActionBarTitle();
+
+///////////////////////////////Amplify///////////////////////////////////////
+        if (savedInstanceState == null) {
+            DefaultLayoutPromptView promptView
+                    = (DefaultLayoutPromptView) findViewById(R.id.prompt_view);
+
+            Amplify.getSharedInstance().promptIfReady(promptView);
+        }
+/////////////////////////////////////////////////////////////////////////////
+
         //   picker = (BubblePicker) findViewById(R.id.picker);
         coordinator = (CoordinatorLayout) findViewById(R.id.co);
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +118,7 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
 
         setRecycleView();
     }
+
 
     private void setupWindowAnimations() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -234,6 +247,18 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
 
 
         }
+
+        else if (id == R.id.reward_Video) {
+
+            if (mRewardedVideoAd.isLoaded()) {
+                mRewardedVideoAd.show();
+            }
+            else
+            {
+                Toast.makeText(this, "Reward Video Not Loaded", Toast.LENGTH_SHORT).show();
+            }
+        }
+
         else if (id == R.id.about_Floso) {
 
 
@@ -256,12 +281,7 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         }
 
         else if (id == R.id.nav_share) {
-           /* Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT,
-                    "Hey check out my app at: test");//https://play.google.com/store/apps/details?id=com.google.android.apps.plus
-            sendIntent.setType("text/plain");
-            startActivity(sendIntent);*/
+
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
             i.putExtra(Intent.EXTRA_SUBJECT, "My application name");

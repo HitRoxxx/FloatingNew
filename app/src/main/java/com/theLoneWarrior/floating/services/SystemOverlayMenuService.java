@@ -150,7 +150,6 @@ public class SystemOverlayMenuService extends Service {
 
         if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)) {
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                flashMode.setBackgroundResource(R.drawable.ic_flash_off_black_24dp);
                 Camera cam = Camera.open();
                 Camera.Parameters p = cam.getParameters();
                 if (cam.getParameters().getFlashMode().equals("torch")) {

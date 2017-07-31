@@ -25,6 +25,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +46,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.theLoneWarrior.floating.splash.SplashScreen.mInterstitialAd;
+
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.ListItemCheckListener {
 
@@ -59,10 +62,22 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     private TextView appCountView;
     private boolean refreshFlag = true;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+//////////////////////////////ADS////////////////////
+
+
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.");
+        }
+//////////////////////////////////////////////////////////////
         //  setupWindowAnimations();
         //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
@@ -87,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
                  /*   recycleViewPropagation();
                     setRecycleView();*/
 
-            new RecycleViewSet().execute("");
+            new RecycleViewSet().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"");
 
 
         } else {
@@ -113,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
         });
 
-
     }
 
     private class RecycleViewSet extends AsyncTask<String, String, String> {
@@ -134,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    button.setVisibility(View.INVISIBLE);
+                    button.setVisibility(View.GONE);
                 }
             });
 
@@ -393,8 +407,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        saveData();
+
     }
 
     private void saveData() {
@@ -611,5 +624,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
     @Override
     protected void onResume() {
         super.onResume();
+
     }
 }

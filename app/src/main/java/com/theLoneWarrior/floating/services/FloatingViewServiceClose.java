@@ -87,7 +87,7 @@ public class FloatingViewServiceClose extends Service {
         p = new Point();
         Display d = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         d.getSize(p);
-
+        mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_closed_widget, null);
         removeView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.remove, null);
         hideView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.hide, null);
         WindowManager.LayoutParams paramRemove = new WindowManager.LayoutParams(
@@ -108,7 +108,7 @@ public class FloatingViewServiceClose extends Service {
 
 
         //Inflate the floating view layout we created
-        mFloatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_closed_widget, null);
+
         //Add the view to the window.
         /*final WindowManager.LayoutParams*/
      /*   params = new WindowManager.LayoutParams(

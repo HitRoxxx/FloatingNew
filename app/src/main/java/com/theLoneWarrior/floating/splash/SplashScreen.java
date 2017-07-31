@@ -3,26 +3,41 @@ package com.theLoneWarrior.floating.splash;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.squareup.leakcanary.LeakCanary;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.theLoneWarrior.floating.R;
 import com.theLoneWarrior.floating.SelectedApplication;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 import com.theLoneWarrior.floating.services.FloatingViewServiceOpen;
 import com.theLoneWarrior.floating.services.FloatingViewServiceOpenIconOnly;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 
-public class SplashScreen extends AppCompatActivity {
+public class SplashScreen extends AppCompatActivity implements RewardedVideoAdListener {
 
-    private static final int UI_ANIMATION_DELAY = 200;
+    static public InterstitialAd mInterstitialAd;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+    public static RewardedVideoAd mRewardedVideoAd;
+
+
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -60,37 +75,92 @@ public class SplashScreen extends AppCompatActivity {
         }
     };
 
-    private int count=0;
+    private int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (LeakCanary.isInAnalyzerProcess(getApplication())) {
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+
+        //////////Reward Video///////////////
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        mRewardedVideoAd.setRewardedVideoAdListener(this);
+        loadRewardedVideoAd();
+
+        ///Interstetial//////////
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+
+                // Code to be executed when an ad finishes loading.
+                Log.i("Ads", "onAdLoaded");
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+
+                if (errorCode != AdRequest.ERROR_CODE_NETWORK_ERROR) {
+                    mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                } else {
+                    new OnlineCheckAsyncClassForInterstetial().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+
+
+                // Code to be executed when an ad request fails.
+                Log.i("Ads", "onAdFailedToLoad");
+            }
+
+            @Override
+            public void onAdOpened() {
+
+                // Code to be executed when the ad is displayed.
+                Log.i("Ads", "onAdOpened");
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+
+                // Code to be executed when the user has left the app.
+                Log.i("Ads", "onAdLeftApplication");
+            }
+
+            @Override
+            public void onAdClosed() {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+                // Code to be executed when when the interstitial ad is closed.
+                Log.i("Ads", "onAdClosed");
+            }
+        });
+
+
+       /* if (LeakCanary.isInAnalyzerProcess(getApplication())) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
             return;
         }
-        LeakCanary.install(getApplication());
-
+        LeakCanary.install(getApplication());*/
 
 
         setContentView(R.layout.activity_splash_screen);
         mContentView = findViewById(R.id.fullscreen_content);
         searchPreviousService();
-     final Handler handler=  new Handler();
-            handler.post(new Runnable() {
+        final Handler handler = new Handler();
+        handler.post(new Runnable() {
 
             @Override
             public void run() {
                 count++;
 
-                if(count==100)
-                {
+                if (count == 100) {
                     startActivity(new Intent(SplashScreen.this, SelectedApplication.class));
                     finish();
-                }else
-                {
-                    handler.postDelayed(this,10);
+                } else {
+                    handler.postDelayed(this, 10);
                 }
 
             }
@@ -134,6 +204,7 @@ public class SplashScreen extends AppCompatActivity {
 
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
+        int UI_ANIMATION_DELAY = 200;
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
     }
 
@@ -145,5 +216,135 @@ public class SplashScreen extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mRewardedVideoAd.pause(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mRewardedVideoAd.resume(this);
+    }
+
+    private void loadRewardedVideoAd() {
+        if (!mRewardedVideoAd.isLoaded()) {
+            mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", new AdRequest.Builder().build());
+        }
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+        Toast.makeText(this, "onRewardedVideoAdLeftApplication", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        Toast.makeText(this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show();
+        // Preload the next video ad.
+        loadRewardedVideoAd();
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int errorCode) {
+        if (errorCode != AdRequest.ERROR_CODE_NETWORK_ERROR) {
+            loadRewardedVideoAd();
+        } else {
+            new OnlineCheckAsyncClass().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+        Toast.makeText(this, "onRewardedVideoAdFailedToLoad", Toast.LENGTH_SHORT).show();
+    }
+
+
+    class OnlineCheckAsyncClass extends AsyncTask<Void, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            while (!isOnline()) {
+                try {
+                    Thread.currentThread();
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            loadRewardedVideoAd();
+        }
+    }
+
+    class OnlineCheckAsyncClassForInterstetial extends AsyncTask<Void, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            while (!isOnline()) {
+                try {
+                    Thread.currentThread();
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        }
+    }
+
+    public boolean isOnline() {
+        try {
+            int timeoutMs = 1500;
+            Socket sock = new Socket();
+            SocketAddress sockaddr = new InetSocketAddress("8.8.8.8", 53);
+
+            sock.connect(sockaddr, timeoutMs);
+            sock.close();
+
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+        Toast.makeText(this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+        Toast.makeText(this, "onRewardedVideoAdOpened", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRewarded(RewardItem reward) {
+        Toast.makeText(this,
+                String.format(" onRewarded! currency: %s amount: %d", reward.getType(),
+                        reward.getAmount()),
+                Toast.LENGTH_SHORT).show();
+        //do the reward ///
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+        Toast.makeText(this, "onRewardedVideoStarted", Toast.LENGTH_SHORT).show();
     }
 }

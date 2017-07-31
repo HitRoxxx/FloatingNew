@@ -31,4 +31,9 @@
 
     <dimen name="sub_action_button_size">46dp</dimen>//36
     <dimen name="sub_action_button_content_margin">6dp</dimen>
+
+
+    <dimen name="margin_thirty_two">32dp</dimen>
+    <dimen name="margin_eight">8dp</dimen>
+    <dimen name="margin_thirty">30dp</dimen>
 </resources>

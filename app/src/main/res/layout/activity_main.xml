@@ -129,9 +129,9 @@
             app:srcCompat="@drawable/check"/>
 
         <FrameLayout
-            android:layout_width="52dp"
+            android:layout_width="50dp"
 
-            android:layout_height="74dp"
+            android:layout_height="50dp"
             android:layout_gravity="bottom|end"
             android:layout_marginBottom="0dp"
             android:layout_marginLeft="24dp"
@@ -153,6 +153,7 @@
                 android:layout_gravity="center_horizontal|left"
                 app:backgroundTint="@color/colorAccent"
                 app:fabSize="mini"
+
                 app:rippleColor="@android:color/holo_red_dark"/>
 
             <TextView

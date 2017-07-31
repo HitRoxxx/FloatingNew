@@ -8,6 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     tools:context=".preference.PreferenceActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -25,13 +26,14 @@
             app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
     </android.support.design.widget.AppBarLayout>
-
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:layout_height="wrap_content">
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="#ffffff">
-
 
         <TextView
             android:id="@+id/textView2"
@@ -61,7 +63,11 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2"/>
+            app:layout_constraintTop_toBottomOf="@+id/textView2"
+            tools:layout_constraintRight_creator="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            tools:layout_constraintLeft_creator="1"/>
 
         <android.support.v7.widget.CardView
             android:id="@+id/outputView"
@@ -75,7 +81,11 @@
             app:cardCornerRadius="5dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/view">
+            app:layout_constraintTop_toTopOf="@+id/view"
+            tools:layout_constraintRight_creator="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            tools:layout_constraintLeft_creator="1">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -85,9 +95,6 @@
                     android:id="@+id/outputViewImage"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:layout_marginBottom="0dp"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginTop="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -108,7 +115,9 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toRightOf="@+id/outputViewImage"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView4"/>
+                    app:layout_constraintTop_toBottomOf="@+id/textView4"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="8dp"/>
 
                 <TextView
                     android:id="@+id/textView4"
@@ -123,8 +132,30 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toRightOf="@+id/outputViewImage"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"/>
             </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.CardView>
+
+        <com.google.android.gms.ads.NativeExpressAdView
+            android:id="@+id/nativeExpressAdView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            ads:adSize="320x300"
+            ads:adUnitId="@string/ad_unit_id"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/outputView"
+            tools:layout_constraintLeft_creator="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginRight="0dp"
+            app:layout_constraintRight_toRightOf="parent">
+        </com.google.android.gms.ads.NativeExpressAdView>
+
     </android.support.constraint.ConstraintLayout>
+</ScrollView>
 </android.support.design.widget.CoordinatorLayout>

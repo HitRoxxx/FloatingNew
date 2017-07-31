@@ -5,6 +5,8 @@
     <string name="service_description">Service to Run Floating Shortcut</string>
     <string name="notification_service_description">Service to run minimize floating Shortcut</string>
 
+    <string name="app_contact">FloSo support</string>
+
     <string name="title_activity_splash_screen">SplashScreen</string>
     <string name="dummy_content">"The\nWorld\nIs\nAgainst\nMe\nIt\nWouldn't\nBe\nFair\nOtherwise"</string>
 
@@ -101,4 +103,31 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+
+    <string name="ad_unit_id">ca-app-pub-3940256099942544/2177258514</string>
+
+
+    ////feedback///////////////
+    <string name="file_name_device_info" translatable="false">deviceInf.txt</string>
+    <string name="file_name_device_log" translatable="false">deviceLog.txt</string>
+    <string name="feedback_mail_subject">feedback about %1$s</string>
+    <string name="cancel">Cancel</string>
+    <string name="Ok">OK</string>
+    <string name="your_input">Write your feedback</string>
+    <string name="send_feedback">Send</string>
+    <string name="from" translatable="false">From:</string>
+    <string name="please_write">Please write something.</string>
+    <string name="send_feedback_two">Send Feedback</string>
+    <string name="feedback">Feedback</string>
+    <string name="select_image">+ Add Screenshot</string>
+    <string name="click_again">Click again to change the image</string>
+    <string name="select_picture_title">Select Picture</string>
+    <string name="ok">OK</string>
+    <string name="system_info">System Info</string>
+    <string name="info_fedback_legal_start">"Your "</string>
+    <string name="info_fedback_legal_system_info">"system info "</string>
+    <string name="info_fedback_legal_and">"and "</string>
+    <string name="info_fedback_legal_log_data">"log data "</string>
+    <string name="info_fedback_legal_will_be_sent">will be sent to %s</string>
+    <string name="space">" "</string>
 </resources>

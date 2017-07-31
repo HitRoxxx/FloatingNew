@@ -10,23 +10,41 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.NativeExpressAdView;
+import com.google.android.gms.ads.VideoController;
+import com.google.android.gms.ads.VideoOptions;
 import com.theLoneWarrior.floating.R;
+
+import static com.theLoneWarrior.floating.splash.SplashScreen.mInterstitialAd;
+
 
 public class PreferenceActivity extends AppCompatActivity {
     SharedPreferences settingPreference;
 
     int selectedView, temp;;
+    NativeExpressAdView mAdView;
+    VideoController mVideoController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preference);
+//////////////////////////////ADS////////////////////
 
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.");
+        }
+//////////////////////////////////////////////////////////////
         settingPreference = PreferenceActivity.this.getSharedPreferences("Setting", Context.MODE_PRIVATE);
        /* if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -132,7 +150,42 @@ public class PreferenceActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
+///////////////////////////////////NativeAd//////////////////////////////////////////////
+        // Locate the NativeExpressAdView.
+        mAdView = (NativeExpressAdView) findViewById(R.id.nativeExpressAdView);
+        // Set its video options.
+        mAdView.setVideoOptions(new VideoOptions.Builder()
+                .setStartMuted(true)
+                .build());
 
+        // The VideoController can be used to get lifecycle events and info about an ad's video
+        // asset. One will always be returned by getVideoController, even if the ad has no video
+        // asset.
+        mVideoController = mAdView.getVideoController();
+        mVideoController.setVideoLifecycleCallbacks(new VideoController.VideoLifecycleCallbacks() {
+            @Override
+            public void onVideoEnd() {
+
+                super.onVideoEnd();
+            }
+        });
+
+        // Set an AdListener for the AdView, so the Activity can take action when an ad has finished
+        // loading.
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                if (mVideoController.hasVideoContent()) {
+
+                } else {
+
+                }
+            }
+        });
+
+        mAdView.loadAd(new AdRequest.Builder().build());
+
+        /////////////////////////////////////////////////////////////////////////////////////////////
 
     }
 
@@ -180,5 +233,11 @@ public class PreferenceActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         NavUtils.navigateUpFromSameTask(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 }

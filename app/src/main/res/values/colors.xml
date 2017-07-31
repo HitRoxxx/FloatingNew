@@ -9,4 +9,6 @@
     <color name="black_overlay">#66000000</color>
 
     <color name="halfPink">#dae2d701</color>
+
+    <color name="grey">#eeeeee</color>
 </resources>
