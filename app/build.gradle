@@ -51,4 +51,6 @@ dependencies {
     compile 'com.github.stkent:amplify:2.1.0'
     compile 'com.google.android.gms:play-services-ads:11.0.4'
 
+    compile 'com.github.apl-devs:appintro:v4.2.2'
+
 }

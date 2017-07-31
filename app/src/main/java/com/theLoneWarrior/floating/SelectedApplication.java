@@ -36,6 +36,7 @@ import com.theLoneWarrior.floating.helper.SimpleItemTouchHelperCallback;
 import com.theLoneWarrior.floating.pojoClass.AppInfo;
 import com.theLoneWarrior.floating.preference.PreferenceActivity;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
+import com.theLoneWarrior.floating.tutorial.CustomBackgroundIntro;
 import com.theLoneWarrior.floating.utils.UtilsApp;
 
 import java.util.ArrayList;
@@ -69,8 +70,26 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
             Amplify.getSharedInstance().promptIfReady(promptView);
         }
 /////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////Tutorial///////////////////////////////
+       /* SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!prefs.getBoolean("firstTime", false)) {
+            // <---- run your one time code here*/
+         
+            setUpTotorial();
+            // mark first time has runned.
+        /*    SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("firstTime", true);
+            editor.apply();
+        }*/
+///////////////////////////////////////////////////////////////////////////
 
-        //   picker = (BubblePicker) findViewById(R.id.picker);
+
+
+
+
+
+
+
         coordinator = (CoordinatorLayout) findViewById(R.id.co);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -117,6 +136,10 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         navigationView.setNavigationItemSelectedListener(this);
 
         setRecycleView();
+    }
+
+    private void setUpTotorial() {
+        startActivity(new Intent(getBaseContext(), CustomBackgroundIntro.class));
     }
 
 
@@ -238,7 +261,7 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         if (id == R.id.nav_gallery) {
             // Handle the camera action
         } else if (id == R.id.nav_tutorial) {
-
+            setUpTotorial();
         } else if (id == R.id.nav_setting) {
 
             startActivity(new Intent(SelectedApplication.this, PreferenceActivity.class));

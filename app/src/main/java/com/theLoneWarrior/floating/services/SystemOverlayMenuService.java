@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -27,6 +29,13 @@ import com.theLoneWarrior.floating.circular_menu.FloatingActionButton;
 import com.theLoneWarrior.floating.circular_menu.FloatingActionMenu;
 import com.theLoneWarrior.floating.circular_menu.SubActionButton;
 import com.theLoneWarrior.floating.splash.SplashScreen;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+
+import android.provider.Settings.SettingNotFoundException;
+import android.provider.Settings.System;
 
 
 public class SystemOverlayMenuService extends Service {
@@ -251,8 +260,8 @@ public class SystemOverlayMenuService extends Service {
                 Toast.makeText(SystemOverlayMenuService.this, "Not Implemented", Toast.LENGTH_SHORT).show();
             }
         });
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        //////////////////////////////////       ///////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
         // Set up the large red button on the top center side
         // With custom button and content sizes and margins
         int redActionButtonSize = getResources().getDimensionPixelSize(R.dimen.red_action_button_size);
@@ -307,27 +316,27 @@ public class SystemOverlayMenuService extends Service {
         tCRedBuilder.setLayoutParams(blueParams);
 
         ImageView floSo = new ImageView(this);
-        ImageView tcIcon2 = new ImageView(this);
+        ImageView notification = new ImageView(this);
         ImageView home = new ImageView(this);
-        ImageView back = new ImageView(this);
+        final ImageView brightness = new ImageView(this);
         ImageView closeSystemOverlay = new ImageView(this);
         final ImageView wifi = new ImageView(this);
         ImageView listViewApp = new ImageView(this);
         final ImageView blueTooth = new ImageView(this);
 
         //  floSo.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
-        tcIcon2.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_picture));
+        notification.setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_black_24dp));
         home.setImageDrawable(getResources().getDrawable(R.drawable.ic_home_black));
-        back.setImageDrawable(getResources().getDrawable(R.drawable.ic_backspace));
+        //  brightness.setImageDrawable(getResources().getDrawable(R.drawable.ic_backspace));
         closeSystemOverlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_cancel));
         // wifi.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_headphones));
         listViewApp.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_chat));
         //  blueTooth.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_important));
 
         SubActionButton tcSub1 = tCRedBuilderFloSo.setContentView(floSo, blueContentParams).build();
-        SubActionButton tcSub2 = tCSubBuilder.setContentView(tcIcon2, blueContentParams).build();
+        SubActionButton tcSub2 = tCSubBuilder.setContentView(notification, blueContentParams).build();
         SubActionButton tcSub3 = tCSubBuilder.setContentView(home, blueContentParams).build();
-        SubActionButton tcSub4 = tCSubBuilder.setContentView(back, blueContentParams).build();
+        SubActionButton tcSub4 = tCSubBuilder.setContentView(brightness, blueContentParams).build();
         SubActionButton tcSub5 = tCRedBuilder.setContentView(closeSystemOverlay, blueContentParams).build();
         SubActionButton tcSub6 = tCSubBuilder.setContentView(wifi, blueContentParams).build();
         SubActionButton tcSub7 = tCSubBuilder.setContentView(listViewApp, blueContentParams).build();
@@ -414,11 +423,14 @@ public class SystemOverlayMenuService extends Service {
         });
 
 
-        back.setOnClickListener(new View.OnClickListener() {
+
+        setBrightnessImage(brightness);
+
+        brightness.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             //   KeyEvent kdown = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK);
-             //   dispatchKeyEvent(kdown);
+                new BrightnessController(SystemOverlayMenuService.this).switchBrighness();
+                setBrightnessImage(brightness);
             }
         });
 
@@ -490,16 +502,68 @@ public class SystemOverlayMenuService extends Service {
         listViewApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startService(new Intent(SystemOverlayMenuService.this, FloatingViewServiceOpenIconOnly.class));
                 // startCloseService();
                 serviceWillBeDismissed = true; // the order is important
                 topCenterMenu.close(true);
                 rightLowerMenu.close(true);
                 centerMenu.close(true);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startService(new Intent(SystemOverlayMenuService.this, FloatingViewServiceOpenIconOnly.class));
+                    }
+                }).start();
+
                 stopSelf();
             }
         });
+
+
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Object sbservice = getSystemService("statusbar");
+                try {
+                    Method showsb;
+                    Class<?> statusbarManager = Class.forName("android.app.StatusBarManager");
+                    if (Build.VERSION.SDK_INT >= 17) {
+                        showsb = statusbarManager.getMethod("expandNotificationsPanel", new Class[0]);
+                    } else {
+                        showsb = statusbarManager.getMethod("expand", new Class[0]);
+                    }
+                    showsb.invoke(sbservice, new Object[0]);
+                    startCloseService();
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                } catch (IllegalArgumentException e2) {
+                    e2.printStackTrace();
+                } catch (IllegalAccessException e3) {
+                    e3.printStackTrace();
+                } catch (InvocationTargetException e4) {
+                    e4.printStackTrace();
+                } catch (ClassNotFoundException e5) {
+                    e5.printStackTrace();
+                }
+            }
+        });
         ////////////////////////////////////////////////////
+    }
+
+    private void setBrightnessImage(ImageView brightness) {
+        switch (new BrightnessController(this).getBrighnessImageLevel()) {
+            case 0:
+                brightness.setImageDrawable(getResources().getDrawable(R.drawable.ic_brightness_auto_black_24dp));
+                break;
+            case 1:
+                brightness.setImageDrawable(getResources().getDrawable(R.drawable.ic_brightness_low_black_24dp));
+                break;
+            case 2:
+                brightness.setImageDrawable(getResources().getDrawable(R.drawable.ic_brightness_medium_black_24dp));
+                break;
+            case 3:
+                brightness.setImageDrawable(getResources().getDrawable(R.drawable.ic_brightness_high_black_24dp));
+                break;
+        }
     }
 
 
@@ -648,5 +712,93 @@ public class SystemOverlayMenuService extends Service {
     public void closeFloatingOverlay() {
         serviceWillBeDismissed = true; // the order is important
         topCenterMenu.close(true);
+    }
+}
+
+
+class BrightnessController {
+    private static final int BRIGHT_HIGH = 255;
+    private static final int BRIGHT_LOW = 63;
+    private static final int BRIGHT_MEDIUM = 153;
+    private static final int MAXIMUM_BACKLIGHT = 255;
+    private Context mContext;
+
+    public BrightnessController(Context context) {
+        this.mContext = context;
+    }
+
+    public int switchBrighness() {
+        if (isAutoBrightness()) {
+            setAutoBrightness(false);
+            setBrightnessLevel(63);
+            return 1;
+        }
+        int brightness = getBrightnessLevel();
+        if (brightness < 63) {
+            setBrightnessLevel(63);
+            return 1;
+        } else if (brightness < BRIGHT_MEDIUM) {
+            setBrightnessLevel(BRIGHT_MEDIUM);
+            return 2;
+        } else if (brightness < 255) {
+            setBrightnessLevel(255);
+            return 3;
+        } else {
+            setAutoBrightness(true);
+            return 0;
+        }
+    }
+
+    public int getBrighnessImageLevel() {
+        if (isAutoBrightness()) {
+            return 0;
+        }
+        int brightness = getBrightnessLevel();
+        if (brightness < BRIGHT_MEDIUM) {
+            return 1;
+        }
+        if (brightness >= 255 || brightness < BRIGHT_MEDIUM) {
+            return 3;
+        }
+        return 2;
+    }
+
+    private boolean isAutoBrightness() {
+        try {
+            return System.getInt(this.mContext.getContentResolver(), "screen_brightness_mode") == 1;
+        } catch (SettingNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void setAutoBrightness(boolean value) {
+        if (value) {
+            System.putInt(this.mContext.getContentResolver(), "screen_brightness_mode", 1);
+        } else {
+            System.putInt(this.mContext.getContentResolver(), "screen_brightness_mode", 0);
+        }
+    }
+
+    private int getBrightnessLevel() {
+        try {
+            return System.getInt(this.mContext.getContentResolver(), "screen_brightness");
+        } catch (SettingNotFoundException e) {
+            return 0;
+        }
+    }
+
+    private void setBrightnessLevel(int brightness) {
+        System.putInt(this.mContext.getContentResolver(), "screen_brightness", brightness);
+    }
+
+    public void gotoBrightnessSetting() {
+        try {
+            Intent intentWifi = new Intent("android.settings.DISPLAY_SETTINGS");
+            intentWifi.setFlags(268435456);
+            this.mContext.startActivity(intentWifi);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
