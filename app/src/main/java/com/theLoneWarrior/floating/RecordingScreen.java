@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -21,7 +20,6 @@ import java.io.IOException;
 
 public class RecordingScreen extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
     private static final int PERMISSION_CODE = 1;
     private int mScreenDensity;
     private MediaProjectionManager mProjectionManager;
@@ -71,7 +69,6 @@ public class RecordingScreen extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode != PERMISSION_CODE) {
-            Log.e(TAG, "Unknown request code: " + requestCode);
             return;
         }
         if (resultCode != RESULT_OK) {
@@ -92,7 +89,7 @@ public class RecordingScreen extends AppCompatActivity {
         } else {
             mMediaRecorder.stop();
             mMediaRecorder.reset();
-            Log.v(TAG, "Recording Stopped");
+
             stopScreenSharing();
             initRecorder();
             prepareRecorder();
@@ -130,13 +127,13 @@ public class RecordingScreen extends AppCompatActivity {
                 mToggleButton.setChecked(false);
                 mMediaRecorder.stop();
                 mMediaRecorder.reset();
-                Log.v(TAG, "Recording Stopped");
+
                 initRecorder();
                 prepareRecorder();
             }
             mMediaProjection = null;
             stopScreenSharing();
-            Log.i(TAG, "MediaProjection Stopped");
+
         }
     }
 
@@ -171,7 +168,10 @@ public class RecordingScreen extends AppCompatActivity {
         if (!file.exists()) {
             file.mkdirs();
         }
-
+         file = new File(filepath+"/FloSo");
+        if (!file.exists()) {
+            file.mkdirs();
+        }
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + ".mp4");
     }
 }

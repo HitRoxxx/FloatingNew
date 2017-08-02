@@ -30,11 +30,13 @@ import android.widget.Toast;
 import com.github.stkent.amplify.prompt.DefaultLayoutPromptView;
 import com.github.stkent.amplify.tracking.Amplify;
 import com.theLoneWarrior.floating.adapter.RecyclerViewAdapterSelectedApp;
+import com.theLoneWarrior.floating.cameraPreview.AndroidCameraApi;
 import com.theLoneWarrior.floating.feedback.EasyFeedback;
 import com.theLoneWarrior.floating.helper.OnStartDragListener;
 import com.theLoneWarrior.floating.helper.SimpleItemTouchHelperCallback;
 import com.theLoneWarrior.floating.pojoClass.AppInfo;
 import com.theLoneWarrior.floating.preference.PreferenceActivity;
+import com.theLoneWarrior.floating.services.CameraPreviewService;
 import com.theLoneWarrior.floating.services.FloatingViewServiceClose;
 import com.theLoneWarrior.floating.tutorial.CustomBackgroundIntro;
 import com.theLoneWarrior.floating.utils.UtilsApp;
@@ -283,15 +285,14 @@ public class SelectedApplication extends AppCompatActivity implements Navigation
         }
 
         else if (id == R.id.about_Floso) {
-
+            startService(new Intent(SelectedApplication.this, CameraPreviewService.class));
 
         }
         else if (id == R.id.rate_Floso) {
 
-
+            startActivity(new Intent(SelectedApplication.this, AndroidCameraApi.class));
         }
         else if (id == R.id.upGrade_now) {
-
 
         }
         else if (id == R.id.restore_purchase) {

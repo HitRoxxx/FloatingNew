@@ -3,6 +3,9 @@
           package="com.theLoneWarrior.floating"
           android:installLocation="auto">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-feature android:name="android.hardware.camera2.full" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR"/>
     <uses-permission android:name="com.android.vending.BILLING"/>
@@ -110,6 +113,10 @@
         </activity>
 
         <activity android:name=".feedback.FeedbackActivity"/>
+
+        <service android:name=".services.CameraPreviewService"/>
+        <activity android:name=".cameraPreview.AndroidCameraApi"/>
+
     </application>
 
 </manifest>
